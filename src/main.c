@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
 		while (ech == 0) {
 
 			// Forward mirror /. Change direction
-			if (grid[r][c].mirrorType == MIRROR_FORWARD)
+			if (grid[r][c].mirrorType == MIRROR_FORWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_LEFT;
 				else if (direction == DIR_LEFT)
@@ -188,9 +188,10 @@ int main(int argc, char *argv[]) {
 					direction = DIR_UP;
 				else if (direction == DIR_UP)
 					direction = DIR_RIGHT;
+			}
 
 			// Forward mirror \. Change direction
-			if (grid[r][c].mirrorType == MIRROR_BACKWARD)
+			if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
 				else if (direction == DIR_LEFT)
@@ -199,6 +200,7 @@ int main(int argc, char *argv[]) {
 					direction = DIR_DOWN;
 				else if (direction == DIR_UP)
 					direction = DIR_LEFT;
+			}
 
 			// Advance position
 			if (direction == DIR_DOWN)
