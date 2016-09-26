@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <unistd.h> 
 #include <ctype.h>
-#include <time.h>
 #include <stdbool.h>
-#include <sys/stat.h>
+
+#include "modules/mirrorfile.h"
 
 #define DIR_UP           1
 #define DIR_DOWN         2
@@ -69,9 +69,6 @@ int main(int argc, char *argv[]) {
 	// Combine mirror file path and name in to one string.
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
 	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
-
-	// Seed my random number generator
-	srand(time(NULL));
 
 	// Validate supported character count is square
 	if (strlen(supportedChars) % 4 != 0) {
@@ -236,49 +233,4 @@ int main(int argc, char *argv[]) {
 	free(mirrorFileFullPathName);
 
 	return 0;
-}
-
-int create_mirror_file(char *mirrorFileFullPathName, int width) {
-	int i, r, c;
-	struct stat sb;
-	FILE *config;
-	
-
-	// Check subdirs and create them if needed
-	if (strchr(mirrorFileFullPathName, '/') != NULL) {
-		for (i = 0; mirrorFileFullPathName[i] != '\0'; ++i) {
-			if (i == 0)
-				continue;
-			if (mirrorFileFullPathName[i] == '/') {
-				mirrorFileFullPathName[i] = '\0';
-				if (stat(mirrorFileFullPathName, &sb) != 0)
-					if (mkdir(mirrorFileFullPathName, 0700) == -1)
-						return 0;
-				mirrorFileFullPathName[i] = '/';
-			}
-		}
-	}
-
-	// Now lets create the config file
-	if ((config = fopen(mirrorFileFullPathName, "w")) == NULL)
-		return 0;
-	for (r = 0; r < width; ++r) {
-		for (c = 0; c < width; ++c) {
-			switch (rand() % 10) {
-				case MIRROR_FORWARD:
-					fprintf(config, "/");
-					break;
-				case MIRROR_BACKWARD:
-					fprintf(config, "\\");
-					break;
-				default:
-					fprintf(config, " ");
-					break;
-			}
-		}
-		fprintf(config, "\n");
-	}
-	fclose(config);
-
-	return 1;
 }

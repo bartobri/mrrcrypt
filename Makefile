@@ -24,7 +24,7 @@ EXES = mirrorcrypt
 
 all: $(EXES)
 
-mirrorcrypt: $(OBJ)/main.o | $(BIN)
+mirrorcrypt: $(OBJ_MODS)/mirrorfile.o $(OBJ)/main.o | $(BIN)
 	$(CC) $(CFLAGS) -o $(BIN)/$@ $^
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
