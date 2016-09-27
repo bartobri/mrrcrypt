@@ -40,19 +40,18 @@ int create_mirror_file(char *, int);
 
 int main(int argc, char *argv[]) {
 	int o, w, r, c, ch, i;
-	bool autoCreateMirrorFile = false;
+	int autoCreateMirrorFile = 0;
 	char *supportedChars      = SUPPORTED_CHARS;
 	char *mirrorFilePath      = MIRROR_FILE_PATH;
 	char *mirrorFileName      = MIRROR_FILE_NAME;
 	char *mirrorFilePathName, *mirrorFileFullPathName;
 	char *homeDir             = getenv("HOME");
-	FILE *mirrorFile;
 
 	// Check arguments
 	while ((o = getopt(argc, argv, "am:")) != -1) {
 		switch (o) {
 			case 'a':
-				autoCreateMirrorFile = true;
+				autoCreateMirrorFile = 1;
 				break;
 			case 'm':
 				mirrorFileName = optarg;
@@ -89,22 +88,21 @@ int main(int argc, char *argv[]) {
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
 	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
 	
-	// Set mirror file
-	mirrorfile_set(mirrorFileFullPathName);
-
-	// Open mirror file, prompt to create if can't open, die if can't create.
-	while ((mirrorFile = fopen(mirrorFileFullPathName, "r")) == NULL) {
+	// open mirror file
+	while (mirrorfile_open(mirrorFileFullPathName) == 0) {
 		if (autoCreateMirrorFile) {
 			if (create_mirror_file(mirrorFileFullPathName, w) == 0) {
-				fprintf(stderr, "Could not create mirror field file: %s\n", mirrorFileFullPathName);
 				return 1;
 			}
-		} else {
-			fprintf(stderr, "Mirror file '%s' not found. ", mirrorFileName);
-			fprintf(stderr, "Use the -a option to auto-create.\n");
+		} else
 			return 1;
-		}
+		
+		// TODO - create a main_exit() to handle the above returns/exits
 	}
+	
+	// Free memory
+	free(mirrorFilePathName);
+	free(mirrorFileFullPathName);
 
 	// Populate Grid
 	struct gridPoint grid[w][w];
@@ -230,10 +228,6 @@ int main(int argc, char *argv[]) {
 		}
 		putchar(ech);
 	}
-	
-	// Free memory
-	free(mirrorFilePathName);
-	free(mirrorFileFullPathName);
 
 	return 0;
 }

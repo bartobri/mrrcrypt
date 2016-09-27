@@ -10,14 +10,17 @@
 #include <sys/stat.h>
 
 // Static chars
-static char *mirrorFile;
+static FILE *mirrorFile;
 
-void mirrorfile_set(char *filePath) {
-	mirrorFile = malloc(strlen(filePath) + 1);
-	strcpy(mirrorFile, filePath);
+int mirrorfile_open(char *filePath) {
+
+	if ((mirrorFile = fopen(filePath, "r")) == NULL)
+		return 0;
+	
+	return 1;
 }
 
-int create_mirror_file(char *file, int width) {
+int mirrorfile_create(char *file, int width) {
 	int i, r, c;
 	struct stat sb;
 	FILE *config;
