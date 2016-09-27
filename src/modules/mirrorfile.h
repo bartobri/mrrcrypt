@@ -6,6 +6,7 @@
 #ifndef MIRRORFILE_H
 #define MIRRORFILE_H 1
 
+void mirrorfile_set(char *);
 int create_mirror_file(char *, int);
 
 #endif

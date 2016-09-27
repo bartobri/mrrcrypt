@@ -9,6 +9,14 @@
 #include <time.h>
 #include <sys/stat.h>
 
+// Static chars
+static char *mirrorFile;
+
+void mirrorfile_set(char *filePath) {
+	mirrorFile = malloc(strlen(filePath) + 1);
+	strcpy(mirrorFile, filePath);
+}
+
 int create_mirror_file(char *file, int width) {
 	int i, r, c;
 	struct stat sb;

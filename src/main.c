@@ -88,6 +88,9 @@ int main(int argc, char *argv[]) {
 	// Build mirror file path
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
 	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
+	
+	// Set mirror file
+	mirrorfile_set(mirrorFileFullPathName);
 
 	// Open mirror file, prompt to create if can't open, die if can't create.
 	while ((mirrorFile = fopen(mirrorFileFullPathName, "r")) == NULL) {
@@ -227,7 +230,7 @@ int main(int argc, char *argv[]) {
 		}
 		putchar(ech);
 	}
-
+	
 	// Free memory
 	free(mirrorFilePathName);
 	free(mirrorFileFullPathName);
