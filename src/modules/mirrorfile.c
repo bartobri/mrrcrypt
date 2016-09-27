@@ -66,3 +66,7 @@ int mirrorfile_create(char *file, int width) {
 
 	return 1;
 }
+
+int mirrorfile_next_char(void) {
+	return fgetc(mirrorFile);
+}

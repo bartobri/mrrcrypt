@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 	// open mirror file
 	while (mirrorfile_open(mirrorFileFullPathName) == 0) {
 		if (autoCreateMirrorFile) {
-			if (create_mirror_file(mirrorFileFullPathName, w) == 0) {
+			if (mirrorfile_create(mirrorFileFullPathName, w) == 0) {
 				return 1;
 			}
 		} else
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 				grid[r][c].charDown = supportedChars[(w*3)+c];
 
 			// Set mirror type
-			int m = fgetc(mirrorFile);
+			int m = mirrorfile_next_char();
 			if (m == EOF)
 				continue;
 			else if (m == 10)
