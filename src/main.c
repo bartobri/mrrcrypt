@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Close mirror file
-	fclose(mirrorFile);
+	mirrorfile_close();
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {

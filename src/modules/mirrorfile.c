@@ -70,3 +70,8 @@ int mirrorfile_create(char *file, int width) {
 int mirrorfile_next_char(void) {
 	return fgetc(mirrorFile);
 }
+
+void mirrorfile_close(void) {
+	if (mirrorFile != NULL)
+		fclose(mirrorFile);
+}
