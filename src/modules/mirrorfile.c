@@ -12,6 +12,10 @@
 // Static chars
 static FILE *mirrorFile;
 
+void mirrorfile_init(void) {
+	mirrorFile = NULL;
+}
+
 int mirrorfile_open(char *filePath) {
 
 	if ((mirrorFile = fopen(filePath, "r")) == NULL)

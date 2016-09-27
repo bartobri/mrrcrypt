@@ -46,6 +46,9 @@ int main(int argc, char *argv[]) {
 	char *mirrorFileName      = MIRROR_FILE_NAME;
 	char *mirrorFilePathName, *mirrorFileFullPathName;
 	char *homeDir             = getenv("HOME");
+	
+	// Run module init functions
+	mirrorfile_init();
 
 	// Check arguments
 	while ((o = getopt(argc, argv, "am:")) != -1) {
