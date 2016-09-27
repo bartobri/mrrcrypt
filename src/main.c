@@ -32,7 +32,7 @@ struct gridPoint {
 };
 
 // Function prototypes
-int create_mirror_file(char *, int);
+void main_shutdown(const char *);
 
 // TODO - Validate mirror file. 
 //            Only should have /, \, space, and \n.
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 					fprintf (stderr, "Unknown option '-%c'.\n", optopt);
 				else
 					fprintf (stderr, "Unknown option character '\\x%x'.\n", optopt);
-				exit(1);
+				main_shutdown("Invalid command option(s).");
 		}
 	}
 
@@ -73,19 +73,15 @@ int main(int argc, char *argv[]) {
 	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
 
 	// Validate supported character count is square
-	if (strlen(supportedChars) % 4 != 0) {
-		fprintf(stderr, "Invalid character set. Character count must be evenly divisible by 4\n");
-		return 1;
-	}
+	if (strlen(supportedChars) % 4 != 0)
+		main_shutdown("Invalid character set. Character count must be evenly divisible by 4");
 
 	// Get required grid size
 	w = (strlen(supportedChars) / 4);
 
 	// Die if we don't have a home directory
-	if (homeDir == NULL) {
-		fprintf(stderr, "Unable to read HOME environmental variable.\n");
-		return 1;
-	}
+	if (homeDir == NULL)
+		main_shutdown("Unable to read HOME environmental variable.");
 
 	// Build mirror file path
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
@@ -95,12 +91,10 @@ int main(int argc, char *argv[]) {
 	while (mirrorfile_open(mirrorFileFullPathName) == 0) {
 		if (autoCreateMirrorFile) {
 			if (mirrorfile_create(mirrorFileFullPathName, w) == 0) {
-				return 1;
+				main_shutdown("Could not auto-create mirror file.");
 			}
 		} else
-			return 1;
-		
-		// TODO - create a main_exit() to handle the above returns/exits
+			main_shutdown("Could not open mirror file. Use -a to auto-create.");
 	}
 	
 	// Free memory
@@ -233,4 +227,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	return 0;
+}
+
+void main_shutdown(const char *errmsg) {
+	
+	// Log a shutdown message
+	printf("Shutting down. Reason: %s\n", errmsg);
+	
+	// Shutdown
+	exit(1);
 }
