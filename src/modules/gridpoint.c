@@ -3,9 +3,6 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
-#define MIRROR_NONE      0
-#define MIRROR_FORWARD   1
-#define MIRROR_BACKWARD  2
 #define GRID_WIDTH       24
 
 // Gridpoint Structure
@@ -28,7 +25,7 @@ void gridpoint_init(void) {
 		for (c = 0; c < GRID_WIDTH; ++c) {
 
 			// Init struct with default values
-			grid[r][c].mirrorType = MIRROR_NONE;
+			grid[r][c].mirrorType = 0;
 			grid[r][c].charUp = 0;
 			grid[r][c].charDown = 0;
 			grid[r][c].charLeft = 0;
