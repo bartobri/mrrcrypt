@@ -11,25 +11,20 @@
 #include <stdbool.h>
 
 #include "modules/mirrorfile.h"
+#include "modules/gridpoint.h"
 
 #define DIR_UP           1
 #define DIR_DOWN         2
 #define DIR_LEFT         3
 #define DIR_RIGHT        4
-#define MIRROR_NONE      0
-#define MIRROR_FORWARD   1
-#define MIRROR_BACKWARD  2
 #define SUPPORTED_CHARS  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\\:;\"'<>,.?/~\n\t "
 #define MIRROR_FILE_NAME "default"
 #define MIRROR_FILE_PATH ".config/mirrorcrypt/"
 
-struct gridPoint {
-	int mirrorType;
-	char charUp;
-	char charDown;
-	char charLeft;
-	char charRight;
-};
+#define MIRROR_NONE      0
+#define MIRROR_FORWARD   1
+#define MIRROR_BACKWARD  2
+#define GRID_WIDTH       24
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -49,6 +44,7 @@ int main(int argc, char *argv[]) {
 	
 	// Run module init functions
 	mirrorfile_init();
+	gridpoint_init();
 
 	// Check arguments
 	while ((o = getopt(argc, argv, "am:")) != -1) {
@@ -102,26 +98,18 @@ int main(int argc, char *argv[]) {
 	free(mirrorFileFullPathName);
 
 	// Populate Grid
-	struct gridPoint grid[w][w];
 	for (r = 0; r < w; ++r) {
 		for (c = 0; c < w; ++c) {
 
-			// Init struct with default values
-			grid[r][c].mirrorType = MIRROR_NONE;
-			grid[r][c].charUp = 0;
-			grid[r][c].charDown = 0;
-			grid[r][c].charLeft = 0;
-			grid[r][c].charRight = 0;
-
 			// Set adjacent characters
 			if (r == 0)
-				grid[r][c].charUp = supportedChars[c];
+				gridpoint_set_charup(r, c, supportedChars[c]);
 			if (c == 0)
-				grid[r][c].charLeft = supportedChars[(w*2)+r];
+				gridpoint_set_charleft(r, c, supportedChars[(w*2)+r]);
 			if (c == (w - 1))
-				grid[r][c].charRight = supportedChars[w+r];
+				gridpoint_set_charright(r, c, supportedChars[w+r]);
 			if (r == (w - 1))
-				grid[r][c].charDown = supportedChars[(w*3)+c];
+				gridpoint_set_chardown(r, c, supportedChars[(w*3)+c]);
 
 			// Set mirror type
 			int m = mirrorfile_next_char();
@@ -130,9 +118,9 @@ int main(int argc, char *argv[]) {
 			else if (m == 10)
 				--c;
 			else if (m == '/')
-				grid[r][c].mirrorType = MIRROR_FORWARD;
+				gridpoint_set_type(r, c, MIRROR_FORWARD);
 			else if (m == '\\')
-				grid[r][c].mirrorType = MIRROR_BACKWARD;
+				gridpoint_set_type(r, c, MIRROR_BACKWARD);
 
 		}
 	}
@@ -179,7 +167,7 @@ int main(int argc, char *argv[]) {
 		while (ech == 0) {
 
 			// Forward mirror /. Change direction
-			if (grid[r][c].mirrorType == MIRROR_FORWARD) {
+			if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_LEFT;
 				else if (direction == DIR_LEFT)
@@ -191,7 +179,7 @@ int main(int argc, char *argv[]) {
 			}
 
 			// Forward mirror \. Change direction
-			if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
+			if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
 				else if (direction == DIR_LEFT)
@@ -214,13 +202,13 @@ int main(int argc, char *argv[]) {
 
 			// Check if our position is out of grid bounds. That means we found our char.
 			if (r < 0)
-				ech = grid[0][c].charUp;
+				ech = gridpoint_get_charup(0, c);
 			else if (r >= w)
-				ech = grid[w-1][c].charDown;
+				ech = gridpoint_get_chardown(w-1, c);
 			else if (c < 0)
-				ech = grid[r][0].charLeft;
+				ech = gridpoint_get_charleft(r, 0);
 			else if (c >= w)
-				ech = grid[r][w-1].charRight;
+				ech = gridpoint_get_charright(r, w-1);
 
 		}
 		putchar(ech);
