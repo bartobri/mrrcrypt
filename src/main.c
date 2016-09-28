@@ -68,10 +68,14 @@ int main(int argc, char *argv[]) {
 
 	// Validate supported character count is square
 	if (strlen(supportedChars) % 4 != 0)
-		main_shutdown("Invalid character set. Character count must be evenly divisible by 4");
+		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
 
-	// Get required grid size
-	w = (strlen(supportedChars) / 4);
+	// Validate supported character count is compatible with grid width
+	if (strlen(supportedChars) / 4 != gridpoint_get_width())
+		main_shutdown("Invalid character set. Character count does not match grid width.");
+
+	// Get grid width
+	w = gridpoint_get_width();
 
 	// Die if we don't have a home directory
 	if (homeDir == NULL)

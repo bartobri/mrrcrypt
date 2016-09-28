@@ -34,7 +34,7 @@ void gridpoint_init(void) {
 	}
 }
 
-int gridpoint_get_width(void) {
+unsigned int gridpoint_get_width(void) {
 	return GRID_WIDTH;
 }
 
