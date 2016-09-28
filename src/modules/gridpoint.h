@@ -7,12 +7,13 @@
 #define GRIDPOINT_H 1
 
 void gridpoint_init(void);
+int  gridpoint_get_width(void);
 void gridpoint_set_type(int, int, int);
 void gridpoint_set_charup(int, int, char);
 void gridpoint_set_chardown(int, int, char);
 void gridpoint_set_charleft(int, int, char);
 void gridpoint_set_charright(int, int, char);
-int gridpoint_get_type(int, int);
+int  gridpoint_get_type(int, int);
 char gridpoint_get_charup(int, int);
 char gridpoint_get_chardown(int, int);
 char gridpoint_get_charleft(int, int);

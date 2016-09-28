@@ -13,6 +13,9 @@
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
 
+#define MIRROR_NONE      0
+#define MIRROR_FORWARD   1
+#define MIRROR_BACKWARD  2
 #define DIR_UP           1
 #define DIR_DOWN         2
 #define DIR_LEFT         3
@@ -20,11 +23,6 @@
 #define SUPPORTED_CHARS  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\\:;\"'<>,.?/~\n\t "
 #define MIRROR_FILE_NAME "default"
 #define MIRROR_FILE_PATH ".config/mirrorcrypt/"
-
-#define MIRROR_NONE      0
-#define MIRROR_FORWARD   1
-#define MIRROR_BACKWARD  2
-#define GRID_WIDTH       24
 
 // Function prototypes
 void main_shutdown(const char *);

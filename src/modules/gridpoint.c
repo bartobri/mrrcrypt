@@ -34,6 +34,10 @@ void gridpoint_init(void) {
 	}
 }
 
+int gridpoint_get_width(void) {
+	return GRID_WIDTH;
+}
+
 void gridpoint_set_type(int r, int c, int value) {
 	if (r < GRID_WIDTH && c < GRID_WIDTH)
 		grid[r][c].mirrorType = value;
