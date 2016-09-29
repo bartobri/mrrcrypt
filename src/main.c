@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 
 	// Die if we don't have a home directory
 	if (homeDir == NULL)
-		main_shutdown("Unable to read HOME environmental variable.");
+		main_shutdown("Unable to read HOME environment variable.");
 
 	// Build mirror file path
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
