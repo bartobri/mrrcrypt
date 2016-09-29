@@ -44,6 +44,18 @@ int main(int argc, char *argv[]) {
 	mirrorfile_init();
 	gridpoint_init();
 
+	// Die if we don't have a home directory
+	if (homeDir == NULL)
+		main_shutdown("Unable to read HOME environment variable.");
+	
+	// Validate supported character count is square
+	if (supportedchars_count() % 4 != 0)
+		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
+
+	// Validate supported character count is compatible with grid width
+	if (supportedchars_count() / 4 != gridpoint_get_width())
+		main_shutdown("Invalid character set. Character count does not match grid width.");
+
 	// Check arguments
 	while ((o = getopt(argc, argv, "am:")) != -1) {
 		switch (o) {
@@ -66,20 +78,8 @@ int main(int argc, char *argv[]) {
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
 	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
 
-	// Validate supported character count is square
-	if (supportedchars_count() % 4 != 0)
-		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
-
-	// Validate supported character count is compatible with grid width
-	if (supportedchars_count() / 4 != gridpoint_get_width())
-		main_shutdown("Invalid character set. Character count does not match grid width.");
-
 	// Get grid width
 	w = gridpoint_get_width();
-
-	// Die if we don't have a home directory
-	if (homeDir == NULL)
-		main_shutdown("Unable to read HOME environment variable.");
 
 	// Build mirror file path
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
