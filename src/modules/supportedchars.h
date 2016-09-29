@@ -6,6 +6,8 @@
 #ifndef SUPPORTEDCHARS_H
 #define SUPPORTEDCHARS_H 1
 
-
+void supportedchars_init(void);
+unsigned int  supportedchars_count(void);
+char supportedchars_get(int);
 
 #endif

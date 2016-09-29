@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#include "modules/supportedchars.h"
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
 
@@ -20,7 +21,6 @@
 #define DIR_DOWN         2
 #define DIR_LEFT         3
 #define DIR_RIGHT        4
-#define SUPPORTED_CHARS  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\\:;\"'<>,.?/~\n\t "
 #define MIRROR_FILE_NAME "default"
 #define MIRROR_FILE_PATH ".config/mirrorcrypt/"
 
@@ -34,13 +34,13 @@ void main_shutdown(const char *);
 int main(int argc, char *argv[]) {
 	int o, w, r, c, ch, i;
 	int autoCreateMirrorFile = 0;
-	char *supportedChars      = SUPPORTED_CHARS;
 	char *mirrorFilePath      = MIRROR_FILE_PATH;
 	char *mirrorFileName      = MIRROR_FILE_NAME;
 	char *mirrorFilePathName, *mirrorFileFullPathName;
 	char *homeDir             = getenv("HOME");
 	
 	// Run module init functions
+	supportedchars_init();
 	mirrorfile_init();
 	gridpoint_init();
 
@@ -67,11 +67,11 @@ int main(int argc, char *argv[]) {
 	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
 
 	// Validate supported character count is square
-	if (strlen(supportedChars) % 4 != 0)
+	if (supportedchars_count() % 4 != 0)
 		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
 
 	// Validate supported character count is compatible with grid width
-	if (strlen(supportedChars) / 4 != gridpoint_get_width())
+	if (supportedchars_count() / 4 != gridpoint_get_width())
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Get grid width
@@ -105,13 +105,13 @@ int main(int argc, char *argv[]) {
 
 			// Set adjacent characters
 			if (r == 0)
-				gridpoint_set_charup(r, c, supportedChars[c]);
+				gridpoint_set_charup(r, c, supportedchars_get(c));
 			if (c == 0)
-				gridpoint_set_charleft(r, c, supportedChars[(w*2)+r]);
+				gridpoint_set_charleft(r, c, supportedchars_get((w*2)+r));
 			if (c == (w - 1))
-				gridpoint_set_charright(r, c, supportedChars[w+r]);
+				gridpoint_set_charright(r, c, supportedchars_get(w+r));
 			if (r == (w - 1))
-				gridpoint_set_chardown(r, c, supportedChars[(w*3)+c]);
+				gridpoint_set_chardown(r, c, supportedchars_get((w*3)+c));
 
 			// Set mirror type
 			int m = mirrorfile_next_char();
@@ -136,12 +136,12 @@ int main(int argc, char *argv[]) {
 		int direction;
 		char ech = 0;
 
-		for (i = 0; supportedChars[i] != '\0'; ++i)
-			if (supportedChars[i] == ch)
+		for (i = 0; supportedchars_get(i) != '\0'; ++i)
+			if (supportedchars_get(i) == ch)
 				break;
 
 		// If character not supported, just print it and continue the loop
-		if (supportedChars[i] == '\0') {
+		if (supportedchars_get(i) == '\0') {
 			putchar(ch);
 			continue;
 		}
