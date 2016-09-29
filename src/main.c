@@ -21,8 +21,6 @@
 #define DIR_DOWN         2
 #define DIR_LEFT         3
 #define DIR_RIGHT        4
-#define MIRROR_FILE_NAME "default"
-#define MIRROR_FILE_PATH ".config/mirrorcrypt/"
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -33,11 +31,9 @@ void main_shutdown(const char *);
 
 int main(int argc, char *argv[]) {
 	int o, w, r, c, ch, i;
-	int autoCreateMirrorFile = 0;
-	char *mirrorFilePath      = MIRROR_FILE_PATH;
-	char *mirrorFileName      = MIRROR_FILE_NAME;
-	char *mirrorFilePathName, *mirrorFileFullPathName;
-	char *homeDir             = getenv("HOME");
+	int autoCreate = 0;
+	char *homeDir = getenv("HOME");
+	char *mirrorFileName = NULL;
 	
 	// Run module init functions
 	supportedchars_init();
@@ -60,7 +56,7 @@ int main(int argc, char *argv[]) {
 	while ((o = getopt(argc, argv, "am:")) != -1) {
 		switch (o) {
 			case 'a':
-				autoCreateMirrorFile = 1;
+				autoCreate = 1;
 				break;
 			case 'm':
 				mirrorFileName = optarg;
@@ -73,31 +69,19 @@ int main(int argc, char *argv[]) {
 				main_shutdown("Invalid command option(s).");
 		}
 	}
-
-	// Combine mirror file path and name in to one string.
-	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
-	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
-
-	// Get grid width
-	w = gridpoint_get_width();
-
-	// Build mirror file path
-	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
-	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
 	
 	// open mirror file
-	while (mirrorfile_open(mirrorFileFullPathName) == 0) {
-		if (autoCreateMirrorFile) {
-			if (mirrorfile_create(mirrorFileFullPathName, w) == 0) {
+	while (mirrorfile_open(homeDir, mirrorFileName) == 0) {
+		if (autoCreate) {
+			if (mirrorfile_create(homeDir, mirrorFileName, gridpoint_get_width()) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
 		} else
 			main_shutdown("Could not open mirror file. Use -a to auto-create.");
 	}
 	
-	// Free memory
-	free(mirrorFilePathName);
-	free(mirrorFileFullPathName);
+	// Get grid width
+	w = gridpoint_get_width();
 
 	// Populate Grid
 	for (r = 0; r < w; ++r) {

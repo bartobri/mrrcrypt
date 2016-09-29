@@ -7,8 +7,8 @@
 #define MIRRORFILE_H 1
 
 void mirrorfile_init(void);
-int mirrorfile_open(char *);
-int mirrorfile_create(char *, int);
+int mirrorfile_open(char *, char *);
+int mirrorfile_create(char *, char *, int);
 int mirrorfile_next_char(void);
 void mirrorfile_close(void);
 

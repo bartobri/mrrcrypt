@@ -9,6 +9,9 @@
 #include <time.h>
 #include <sys/stat.h>
 
+#define MIRROR_FILE_NAME "default"
+#define MIRROR_FILE_PATH ".config/mirrorcrypt/"
+
 // Static chars
 static FILE *mirrorFile;
 
@@ -16,34 +19,68 @@ void mirrorfile_init(void) {
 	mirrorFile = NULL;
 }
 
-int mirrorfile_open(char *filePath) {
-
-	if ((mirrorFile = fopen(filePath, "r")) == NULL)
-		return 0;
+int mirrorfile_open(char *homeDir, char *mirrorFileName) {
+	int r = 1;
+	char *mirrorFilePath = MIRROR_FILE_PATH;
+	char *mirrorFilePathName;
+	char *mirrorFileFullPathName;
 	
-	return 1;
+	// Set mirror file name to default if NULL
+	if (mirrorFileName == NULL)
+		mirrorFileName = MIRROR_FILE_NAME;
+	
+	// Combine mirror file path and name in to one string.
+	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
+	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
+	
+	// Build mirror file path
+	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
+	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
+
+	if ((mirrorFile = fopen(mirrorFileFullPathName, "r")) == NULL)
+		r = 0;
+	
+	free(mirrorFilePathName);
+	free(mirrorFileFullPathName);
+	
+	return r;
 }
 
-int mirrorfile_create(char *file, int width) {
+int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	int i, r, c;
 	struct stat sb;
 	FILE *config;
+	char *mirrorFilePath = MIRROR_FILE_PATH;
+	char *mirrorFilePathName;
+	char *mirrorFileFullPathName;
+	
+	// Set mirror file name to default if NULL
+	if (mirrorFileName == NULL)
+		mirrorFileName = MIRROR_FILE_NAME;
+	
+	// Combine mirror file path and name in to one string.
+	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
+	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
+	
+	// Build mirror file path
+	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
+	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
 
 	// Check subdirs and create them if needed
-	if (strchr(file, '/') != NULL) {
-		for (i = 1; file[i] != '\0'; ++i) {
-			if (file[i] == '/') {
-				file[i] = '\0';
-				if (stat(file, &sb) != 0)
-					if (mkdir(file, 0700) == -1)
+	if (strchr(mirrorFileFullPathName, '/') != NULL) {
+		for (i = 1; mirrorFileFullPathName[i] != '\0'; ++i) {
+			if (mirrorFileFullPathName[i] == '/') {
+				mirrorFileFullPathName[i] = '\0';
+				if (stat(mirrorFileFullPathName, &sb) != 0)
+					if (mkdir(mirrorFileFullPathName, 0700) == -1)
 						return 0;
-				file[i] = '/';
+				mirrorFileFullPathName[i] = '/';
 			}
 		}
 	}
 
 	// Now lets open the mirror file
-	if ((config = fopen(file, "w")) == NULL)
+	if ((config = fopen(mirrorFileFullPathName, "w")) == NULL)
 		return 0;
 
 	// Seed my random number generator
