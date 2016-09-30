@@ -101,8 +101,11 @@ int main(int argc, char *argv[]) {
 			ch = mirrorfile_next_char();
 
 			// Shutdown if mirror file is not open
-			if (ch < 0)
-				main_shutdown("Could not read from mirror file. Mirror file not open.");
+			// TODO - use -2 instead of -1 for this check
+			//if (ch < 0) {
+			//	printf("ch = %i, EOF = %i\n", ch, EOF);
+			//	main_shutdown("Could not read from mirror file. Mirror file not open.");
+			//}
 			
 			// Break out of loop if we reached the end of the mirror file
 			if (ch == EOF)
@@ -110,7 +113,10 @@ int main(int argc, char *argv[]) {
 			
 			// Evaluate mirror file character
 			if (ch == 10)
-				--c;
+				if (c == 0)
+					--c;
+				else
+					main_shutdown("Invalid mirror file. Width des not conform.");
 			else if (ch == '/')
 				gridpoint_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
@@ -124,6 +130,12 @@ int main(int argc, char *argv[]) {
 		if (ch == EOF)
 			break;
 	}
+	
+	if (r != w && c != w)
+		main_shutdown("Invalid mirror file. Too short.");
+
+	//printf("r = %i, c = %i\n", r, c);
+	//printf("last char read: %i\n", ch);
 
 	// Close mirror file
 	mirrorfile_close();
