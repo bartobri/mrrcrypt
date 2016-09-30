@@ -228,6 +228,9 @@ void main_shutdown(const char *errmsg) {
 	// Log a shutdown message
 	printf("Shutting down. Reason: %s\n", errmsg);
 	
+	// Close mirror file (if open)
+	mirrorfile_close();
+	
 	// Shutdown
 	exit(1);
 }

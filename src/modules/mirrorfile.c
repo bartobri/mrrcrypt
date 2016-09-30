@@ -116,6 +116,8 @@ int mirrorfile_next_char(void) {
 }
 
 void mirrorfile_close(void) {
-	if (mirrorFile != NULL)
+	if (mirrorFile != NULL) {
 		fclose(mirrorFile);
+		mirrorFile = NULL;
+	}
 }
