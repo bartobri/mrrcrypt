@@ -112,7 +112,7 @@ int mirrorfile_next_char(void) {
 	if (mirrorFile != NULL)
 		return fgetc(mirrorFile);
 	
-	return -1;
+	return -2;
 }
 
 void mirrorfile_close(void) {

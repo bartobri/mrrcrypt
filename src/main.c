@@ -101,11 +101,8 @@ int main(int argc, char *argv[]) {
 			ch = mirrorfile_next_char();
 
 			// Shutdown if mirror file is not open
-			// TODO - use -2 instead of -1 for this check
-			//if (ch < 0) {
-			//	printf("ch = %i, EOF = %i\n", ch, EOF);
-			//	main_shutdown("Could not read from mirror file. Mirror file not open.");
-			//}
+			if (ch == -2)
+				main_shutdown("Could not read from mirror file. Mirror file not open.");
 			
 			// Break out of loop if we reached the end of the mirror file
 			if (ch == EOF)
@@ -116,7 +113,7 @@ int main(int argc, char *argv[]) {
 				if (c == 0)
 					--c;
 				else
-					main_shutdown("Invalid mirror file. Width des not conform.");
+					main_shutdown("Invalid mirror file. Width does not conform.");
 			else if (ch == '/')
 				gridpoint_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
