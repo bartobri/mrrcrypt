@@ -115,6 +115,10 @@ int main(int argc, char *argv[]) {
 				gridpoint_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
 				gridpoint_set_type(r, c, MIRROR_BACKWARD);
+			else if (ch == ' ')
+				gridpoint_set_type(r, c, MIRROR_NONE);
+			else
+				main_shutdown("Invalid character in mirror file.");
 
 		}
 		if (ch == EOF)
@@ -174,7 +178,7 @@ int main(int argc, char *argv[]) {
 					direction = DIR_RIGHT;
 			}
 
-			// Forward mirror \. Change direction
+			// backward mirror \. Change direction
 			if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
