@@ -131,9 +131,6 @@ int main(int argc, char *argv[]) {
 	if (r != w && c != w)
 		main_shutdown("Invalid mirror file. Too short.");
 
-	//printf("r = %i, c = %i\n", r, c);
-	//printf("last char read: %i\n", ch);
-
 	// Close mirror file
 	mirrorfile_close();
 
