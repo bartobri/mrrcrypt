@@ -109,7 +109,10 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 }
 
 int mirrorfile_next_char(void) {
-	return fgetc(mirrorFile);
+	if (mirrorFile != NULL)
+		return fgetc(mirrorFile);
+	
+	return -1;
 }
 
 void mirrorfile_close(void) {

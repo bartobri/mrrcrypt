@@ -98,17 +98,27 @@ int main(int argc, char *argv[]) {
 				gridpoint_set_chardown(r, c, supportedchars_get((w*3)+c));
 
 			// Set mirror type
-			int m = mirrorfile_next_char();
-			if (m == EOF)
-				continue;
-			else if (m == 10)
+			ch = mirrorfile_next_char();
+
+			// Shutdown if mirror file is not open
+			if (ch < 0)
+				main_shutdown("Could not read from mirror file. Mirror file not open.");
+			
+			// Break out of loop if we reached the end of the mirror file
+			if (ch == EOF)
+				break;
+			
+			// Evaluate mirror file character
+			if (ch == 10)
 				--c;
-			else if (m == '/')
+			else if (ch == '/')
 				gridpoint_set_type(r, c, MIRROR_FORWARD);
-			else if (m == '\\')
+			else if (ch == '\\')
 				gridpoint_set_type(r, c, MIRROR_BACKWARD);
 
 		}
+		if (ch == EOF)
+			break;
 	}
 
 	// Close mirror file
