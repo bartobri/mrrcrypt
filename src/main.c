@@ -13,6 +13,7 @@
 #include "modules/supportedchars.h"
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
+#include "modules/visitedpoints.h"
 
 #define MIRROR_NONE      0
 #define MIRROR_FORWARD   1
@@ -35,6 +36,7 @@ int main(int argc, char *argv[]) {
 	supportedchars_init();
 	mirrorfile_init();
 	gridpoint_init();
+	visitedpoints_init();
 
 	// Die if we don't have a home directory
 	if (homeDir == NULL)
@@ -164,9 +166,24 @@ int main(int argc, char *argv[]) {
 			c = i - (w*3);
 			direction = DIR_UP;
 		}
+		
+		// Clear visited points
+		visitedpoints_clear();
 
 		// Traverse through the grid
 		while (ech == 0) {
+			
+			if (gridpoint_get_type(r, c) != MIRROR_NONE) {
+				if (visitedpoints_exists(r, c)) {
+					if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
+						gridpoint_set_type(r, c, MIRROR_BACKWARD);
+					} else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
+						gridpoint_set_type(r, c, MIRROR_FORWARD);
+					}
+				} else {
+					visitedpoints_add(r, c);
+				}
+			}
 
 			// Forward mirror /. Change direction
 			if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
@@ -178,10 +195,13 @@ int main(int argc, char *argv[]) {
 					direction = DIR_UP;
 				else if (direction == DIR_UP)
 					direction = DIR_RIGHT;
+				
+				// Spin mirror
+				gridpoint_set_type(r, c, MIRROR_BACKWARD);
 			}
 
 			// backward mirror \. Change direction
-			if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
+			else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
 				else if (direction == DIR_LEFT)
@@ -190,6 +210,9 @@ int main(int argc, char *argv[]) {
 					direction = DIR_DOWN;
 				else if (direction == DIR_UP)
 					direction = DIR_LEFT;
+				
+				// Spin mirror
+				gridpoint_set_type(r, c, MIRROR_FORWARD);
 			}
 
 			// Advance position
