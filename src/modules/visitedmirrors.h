@@ -3,12 +3,12 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
-#ifndef VISITEDPOINTS_H
-#define VISITEDPOINTS_H 1
+#ifndef VISITEDMIRRORS_H
+#define VISITEDMIRRORS_H 1
 
-void visitedpoints_init(void);
-void visitedpoints_add(int, int);
-int visitedpoints_exists(int, int);
-void visitedpoints_clear(void);
+void visitedmirrors_init(void);
+void visitedmirrors_add(int, int);
+int visitedmirrors_exists(int, int);
+void visitedmirrors_clear(void);
 
 #endif

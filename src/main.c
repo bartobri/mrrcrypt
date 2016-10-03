@@ -13,7 +13,7 @@
 #include "modules/supportedchars.h"
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
-#include "modules/visitedpoints.h"
+#include "modules/visitedmirrors.h"
 
 #define MIRROR_NONE      0
 #define MIRROR_FORWARD   1
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 	supportedchars_init();
 	mirrorfile_init();
 	gridpoint_init();
-	visitedpoints_init();
+	visitedmirrors_init();
 
 	// Die if we don't have a home directory
 	if (homeDir == NULL)
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 		}
 		
 		// Clear visited points
-		visitedpoints_clear();
+		visitedmirrors_clear();
 
 		// Traverse through the grid
 		while (ech == 0) {
@@ -177,14 +177,14 @@ int main(int argc, char *argv[]) {
 			// This is necessary to preserve the ability to reverse the encryption.
 			// We can not rotate a mirror more than once per character.
 			if (gridpoint_get_type(r, c) != MIRROR_NONE) {
-				if (visitedpoints_exists(r, c)) {
+				if (visitedmirrors_exists(r, c)) {
 					if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
 						gridpoint_set_type(r, c, MIRROR_BACKWARD);
 					} else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 						gridpoint_set_type(r, c, MIRROR_FORWARD);
 					}
 				} else {
-					visitedpoints_add(r, c);
+					visitedmirrors_add(r, c);
 				}
 			}
 

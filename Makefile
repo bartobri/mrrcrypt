@@ -24,7 +24,7 @@ EXES = mirrorcrypt
 
 all: $(EXES)
 
-mirrorcrypt: $(OBJ_MODS)/visitedpoints.o $(OBJ_MODS)/supportedchars.o $(OBJ_MODS)/mirrorfile.o $(OBJ_MODS)/gridpoint.o $(OBJ)/main.o | $(BIN)
+mirrorcrypt: $(OBJ_MODS)/visitedmirrors.o $(OBJ_MODS)/supportedchars.o $(OBJ_MODS)/mirrorfile.o $(OBJ_MODS)/gridpoint.o $(OBJ)/main.o | $(BIN)
 	$(CC) $(CFLAGS) -o $(BIN)/$@ $^
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)

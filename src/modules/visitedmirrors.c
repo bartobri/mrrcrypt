@@ -3,7 +3,7 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
-#define MAX_POINTS 100
+#define MAX_MIRRORS 200
 
 struct point {
 	int v;
@@ -11,19 +11,19 @@ struct point {
 	int c;
 };
 
-static struct point visited[MAX_POINTS];
+static struct point visited[MAX_MIRRORS];
 
-void visitedpoints_init(void) {
+void visitedmirrors_init(void) {
 	int i;
 
-	for (i = 0; i < MAX_POINTS; ++i)
+	for (i = 0; i < MAX_MIRRORS; ++i)
 		visited[i].v = 0;
 }
 
-void visitedpoints_add(int r, int c) {
+void visitedmirrors_add(int r, int c) {
 	int i;
 
-	for (i = 0; i < MAX_POINTS; ++i) {
+	for (i = 0; i < MAX_MIRRORS; ++i) {
 		if (visited[i].v == 0) {
 			visited[i].v = 1;
 			visited[i].r = r;
@@ -33,12 +33,12 @@ void visitedpoints_add(int r, int c) {
 	}
 }
 
-int visitedpoints_exists(int r, int c) {
+int visitedmirrors_exists(int r, int c) {
 	int i, x;
 	
 	x = 0;
 
-	for (i = 0; i < MAX_POINTS; ++i) {
+	for (i = 0; i < MAX_MIRRORS; ++i) {
 		if (visited[i].v == 0) {
 			break;
 		} else if (visited[i].r == r && visited[i].c == c) {
@@ -50,9 +50,9 @@ int visitedpoints_exists(int r, int c) {
 	return x;
 }
 
-void visitedpoints_clear(void) {
+void visitedmirrors_clear(void) {
 	int i;
 
-	for (i = 0; i < MAX_POINTS; ++i)
+	for (i = 0; i < MAX_MIRRORS; ++i)
 		visited[i].v = 0;
 }
