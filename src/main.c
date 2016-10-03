@@ -173,6 +173,9 @@ int main(int argc, char *argv[]) {
 		// Traverse through the grid
 		while (ech == 0) {
 			
+			// If we hit a mirror that we've already been to, un-rotate it.
+			// This is necessary to preserve the ability to reverse the encryption.
+			// We can not rotate a mirror more than once per character.
 			if (gridpoint_get_type(r, c) != MIRROR_NONE) {
 				if (visitedpoints_exists(r, c)) {
 					if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
