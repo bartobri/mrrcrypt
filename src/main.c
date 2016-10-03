@@ -25,10 +25,6 @@
 // Function prototypes
 void main_shutdown(const char *);
 
-// TODO - Validate mirror file. 
-//            Only should have /, \, space, and \n.
-//            Should conform to expected grid size
-
 int main(int argc, char *argv[]) {
 	int o, w, r, c, ch, i;
 	int autoCreate = 0;
