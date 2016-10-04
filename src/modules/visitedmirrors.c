@@ -3,7 +3,9 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
-#define MAX_MIRRORS 200
+// Given a grid width of 24, MAX_MIRRORS is 24x24=576
+// TODO - make this utilize the actual GRID_WIDTH symbolic name
+#define MAX_MIRRORS 576
 
 struct point {
 	int v;
