@@ -1,5 +1,5 @@
 # Installation directories following GNU conventions
-prefix = /usr/local
+prefix ?= /usr/local
 exec_prefix = $(prefix)
 bindir = $(exec_prefix)/bin
 sbindir = $(exec_prefix)/sbin
@@ -48,3 +48,10 @@ $(OBJ):
 clean:
 	rm -rf $(BIN)
 	rm -rf $(OBJ)
+
+install:
+	install -d $(DESTDIR)$(bindir)
+	cd $(BIN) && install $(EXES) $(DESTDIR)$(bindir)
+
+uninstall:
+	for exe in $(EXES); do rm $(DESTDIR)$(bindir)/$$exe; done
