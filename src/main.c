@@ -30,6 +30,7 @@ void main_shutdown(const char *);
 int main(int argc, char *argv[]) {
 	int o, r, c, ch, i;
 	int autoCreate       = 0;
+	char *version        = VERSION;
 	char *supportedChars = SUPPORTED_CHARS;
 	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = NULL;
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
-	while ((o = getopt(argc, argv, "am:")) != -1) {
+	while ((o = getopt(argc, argv, "am:v")) != -1) {
 		switch (o) {
 			case 'a':
 				autoCreate = 1;
@@ -60,6 +61,9 @@ int main(int argc, char *argv[]) {
 			case 'm':
 				mirrorFileName = optarg;
 				break;
+			case 'v':
+				printf("mirrorcrypt version %s\n", version);
+				return 0;
 			case '?':
 				if (isprint(optopt))
 					fprintf (stderr, "Unknown option '-%c'.\n", optopt);
