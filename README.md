@@ -36,23 +36,42 @@ $ which git
 ```
 Download and Build:
 ```
-git clone https://github.com/bartobri/mirror-crypt.git
-cd mirror-crypt
-make
+$ git clone https://github.com/bartobri/mirror-crypt.git
+$ cd mirror-crypt
+$ make
 ```
 
 Install:
 ```
-sudo make install
+$ sudo make install
 ```
 
 Uninstall:
 ```
-sudo make uninstall
+$ sudo make uninstall
 ```
 
 Usage
 -----
+
+The first time you use `mirrorcrypt` you will need to use the `-a` option
+to auto-create your default mirror field file, which essentially serves
+as your personal private key.
+
+```
+$ printf "hello world" | mirrorcrypt -a
+ggYt~Vy[mYg
+```
+
+From that point on you no longer need the `-a` option.
+
+```
+$ printf "hello world" | mirrorcrypt
+ggYt~Vy[mYg
+```
+
+Config Dir
+----------
 
 TODO
 
