@@ -34,16 +34,21 @@ $ which gcc
 $ which git
 /usr/bin/git
 ```
-Next download and build the application:
+Download and Build:
 ```
 git clone https://github.com/bartobri/mirror-crypt.git
 cd mirror-crypt
 make
 ```
 
-Install the application:
+Install:
 ```
-TODO - Need install process
+sudo make install
+```
+
+Uninstall:
+```
+sudo make uninstall
 ```
 
 Usage
