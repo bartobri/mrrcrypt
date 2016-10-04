@@ -7,5 +7,6 @@
 #define MAIN_H 1
 
 #define GRID_SIZE 24
+#define SUPPORTED_CHARS  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\\:;\"'<>,.?/~\n\t "
 
 #endif

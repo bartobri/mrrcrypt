@@ -11,7 +11,6 @@
 #include <stdbool.h>
 
 #include "main.h"
-#include "modules/supportedchars.h"
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
 #include "modules/visitedmirrors.h"
@@ -31,11 +30,11 @@ void main_shutdown(const char *);
 int main(int argc, char *argv[]) {
 	int o, r, c, ch, i;
 	int autoCreate       = 0;
+	char *supportedChars = SUPPORTED_CHARS;
 	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = NULL;
 	
 	// Run module init functions
-	supportedchars_init();
 	mirrorfile_init();
 	gridpoint_init();
 	visitedmirrors_init();
@@ -45,11 +44,11 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Unable to read HOME environment variable.");
 	
 	// Validate supported character count is square
-	if (supportedchars_count() % 4 != 0)
+	if (strlen(supportedChars) % 4 != 0)
 		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
 
 	// Validate supported character count is compatible with grid width
-	if (supportedchars_count() / 4 != GRID_SIZE)
+	if (strlen(supportedChars) / 4 != GRID_SIZE)
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
@@ -86,13 +85,13 @@ int main(int argc, char *argv[]) {
 
 			// Set adjacent characters
 			if (r == 0)
-				gridpoint_set_charup(r, c, supportedchars_get(c));
+				gridpoint_set_charup(r, c, supportedChars[c]);
 			if (c == 0)
-				gridpoint_set_charleft(r, c, supportedchars_get((GRID_SIZE * 2) + r));
+				gridpoint_set_charleft(r, c, supportedChars[(GRID_SIZE * 2) + r]);
 			if (c == (GRID_SIZE - 1))
-				gridpoint_set_charright(r, c, supportedchars_get(GRID_SIZE + r));
+				gridpoint_set_charright(r, c, supportedChars[GRID_SIZE + r]);
 			if (r == (GRID_SIZE - 1))
-				gridpoint_set_chardown(r, c, supportedchars_get((GRID_SIZE * 3) + c));
+				gridpoint_set_chardown(r, c, supportedChars[(GRID_SIZE * 3) + c]);
 
 			// Set mirror type
 			ch = mirrorfile_next_char();
@@ -137,12 +136,12 @@ int main(int argc, char *argv[]) {
 		int direction;
 		char ech = 0;
 
-		for (i = 0; supportedchars_get(i) != '\0'; ++i)
-			if (supportedchars_get(i) == ch)
+		for (i = 0; supportedChars[i] != '\0'; ++i)
+			if (supportedChars[i] == ch)
 				break;
 
 		// If character not supported, just print it and continue the loop
-		if (supportedchars_get(i) == '\0') {
+		if (supportedChars[i] == '\0') {
 			putchar(ch);
 			continue;
 		}
