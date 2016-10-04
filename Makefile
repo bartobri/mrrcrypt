@@ -15,8 +15,8 @@ SRC=src
 OBJ_MODS=obj/modules
 SRC_MODS=src/modules
 
-CC = gcc
-CFLAGS = -Wextra -Wall
+CC ?= gcc
+CFLAGS ?= -Wextra -Wall -iquote$(SRC)
 
 .PHONY: all install uninstall clean
 

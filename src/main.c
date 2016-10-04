@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#include "main.h"
 #include "modules/supportedchars.h"
 #include "modules/mirrorfile.h"
 #include "modules/gridpoint.h"
@@ -28,9 +29,9 @@
 void main_shutdown(const char *);
 
 int main(int argc, char *argv[]) {
-	int o, w, r, c, ch, i;
-	int autoCreate = 0;
-	char *homeDir = getenv("HOME");
+	int o, r, c, ch, i;
+	int autoCreate       = 0;
+	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = NULL;
 	
 	// Run module init functions
@@ -48,7 +49,7 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
 
 	// Validate supported character count is compatible with grid width
-	if (supportedchars_count() / 4 != gridpoint_get_width())
+	if (supportedchars_count() / 4 != GRID_SIZE)
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
@@ -72,29 +73,26 @@ int main(int argc, char *argv[]) {
 	// open mirror file
 	while (mirrorfile_open(homeDir, mirrorFileName) == 0) {
 		if (autoCreate || mirrorFileName == NULL) {
-			if (mirrorfile_create(homeDir, mirrorFileName, gridpoint_get_width()) == 0) {
+			if (mirrorfile_create(homeDir, mirrorFileName, GRID_SIZE) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
 		} else
 			main_shutdown("Could not open mirror file. Use -a to auto-create.");
 	}
-	
-	// Get grid width
-	w = gridpoint_get_width();
 
 	// Populate Grid
-	for (r = 0; r < w; ++r) {
-		for (c = 0; c < w; ++c) {
+	for (r = 0; r < GRID_SIZE; ++r) {
+		for (c = 0; c < GRID_SIZE; ++c) {
 
 			// Set adjacent characters
 			if (r == 0)
 				gridpoint_set_charup(r, c, supportedchars_get(c));
 			if (c == 0)
-				gridpoint_set_charleft(r, c, supportedchars_get((w*2)+r));
-			if (c == (w - 1))
-				gridpoint_set_charright(r, c, supportedchars_get(w+r));
-			if (r == (w - 1))
-				gridpoint_set_chardown(r, c, supportedchars_get((w*3)+c));
+				gridpoint_set_charleft(r, c, supportedchars_get((GRID_SIZE * 2) + r));
+			if (c == (GRID_SIZE - 1))
+				gridpoint_set_charright(r, c, supportedchars_get(GRID_SIZE + r));
+			if (r == (GRID_SIZE - 1))
+				gridpoint_set_chardown(r, c, supportedchars_get((GRID_SIZE * 3) + c));
 
 			// Set mirror type
 			ch = mirrorfile_next_char();
@@ -127,8 +125,8 @@ int main(int argc, char *argv[]) {
 			break;
 	}
 	
-	if (r != w && c != w)
-		main_shutdown("Invalid mirror file. Too short.");
+	if (r != GRID_SIZE && c != GRID_SIZE)
+		main_shutdown("Invalid mirror file. Incorrect size.");
 
 	// Close mirror file
 	mirrorfile_close();
@@ -150,21 +148,21 @@ int main(int argc, char *argv[]) {
 		}
 
 		// Determining starting row/col and starting direction
-		if (i < w) {
+		if (i < GRID_SIZE) {
 			r = 0;
 			c = i;
 			direction = DIR_DOWN;
-		} else if (i >= w && i < (w*2)) {
-			r = i - w;
-			c = w - 1;
+		} else if (i >= GRID_SIZE && i < (GRID_SIZE * 2)) {
+			r = i - GRID_SIZE;
+			c = GRID_SIZE - 1;
 			direction = DIR_LEFT;
-		} else if (i >= (w*2) && i < (w*3)) {
-			r = i - (w*2);
+		} else if (i >= (GRID_SIZE * 2) && i < (GRID_SIZE * 3)) {
+			r = i - (GRID_SIZE * 2);
 			c = 0;
 			direction = DIR_RIGHT;
 		} else {
-			r = w - 1;
-			c = i - (w*3);
+			r = GRID_SIZE - 1;
+			c = i - (GRID_SIZE * 3);
 			direction = DIR_UP;
 		}
 		
@@ -206,14 +204,14 @@ int main(int argc, char *argv[]) {
 				gridpoint_set_type(r, c, MIRROR_STRAIGHT);
 			}
 			
-			// straight mirror - Keep same direction, just rotate
+			// Straight mirror - Keep same direction, just rotate
 			else if (gridpoint_get_type(r, c) == MIRROR_STRAIGHT) {
 
 				// Spin mirror
 				gridpoint_set_type(r, c, MIRROR_BACKWARD);
 			}
 
-			// backward mirror \ Change direction and rotate
+			// Backward mirror \ Change direction and rotate
 			else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
@@ -241,12 +239,12 @@ int main(int argc, char *argv[]) {
 			// Check if our position is out of grid bounds. That means we found our char.
 			if (r < 0)
 				ech = gridpoint_get_charup(0, c);
-			else if (r >= w)
-				ech = gridpoint_get_chardown(w-1, c);
+			else if (r >= GRID_SIZE)
+				ech = gridpoint_get_chardown(GRID_SIZE - 1, c);
 			else if (c < 0)
 				ech = gridpoint_get_charleft(r, 0);
-			else if (c >= w)
-				ech = gridpoint_get_charright(r, w-1);
+			else if (c >= GRID_SIZE)
+				ech = gridpoint_get_charright(r, GRID_SIZE - 1);
 
 		}
 		putchar(ech);
