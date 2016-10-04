@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 	
 	// open mirror file
 	while (mirrorfile_open(homeDir, mirrorFileName) == 0) {
-		if (autoCreate) {
+		if (autoCreate || mirrorFileName == NULL) {
 			if (mirrorfile_create(homeDir, mirrorFileName, gridpoint_get_width()) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
