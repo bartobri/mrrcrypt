@@ -18,6 +18,7 @@
 #define MIRROR_NONE      0
 #define MIRROR_FORWARD   1
 #define MIRROR_BACKWARD  2
+#define MIRROR_STRAIGHT  3
 #define DIR_UP           1
 #define DIR_DOWN         2
 #define DIR_LEFT         3
@@ -181,6 +182,8 @@ int main(int argc, char *argv[]) {
 					if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
 						gridpoint_set_type(r, c, MIRROR_BACKWARD);
 					} else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
+						gridpoint_set_type(r, c, MIRROR_STRAIGHT);
+					} else if (gridpoint_get_type(r, c) == MIRROR_STRAIGHT) {
 						gridpoint_set_type(r, c, MIRROR_FORWARD);
 					}
 				} else {
@@ -188,7 +191,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 
-			// Forward mirror /. Change direction
+			// Forward mirror / Change direction and rotate
 			if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_LEFT;
@@ -200,10 +203,17 @@ int main(int argc, char *argv[]) {
 					direction = DIR_RIGHT;
 				
 				// Spin mirror
+				gridpoint_set_type(r, c, MIRROR_STRAIGHT);
+			}
+			
+			// straight mirror - Keep same direction, just rotate
+			else if (gridpoint_get_type(r, c) == MIRROR_STRAIGHT) {
+
+				// Spin mirror
 				gridpoint_set_type(r, c, MIRROR_BACKWARD);
 			}
 
-			// backward mirror \. Change direction
+			// backward mirror \ Change direction and rotate
 			else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
