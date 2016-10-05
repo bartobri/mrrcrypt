@@ -17,7 +17,7 @@ struct gridPoint {
 // Static Variables
 static struct gridPoint grid[GRID_SIZE][GRID_SIZE];
 
-void gridpoint_init(void) {
+void mirrorfield_init(void) {
 	int r, c;
 
 	// Populate Grid
@@ -34,60 +34,60 @@ void gridpoint_init(void) {
 	}
 }
 
-void gridpoint_set_type(int r, int c, int value) {
+void mirrorfield_set_type(int r, int c, int value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].mirrorType = value;
 }
 
-void gridpoint_set_charup(int r, int c, char value) {
+void mirrorfield_set_charup(int r, int c, char value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].charUp = value;
 }
 
-void gridpoint_set_chardown(int r, int c, char value) {
+void mirrorfield_set_chardown(int r, int c, char value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].charDown = value;
 }
 
-void gridpoint_set_charleft(int r, int c, char value) {
+void mirrorfield_set_charleft(int r, int c, char value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].charLeft = value;
 }
 
-void gridpoint_set_charright(int r, int c, char value) {
+void mirrorfield_set_charright(int r, int c, char value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].charRight = value;
 }
 
-int gridpoint_get_type(int r, int c) {
+int mirrorfield_get_type(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].mirrorType;
 	
 	return 0;
 }
 
-char gridpoint_get_charup(int r, int c) {
+char mirrorfield_get_charup(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].charUp;
 	
 	return 0;
 }
 
-char gridpoint_get_chardown(int r, int c) {
+char mirrorfield_get_chardown(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].charDown;
 	
 	return 0;
 }
 
-char gridpoint_get_charleft(int r, int c) {
+char mirrorfield_get_charleft(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].charLeft;
 	
 	return 0;
 }
 
-char gridpoint_get_charright(int r, int c) {
+char mirrorfield_get_charright(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].charRight;
 	

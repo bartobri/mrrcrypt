@@ -12,7 +12,7 @@
 
 #include "main.h"
 #include "modules/mirrorfile.h"
-#include "modules/gridpoint.h"
+#include "modules/mirrorfield.h"
 #include "modules/visitedmirrors.h"
 
 #define MIRROR_NONE      0
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 	
 	// Run module init functions
 	mirrorfile_init();
-	gridpoint_init();
+	mirrorfield_init();
 	visitedmirrors_init();
 
 	// Die if we don't have a home directory
@@ -89,13 +89,13 @@ int main(int argc, char *argv[]) {
 
 			// Set adjacent characters
 			if (r == 0)
-				gridpoint_set_charup(r, c, supportedChars[c]);
+				mirrorfield_set_charup(r, c, supportedChars[c]);
 			if (c == 0)
-				gridpoint_set_charleft(r, c, supportedChars[(GRID_SIZE * 2) + r]);
+				mirrorfield_set_charleft(r, c, supportedChars[(GRID_SIZE * 2) + r]);
 			if (c == (GRID_SIZE - 1))
-				gridpoint_set_charright(r, c, supportedChars[GRID_SIZE + r]);
+				mirrorfield_set_charright(r, c, supportedChars[GRID_SIZE + r]);
 			if (r == (GRID_SIZE - 1))
-				gridpoint_set_chardown(r, c, supportedChars[(GRID_SIZE * 3) + c]);
+				mirrorfield_set_chardown(r, c, supportedChars[(GRID_SIZE * 3) + c]);
 
 			// Set mirror type
 			ch = mirrorfile_next_char();
@@ -115,11 +115,11 @@ int main(int argc, char *argv[]) {
 				else
 					main_shutdown("Invalid mirror file. Width does not conform.");
 			else if (ch == '/')
-				gridpoint_set_type(r, c, MIRROR_FORWARD);
+				mirrorfield_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
-				gridpoint_set_type(r, c, MIRROR_BACKWARD);
+				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
 			else if (ch == ' ')
-				gridpoint_set_type(r, c, MIRROR_NONE);
+				mirrorfield_set_type(r, c, MIRROR_NONE);
 			else
 				main_shutdown("Invalid character in mirror file.");
 
@@ -178,14 +178,14 @@ int main(int argc, char *argv[]) {
 			// If we hit a mirror that we've already been to, un-rotate it.
 			// This is necessary to preserve the ability to reverse the encryption.
 			// We can not rotate a mirror more than once per character.
-			if (gridpoint_get_type(r, c) != MIRROR_NONE) {
+			if (mirrorfield_get_type(r, c) != MIRROR_NONE) {
 				if (visitedmirrors_exists(r, c)) {
-					if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
-						gridpoint_set_type(r, c, MIRROR_BACKWARD);
-					} else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
-						gridpoint_set_type(r, c, MIRROR_STRAIGHT);
-					} else if (gridpoint_get_type(r, c) == MIRROR_STRAIGHT) {
-						gridpoint_set_type(r, c, MIRROR_FORWARD);
+					if (mirrorfield_get_type(r, c) == MIRROR_FORWARD) {
+						mirrorfield_set_type(r, c, MIRROR_BACKWARD);
+					} else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD) {
+						mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
+					} else if (mirrorfield_get_type(r, c) == MIRROR_STRAIGHT) {
+						mirrorfield_set_type(r, c, MIRROR_FORWARD);
 					}
 				} else {
 					visitedmirrors_add(r, c);
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
 			}
 
 			// Forward mirror / Change direction and rotate
-			if (gridpoint_get_type(r, c) == MIRROR_FORWARD) {
+			if (mirrorfield_get_type(r, c) == MIRROR_FORWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_LEFT;
 				else if (direction == DIR_LEFT)
@@ -204,18 +204,18 @@ int main(int argc, char *argv[]) {
 					direction = DIR_RIGHT;
 				
 				// Spin mirror
-				gridpoint_set_type(r, c, MIRROR_STRAIGHT);
+				mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
 			}
 			
 			// Straight mirror - Keep same direction, just rotate
-			else if (gridpoint_get_type(r, c) == MIRROR_STRAIGHT) {
+			else if (mirrorfield_get_type(r, c) == MIRROR_STRAIGHT) {
 
 				// Spin mirror
-				gridpoint_set_type(r, c, MIRROR_BACKWARD);
+				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
 			}
 
 			// Backward mirror \ Change direction and rotate
-			else if (gridpoint_get_type(r, c) == MIRROR_BACKWARD) {
+			else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD) {
 				if (direction == DIR_DOWN)
 					direction = DIR_RIGHT;
 				else if (direction == DIR_LEFT)
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
 					direction = DIR_LEFT;
 				
 				// Spin mirror
-				gridpoint_set_type(r, c, MIRROR_FORWARD);
+				mirrorfield_set_type(r, c, MIRROR_FORWARD);
 			}
 
 			// Advance position
@@ -241,13 +241,13 @@ int main(int argc, char *argv[]) {
 
 			// Check if our position is out of grid bounds. That means we found our char.
 			if (r < 0)
-				ech = gridpoint_get_charup(0, c);
+				ech = mirrorfield_get_charup(0, c);
 			else if (r >= GRID_SIZE)
-				ech = gridpoint_get_chardown(GRID_SIZE - 1, c);
+				ech = mirrorfield_get_chardown(GRID_SIZE - 1, c);
 			else if (c < 0)
-				ech = gridpoint_get_charleft(r, 0);
+				ech = mirrorfield_get_charleft(r, 0);
 			else if (c >= GRID_SIZE)
-				ech = gridpoint_get_charright(r, GRID_SIZE - 1);
+				ech = mirrorfield_get_charright(r, GRID_SIZE - 1);
 
 		}
 		putchar(ech);
