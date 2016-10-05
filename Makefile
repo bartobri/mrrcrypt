@@ -20,12 +20,15 @@ CFLAGS ?= -Wextra -Wall -iquote$(SRC)
 
 .PHONY: all install uninstall clean
 
-EXES = mirrorcrypt
-
-all: $(EXES)
+EXES = mirrorcrypt mirrorcryptv
 
 mirrorcrypt: $(OBJ_MODS)/visitedmirrors.o $(OBJ_MODS)/mirrorfile.o $(OBJ_MODS)/mirrorfield.o $(OBJ)/main.o | $(BIN)
 	$(CC) $(CFLAGS) -o $(BIN)/$@ $^
+	
+mirrorcryptv: $(OBJ_MODS)/visitedmirrors.o $(OBJ_MODS)/mirrorfile.o $(OBJ_MODS)/mirrorfield.o $(OBJ)/mainv.o | $(BIN)
+	$(CC) $(CFLAGS) -o $(BIN)/$@ $^ -lncurses
+	
+all: $(EXES)
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
