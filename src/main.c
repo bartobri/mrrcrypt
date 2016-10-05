@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 			main_shutdown("Could not open mirror file. Use -a to auto-create.");
 	}
 
-	// Populate Grid
+	// Populate Mirror Field
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
