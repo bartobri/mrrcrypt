@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 				break;
 			
 			// Evaluate mirror file character
-			if (ch == 10)
+			if (ch == '\n')
 				if (c == 0)
 					--c;
 				else
