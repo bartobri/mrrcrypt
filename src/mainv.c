@@ -306,10 +306,9 @@ int main(int argc, char *argv[]) {
 				
 				// Show spun mirror in grid window
 				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
-				waddch(wGrid, '+');
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
+				waddch(wGrid, '+');
 			}
 			
 			// Straight mirror - Keep same direction, just rotate
@@ -320,10 +319,9 @@ int main(int argc, char *argv[]) {
 				
 				// Show spun mirror in grid window
 				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
-				waddch(wGrid, '\\');
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
+				waddch(wGrid, '\\');
 			}
 
 			// Backward mirror \ Change direction and rotate
@@ -342,10 +340,9 @@ int main(int argc, char *argv[]) {
 
 				// Show spun mirror in grid window
 				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
-				waddch(wGrid, '/');
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
+				waddch(wGrid, '/');
 			}
 			
 			// Highlight position in grid window and sleep
