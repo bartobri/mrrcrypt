@@ -273,13 +273,6 @@ int main(int argc, char *argv[]) {
 		// Traverse through the grid
 		while (ech == 0) {
 			
-			// Highlight position in grid window
-			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
-			//attron(A_STANDOUT);
-			wrefresh(wGrid);
-			nanosleep(&ts, NULL);
-			//attroff(A_STANDOUT);
-			
 			// If we hit a mirror that we've already been to, un-rotate it.
 			// This is necessary to preserve the ability to reverse the encryption.
 			// We can not rotate a mirror more than once per character.
@@ -310,6 +303,13 @@ int main(int argc, char *argv[]) {
 				
 				// Spin mirror
 				mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
+				
+				// Show spun mirror in grid window
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				waddch(wGrid, '+');
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wrefresh(wGrid);
+				nanosleep(&ts, NULL);
 			}
 			
 			// Straight mirror - Keep same direction, just rotate
@@ -317,6 +317,13 @@ int main(int argc, char *argv[]) {
 
 				// Spin mirror
 				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
+				
+				// Show spun mirror in grid window
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				waddch(wGrid, '\\');
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wrefresh(wGrid);
+				nanosleep(&ts, NULL);
 			}
 
 			// Backward mirror \ Change direction and rotate
@@ -332,7 +339,19 @@ int main(int argc, char *argv[]) {
 				
 				// Spin mirror
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
+
+				// Show spun mirror in grid window
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				waddch(wGrid, '/');
+				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wrefresh(wGrid);
+				nanosleep(&ts, NULL);
 			}
+			
+			// Highlight position in grid window and sleep
+			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+			wrefresh(wGrid);
+			nanosleep(&ts, NULL);
 
 			// Advance position
 			if (direction == DIR_DOWN)
