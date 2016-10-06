@@ -67,13 +67,17 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
-	while ((o = getopt(argc, argv, "am:v")) != -1) {
+	while ((o = getopt(argc, argv, "am:s:v")) != -1) {
 		switch (o) {
 			case 'a':
 				autoCreate = 1;
 				break;
 			case 'm':
 				mirrorFileName = optarg;
+				break;
+			case 's':
+				ts.tv_sec = atoi(optarg) / 1000;
+				ts.tv_nsec = (atoi(optarg) % 1000) * 1000000;
 				break;
 			case 'v':
 				printf("mirrorcrypt version %s\n", version);
