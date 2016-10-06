@@ -9,6 +9,7 @@
 #include <unistd.h> 
 #include <ctype.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include <ncurses.h>
 
@@ -26,6 +27,9 @@
 #define DIR_LEFT         3
 #define DIR_RIGHT        4
 
+// For Ncurses
+#define DEFAULT_STEP_MS 100
+
 // Function prototypes
 void main_shutdown(const char *);
 
@@ -41,6 +45,9 @@ int main(int argc, char *argv[]) {
 	int curRow, curCol;
 	WINDOW *wGrid;
 	WINDOW *wResult;
+	struct timespec ts;
+	ts.tv_sec = DEFAULT_STEP_MS / 1000;
+    ts.tv_nsec = (DEFAULT_STEP_MS % 1000) * 1000000;
 	
 	// Run module init functions
 	mirrorfile_init();
@@ -266,7 +273,7 @@ int main(int argc, char *argv[]) {
 			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
 			//attron(A_STANDOUT);
 			wrefresh(wGrid);
-			sleep(1);
+			nanosleep(&ts, NULL);
 			//attroff(A_STANDOUT);
 			
 			// If we hit a mirror that we've already been to, un-rotate it.
