@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 	
 	// Create result window
 	wResult = newwin(termSizeRows - (GRID_SIZE + 6), termSizeCols, GRID_SIZE + 6, 0);
-	wborder(wResult, '|', '|', ' ','-','|','|','+','+');
+	wborder(wResult, ' ', ' ', ' ','-',' ',' ','-','-');
 	wrefresh(wResult);
 	
 	curRow = 2;
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
 	wrefresh(wGrid);
 	
 	// Position cursor in result window
-	wmove(wResult, 2, 2);
+	wmove(wResult, 1, 0);
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
