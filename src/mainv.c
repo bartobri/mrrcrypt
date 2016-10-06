@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 	
 	// Create result window
 	wResult = newwin(termSizeRows - (GRID_SIZE + 6), termSizeCols, GRID_SIZE + 6, 0);
-	wborder(wResult, '|', '|', '-','-','+','+','+','+');
+	wborder(wResult, '|', '|', ' ','-','|','|','+','+');
 	wrefresh(wResult);
 	
 	curRow = 2;
