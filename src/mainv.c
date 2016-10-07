@@ -182,7 +182,7 @@ int main(int argc, char *argv[]) {
 	wrefresh(wGrid);
 	
 	// Create result window
-	wResult = newwin(termSizeRows - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS + INPUT_TITLE_WINDOW_ROWS, 0);
+	wResult = newwin(termSizeRows - 1 - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS + INPUT_TITLE_WINDOW_ROWS, 0);
 	scrollok(wResult, true);
 	wrefresh(wResult);
 	
