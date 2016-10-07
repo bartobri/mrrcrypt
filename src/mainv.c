@@ -31,7 +31,6 @@
 #define DEFAULT_STEP_MS        100
 #define INPUT_WINDOW_ROWS      5
 #define GRID_WINDOW_ROWS       GRID_SIZE + 6
-#define INPUT_GROWTH_FACTOR    2
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -45,8 +44,6 @@ int main(int argc, char *argv[]) {
 	char *mirrorFileName = NULL;
 	// ncurses vars
 	int termSizeRows, termSizeCols;
-	int inSize = 0, inCapacity = 0;
-	char *input = NULL;
 	WINDOW *wGrid;
 	WINDOW *wResult;
 	WINDOW *wInput;
@@ -157,17 +154,6 @@ int main(int argc, char *argv[]) {
 	// Close mirror file
 	mirrorfile_close();
 	
-	// Geting all input
-	while ((ch = getchar()) != EOF) {
-		++inSize;
-		if (inSize > inCapacity) {
-			inCapacity = inCapacity == 0 ? INPUT_GROWTH_FACTOR : inCapacity * INPUT_GROWTH_FACTOR;
-			input = realloc(input, inCapacity + 1);
-		}
-		input[inSize - 1] = ch;
-		input[inSize] = '\0';
-	}
-	
 	// If we're here, all checked have passed. Let's start curses mode
 	// and set a few things.
 	initscr();
@@ -179,6 +165,7 @@ int main(int argc, char *argv[]) {
 	
 	// Create input window
 	wInput = newwin(INPUT_WINDOW_ROWS, termSizeCols, 0, 0);
+	scrollok(wInput, true);
 	wborder(wInput, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wInput);
 	
@@ -191,11 +178,6 @@ int main(int argc, char *argv[]) {
 	wResult = newwin(termSizeRows - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS, 0);
 	wborder(wResult, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wResult);
-	
-	// Display input in input window
-	wmove(wInput, 2, 0);
-	waddstr(wInput, input);
-	wrefresh(wInput);
 	
 	// Draw mirror field in grid window
 	for (r = -1; r <= GRID_SIZE; ++r) {
@@ -249,11 +231,15 @@ int main(int argc, char *argv[]) {
 	}
 	wrefresh(wGrid);
 	
-	// Position cursor in result window
+	// Position cursor in input/result window
 	wmove(wResult, 2, 0);
+	wmove(wInput, 2, 0);
 
 	// Loop over input one char at a time and encrypt
-	while ((ch = *input) != '\0') {
+	while ((ch = getchar()) != EOF) {
+
+		waddch(wInput, ch);
+		wrefresh(wInput);
 
 		int direction;
 		char ech = 0;
@@ -394,8 +380,6 @@ int main(int argc, char *argv[]) {
 		}
 		waddch(wResult, ech);
 		wrefresh(wResult);
-		
-		input++;
 	}
 	
 	// Set input to keyboard
