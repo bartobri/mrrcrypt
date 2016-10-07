@@ -30,7 +30,7 @@
 // For Ncurses
 #define DEFAULT_STEP_MS              100
 #define INPUT_TITLE_WINDOW_ROWS      1
-#define INPUT_WINDOW_ROWS            4
+#define INPUT_WINDOW_ROWS            3
 #define GRID_WINDOW_ROWS             GRID_SIZE + 6
 
 // Function prototypes
