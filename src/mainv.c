@@ -28,7 +28,9 @@
 #define DIR_RIGHT        4
 
 // For Ncurses
-#define DEFAULT_STEP_MS 100
+#define DEFAULT_STEP_MS    100
+#define INPUT_WINDOW_ROWS  5
+#define GRID_WINDOW_ROWS   GRID_SIZE + 6
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -45,6 +47,7 @@ int main(int argc, char *argv[]) {
 	int curRow, curCol;
 	WINDOW *wGrid;
 	WINDOW *wResult;
+	WINDOW *wInput;
 	struct timespec ts;
 	ts.tv_sec = DEFAULT_STEP_MS / 1000;
     ts.tv_nsec = (DEFAULT_STEP_MS % 1000) * 1000000;
@@ -161,13 +164,18 @@ int main(int argc, char *argv[]) {
 	// Get terminal window size
 	getmaxyx(stdscr, termSizeRows, termSizeCols);
 	
+	// Create input window
+	wInput = newwin(INPUT_WINDOW_ROWS, termSizeCols, 0, 0);
+	wborder(wInput, '|', '|', '-','-','+','+','+','+');
+	wrefresh(wInput);
+	
 	// Create grid window
-	wGrid = newwin(GRID_SIZE + 6, termSizeCols, 0, 0);
+	wGrid = newwin(GRID_WINDOW_ROWS, termSizeCols, INPUT_WINDOW_ROWS, 0);
 	wborder(wGrid, '|', '|', '-','-','+','+','+','+');
 	wrefresh(wGrid);
 	
 	// Create result window
-	wResult = newwin(termSizeRows - (GRID_SIZE + 6), termSizeCols, GRID_SIZE + 6, 0);
+	wResult = newwin(termSizeRows - (GRID_SIZE + 6), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS, 0);
 	wborder(wResult, ' ', ' ', ' ','-',' ',' ','-','-');
 	wrefresh(wResult);
 	
