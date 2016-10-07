@@ -358,11 +358,6 @@ int main(int argc, char *argv[]) {
 				nanosleep(&ts, NULL);
 				waddch(wGrid, '/');
 			}
-			
-			// Highlight position in grid window and sleep
-			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
-			wrefresh(wGrid);
-			nanosleep(&ts, NULL);
 
 			// Advance position
 			if (direction == DIR_DOWN)
@@ -383,6 +378,11 @@ int main(int argc, char *argv[]) {
 				ech = mirrorfield_get_charleft(r, 0);
 			else if (c >= GRID_SIZE)
 				ech = mirrorfield_get_charright(r, GRID_SIZE - 1);
+			
+			// Highlight position in grid window and sleep
+			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+			wrefresh(wGrid);
+			nanosleep(&ts, NULL);
 
 		}
 		waddch(wResult, ech);
