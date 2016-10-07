@@ -166,17 +166,17 @@ int main(int argc, char *argv[]) {
 	
 	// Create input window
 	wInput = newwin(INPUT_WINDOW_ROWS, termSizeCols, 0, 0);
-	wborder(wInput, '|', '|', '-','-','+','+','+','+');
+	wborder(wInput, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wInput);
 	
 	// Create grid window
 	wGrid = newwin(GRID_WINDOW_ROWS, termSizeCols, INPUT_WINDOW_ROWS, 0);
-	wborder(wGrid, '|', '|', '-','-','+','+','+','+');
+	wborder(wGrid, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wGrid);
 	
 	// Create result window
-	wResult = newwin(termSizeRows - (GRID_SIZE + 6), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS, 0);
-	wborder(wResult, ' ', ' ', ' ','-',' ',' ','-','-');
+	wResult = newwin(termSizeRows - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS, 0);
+	wborder(wResult, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wResult);
 	
 	curRow = 2;
@@ -237,7 +237,7 @@ int main(int argc, char *argv[]) {
 	wrefresh(wGrid);
 	
 	// Position cursor in result window
-	wmove(wResult, 1, 0);
+	wmove(wResult, 2, 0);
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
