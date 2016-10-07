@@ -28,9 +28,10 @@
 #define DIR_RIGHT        4
 
 // For Ncurses
-#define DEFAULT_STEP_MS        100
-#define INPUT_WINDOW_ROWS      5
-#define GRID_WINDOW_ROWS       GRID_SIZE + 6
+#define DEFAULT_STEP_MS              100
+#define INPUT_TITLE_WINDOW_ROWS      1
+#define INPUT_WINDOW_ROWS            4
+#define GRID_WINDOW_ROWS             GRID_SIZE + 6
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -47,6 +48,7 @@ int main(int argc, char *argv[]) {
 	WINDOW *wGrid;
 	WINDOW *wResult;
 	WINDOW *wInput;
+	WINDOW *wInputTitle;
 	struct timespec ts;
 	ts.tv_sec = DEFAULT_STEP_MS / 1000;
     ts.tv_nsec = (DEFAULT_STEP_MS % 1000) * 1000000;
@@ -163,20 +165,25 @@ int main(int argc, char *argv[]) {
 	// Get terminal window size
 	getmaxyx(stdscr, termSizeRows, termSizeCols);
 	
+	// Create input title window
+	wInputTitle = newwin(INPUT_TITLE_WINDOW_ROWS, termSizeCols, 0, 0);
+	wmove(wInputTitle, 0, 0);
+	whline(wInputTitle, ACS_CKBOARD, termSizeCols);
+	wrefresh(wInputTitle);
+	
 	// Create input window
-	wInput = newwin(INPUT_WINDOW_ROWS, termSizeCols, 0, 0);
+	wInput = newwin(INPUT_WINDOW_ROWS, termSizeCols, INPUT_TITLE_WINDOW_ROWS, 0);
 	scrollok(wInput, true);
-	wborder(wInput, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wInput);
 	
 	// Create grid window
-	wGrid = newwin(GRID_WINDOW_ROWS, termSizeCols, INPUT_WINDOW_ROWS, 0);
-	wborder(wGrid, ' ', ' ', '-',' ','-','-',' ',' ');
+	wGrid = newwin(GRID_WINDOW_ROWS, termSizeCols, INPUT_WINDOW_ROWS + INPUT_TITLE_WINDOW_ROWS, 0);
+	wborder(wGrid, ' ', ' ', ACS_CKBOARD, ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD);
 	wrefresh(wGrid);
 	
 	// Create result window
-	wResult = newwin(termSizeRows - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS, 0);
-	wborder(wResult, ' ', ' ', '-',' ','-','-',' ',' ');
+	wResult = newwin(termSizeRows - (GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS), termSizeCols, GRID_WINDOW_ROWS + INPUT_WINDOW_ROWS + INPUT_TITLE_WINDOW_ROWS, 0);
+	scrollok(wResult, true);
 	wrefresh(wResult);
 	
 	// Draw mirror field in grid window
@@ -232,8 +239,8 @@ int main(int argc, char *argv[]) {
 	wrefresh(wGrid);
 	
 	// Position cursor in input/result window
-	wmove(wResult, 2, 0);
-	wmove(wInput, 2, 0);
+	wmove(wResult, 1, 0);
+	wmove(wInput, 1, 0);
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
