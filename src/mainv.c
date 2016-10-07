@@ -43,8 +43,12 @@ int main(int argc, char *argv[]) {
 	char *supportedChars = SUPPORTED_CHARS;
 	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = NULL;
+	
 	// ncurses vars
 	int termSizeRows, termSizeCols;
+	char *wInputHeading   = " Input ";
+	char *wGridHeading    = " Mirror Field ";
+	char *wResultHeading  = " Output ";
 	WINDOW *wGrid;
 	WINDOW *wResult;
 	WINDOW *wInput;
@@ -169,6 +173,7 @@ int main(int argc, char *argv[]) {
 	wInputTitle = newwin(INPUT_TITLE_WINDOW_ROWS, termSizeCols, 0, 0);
 	wmove(wInputTitle, 0, 0);
 	whline(wInputTitle, ACS_CKBOARD, termSizeCols);
+	mvwaddstr(wInputTitle, 0, (termSizeCols - strlen(wInputHeading)) / 2, wInputHeading);
 	wrefresh(wInputTitle);
 	
 	// Create input window
@@ -179,6 +184,8 @@ int main(int argc, char *argv[]) {
 	// Create grid window
 	wGrid = newwin(GRID_WINDOW_ROWS, termSizeCols, INPUT_WINDOW_ROWS + INPUT_TITLE_WINDOW_ROWS, 0);
 	wborder(wGrid, ' ', ' ', ACS_CKBOARD, ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD,ACS_CKBOARD);
+	mvwaddstr(wGrid, 0, (termSizeCols - strlen(wGridHeading)) / 2, wGridHeading);
+	mvwaddstr(wGrid, GRID_WINDOW_ROWS - 1, (termSizeCols - strlen(wResultHeading)) / 2, wResultHeading);
 	wrefresh(wGrid);
 	
 	// Create result window
