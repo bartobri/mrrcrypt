@@ -44,7 +44,6 @@ int main(int argc, char *argv[]) {
 	char *mirrorFileName = NULL;
 	// ncurses vars
 	int termSizeRows, termSizeCols;
-	int curRow, curCol;
 	WINDOW *wGrid;
 	WINDOW *wResult;
 	WINDOW *wInput;
@@ -179,14 +178,10 @@ int main(int argc, char *argv[]) {
 	wborder(wResult, ' ', ' ', '-',' ','-','-',' ',' ');
 	wrefresh(wResult);
 	
-	curRow = 2;
-	curCol = 2;
-	wmove(wGrid, curRow, curCol);
-	
 	// Draw mirror field in grid window
 	for (r = -1; r <= GRID_SIZE; ++r) {
 
-		wmove(wGrid, curRow, (termSizeCols - GRID_SIZE) / 2);
+		wmove(wGrid, r + 3, (termSizeCols - GRID_SIZE) / 2);
 
 		for (c = -1; c <= GRID_SIZE; ++c) {
 			
@@ -232,7 +227,6 @@ int main(int argc, char *argv[]) {
 			//waddch(wGrid, ' ');
 
 		}
-		curRow++;
 	}
 	wrefresh(wGrid);
 	
