@@ -281,6 +281,18 @@ int main(int argc, char *argv[]) {
 			direction = DIR_UP;
 		}
 		
+		// Show cursor over starting char
+		if (direction == DIR_DOWN)
+			wmove(wGrid, r + 2, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+		else if (direction == DIR_LEFT)
+			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 2);
+		else if (direction == DIR_RIGHT)
+			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 0);
+		else if (direction == DIR_UP)
+			wmove(wGrid, r + 4, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+		wrefresh(wGrid);
+		nanosleep(&ts, NULL);
+		
 		// Clear visited points
 		visitedmirrors_clear();
 
@@ -322,7 +334,7 @@ int main(int argc, char *argv[]) {
 				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
-				waddch(wGrid, '+');
+				waddch(wGrid, '-');
 			}
 			
 			// Straight mirror - Keep same direction, just rotate
