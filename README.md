@@ -1,7 +1,8 @@
 Mirror Crypt
 ============
 
-A mirror field encryption implementation as a command line tool.
+A command line encryption/decryption tool for ASCII text using a
+modified mirror field algorithm.
 
 ![Screen Cap](http://i.imgur.com/KHJn3FI.gif)
 
