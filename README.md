@@ -9,13 +9,23 @@ About
 -----
 
 Mirror Crypt is a handy tool to easily encrypt/decrypt ASCII text using a
-mirror field traversing algorithm.
+mirror field algorithm with rotating mirrors.
 
-Mirror Crypt improves on the traditional mirror field traversing algorithm
-by implementing a "mirror spin" each time a mirror is encountered in the
-encryption/decryption process. This allows the same letter to have a
-different encrypted result each time, because the mirror field is changed
-with each character traversal.
+A traditional mirror field produces the same output character for the same
+input character, not disimilar to a simple substitution cipher, making it
+a weak form of encryption.
+
+Mirror Crypt employes a method of spinning the mirrors clockwise each time
+they are encountered in the encryption/decryption of a character. This produces
+a different, highly unpredictable result for each input character, even
+if they are the same.
+
+Example:
+
+Input | Output
+----- | ------
+Attack at Dawn | w]M_0FSWAqMmD~
+Mississippi | LWBZe8Bq<zo
 
 Download and Install
 --------------------
