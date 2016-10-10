@@ -32,6 +32,9 @@
 #define INPUT_TITLE_WINDOW_ROWS      1
 #define INPUT_WINDOW_ROWS            3
 #define GRID_WINDOW_ROWS             GRID_SIZE + 6
+#define RESULT_WINDOW_ROWS           3
+#define MIN_ROWS                     INPUT_TITLE_WINDOW_ROWS + INPUT_WINDOW_ROWS + GRID_WINDOW_ROWS + RESULT_WINDOW_ROWS
+#define MIN_COLS                     80
 
 // Function prototypes
 void main_shutdown(const char *);
@@ -168,6 +171,13 @@ int main(int argc, char *argv[]) {
 	
 	// Get terminal window size
 	getmaxyx(stdscr, termSizeRows, termSizeCols);
+	
+	// Require minimum terminal size
+	if (termSizeRows < MIN_ROWS || termSizeCols < MIN_COLS) {
+		endwin();
+		printf("Minimum terminal size must be %ix%i\n", MIN_ROWS, MIN_COLS);
+		main_shutdown("Terminal window too small.");
+	}
 	
 	// Create input title window
 	wInputTitle = newwin(INPUT_TITLE_WINDOW_ROWS, termSizeCols, 0, 0);
