@@ -3,7 +3,7 @@ Mirror Crypt
 
 A mirror field encryption implementation as a command line tool.
 
-SCREEN GRAB HERE
+![Screen Cap](http://i.imgur.com/KHJn3FI.gif)
 
 About
 -----
