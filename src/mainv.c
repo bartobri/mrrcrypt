@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
 	// Draw mirror field in grid window
 	for (r = -1; r <= GRID_SIZE; ++r) {
 
-		wmove(wGrid, r + 3, (termSizeCols - GRID_SIZE) / 2);
+		wmove(wGrid, r + 3, (termSizeCols - (GRID_SIZE * 2)) / 2);
 
 		for (c = -1; c <= GRID_SIZE; ++c) {
 			
@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
 			else
 				waddch(wGrid, ' ');
 			
-			//waddch(wGrid, ' ');
+			waddch(wGrid, ' ');
 
 		}
 	}
@@ -300,13 +300,13 @@ int main(int argc, char *argv[]) {
 		
 		// Show cursor over starting char
 		if (direction == DIR_DOWN)
-			wmove(wGrid, r + 2, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+			wmove(wGrid, r + 2, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 		else if (direction == DIR_LEFT)
-			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 2);
+			wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 4);
 		else if (direction == DIR_RIGHT)
-			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 0);
+			wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 0);
 		else if (direction == DIR_UP)
-			wmove(wGrid, r + 4, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+			wmove(wGrid, r + 4, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 		wrefresh(wGrid);
 		nanosleep(&ts, NULL);
 		
@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
 				mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
 				
 				// Show spun mirror in grid window
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
 				waddch(wGrid, '-');
@@ -361,7 +361,7 @@ int main(int argc, char *argv[]) {
 				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
 				
 				// Show spun mirror in grid window
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
 				waddch(wGrid, '\\');
@@ -382,7 +382,7 @@ int main(int argc, char *argv[]) {
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
 
 				// Show spun mirror in grid window
-				wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+				wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 				wrefresh(wGrid);
 				nanosleep(&ts, NULL);
 				waddch(wGrid, '/');
@@ -409,7 +409,7 @@ int main(int argc, char *argv[]) {
 				ech = mirrorfield_get_charright(r, GRID_SIZE - 1);
 			
 			// Highlight position in grid window and sleep
-			wmove(wGrid, r + 3, ((termSizeCols - GRID_SIZE) / 2) + c + 1);
+			wmove(wGrid, r + 3, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 			wrefresh(wGrid);
 			nanosleep(&ts, NULL);
 
