@@ -4,7 +4,7 @@ Mirror Crypt
 A command line encryption/decryption tool for ASCII text using an
 adaptive mirror field algorithm.
 
-Mirror Crypt Visualizer:
+*Mirror Crypt Visualizer*
 
 ![Screen Cap](http://i.imgur.com/mh8efa2.gif)
 
@@ -52,10 +52,11 @@ $ cat secrets.txt | mrrcrypt -a -m bobs_key | mrrcrypt -a -m johns_key > secrets
 $ cat secrets.encrypted | mrrcrypt -m johns_key | mrrcrypt -m bobs_key > secrets.txt
 ```
 
-The -a and -m <name> options auto-create a unique mirror field key file.
-After performing the first command to encrypt the file, they each copy
+The `-m <name>` option specifies a mirror file to use, and the `-a`
+option auto-creates it if it doesn't exist. After performing the first
+command to create two new keys and encrypt the file, they each copy
 their respective key files for themselves and delete the originals. Then
-to decrypt, they each copy their key file to the original location and
+to decrypt, they each copy their key files to the original location and
 perform the second command.
 
 About
