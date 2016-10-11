@@ -65,20 +65,20 @@ About
 Mirror Crypt is a command line encryption/decryption tool for ASCII text
 using an adaptive mirror field algorithm.
 
-A traditional mirror field encryption algorithm is nothing more than
-elaborate form of a simple substitution cipher. For every identical
-character of input, an identical character of output is produced. For
-example, given an input string of "Mississippi"
-which contains many duplicate characters, the output will also contain
-duplicate characters in the same positions.
+A traditional mirror field encryption algorithm is very similar to a
+simple substitution cipher. For every identical character of input, an
+identical character of output is produced. For example, given an input
+string of "Mississippi", which contains many duplicate characters, the
+output will also contain duplicate characters in the same positions.
 
 "Mississippi" -> Substitution Cypher (or Mirror Field) -> "jTaaTaaTxxT"
 
 This makes for weak, easily defeatable encryption.
 
 Mirror Crypt employs an *adaptive* mirror field algorithm. For each
-character of input, the orientation of the mirrors will change, creating
-a unique mirror field and therefore unique output, even for identical characters.
+character of input, the orientation of the mirrors change, creating
+a unique mirror field permutation and therefore generating unique output,
+even for identical characters.
 
 The result is a highly unpredictable, seemingly random output.
 
@@ -86,12 +86,12 @@ Example:
 
 Input | Output
 ----- | ------
-Mississippi | LWBZe8Bq<zo
-Attack at Dawn | w]M_0FSWAqMmD~
+Mississippi | 2bqK$CGj8n5
+Attack at Dawn | tjrWeoPXAFIcvo
 
-It is as if each character of input is given it's own unique private key,
-which can only be derived with the private key of the character preceeding
-it.
+The number of total possible mirror field permutations is:
+
+3^(24*24) = 6.63e+274
 
 Download and Install
 --------------------
