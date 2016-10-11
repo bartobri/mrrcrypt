@@ -89,7 +89,7 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	// Write mirror data to file
 	for (r = 0; r < width; ++r) {
 		for (c = 0; c < width; ++c) {
-			switch (rand() % 10) {
+			switch (rand() % 5) {
 				case 1:
 					fprintf(config, "/");
 					break;
