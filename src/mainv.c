@@ -175,7 +175,7 @@ int main(int argc, char *argv[]) {
 	// Require minimum terminal size
 	if (termSizeRows < MIN_ROWS || termSizeCols < MIN_COLS) {
 		endwin();
-		printf("Minimum terminal size must be %ix%i\n", MIN_ROWS, MIN_COLS);
+		printf("Minimum terminal size must be %ix%i\n", MIN_COLS, MIN_ROWS);
 		main_shutdown("Terminal window too small.");
 	}
 	
