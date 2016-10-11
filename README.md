@@ -1,33 +1,74 @@
 Mirror Crypt
 ============
 
-A command line encryption/decryption tool for ASCII text using a
-spinning mirror field algorithm.
+A command line encryption/decryption tool for ASCII text using an
+adaptive mirror field algorithm.
+
+Mirror Crypt Visualizer:
 
 ![Screen Cap](http://i.imgur.com/mh8efa2.gif)
 
 Quick Examples
 --------------
 
-**Example #1** - Encrypting/Decrypting a short string.
+**Encrypting/Decrypting a Short String**
 
-**Example #2** - Encrypting/Decrypting the contents of a ASCII file.
+```
+$ printf "Attack at Dawn" | mrrcrypt
+w]M_0FSWAqMmD~
 
-**Example #3** - Encrypting/Decrypting the contents of a binary file using a base64 encoder.
+$ printf "w]M_0FSWAqMmD~" | mrrcrypt
+Attack at Dawn
 
-**Example #4** - Dual key encryption.
+```
+
+**Encrypting/Decrypting the Contents of a ASCII File**
+
+```
+$ cat secrets.txt | mrrcrypt > secrets.encrypted
+
+$ cat secrets.encrypted | mrrcrypt > secrets.txt
+```
+
+**Encrypting/Decrypting the Contents of a Binary File**
+
+This method uses a base64 encoder to convert the binary file to ASCII before encrypting.
+
+```
+$ cat secret_photo.jpg | base64 | mrrcrypt > secret_photo.jpg.encrypted
+
+$ cat secret_photo.jpg.encrypted | mrrcrypt | base64 --decode > secret_photo.jpg
+```
+
+**Dual Key Encryption/Decryption**
+
+Suppose Bob and John want to encrypt a file such that they each hold a
+separate key required for decryption. Nether one can decrypt the file without
+the consent of the other. This is how they can accomplish this.
+
+```
+$ cat secrets.txt | mrrcrypt -a -m bobs_key | mrrcrypt -a -m johns_key > secrets.encrypted
+
+$ cat secrets.encrypted | mrrcrypt -m johns_key | mrrcrypt -m bobs_key > secrets.txt
+```
+
+The -a and -m <name> options auto-create a unique mirror field key file.
+After performing the first command to encrypt the file, they each copy
+their respective key files for themselves and delete the originals. Then
+to decrypt, they each copy their key file to the original location and
+perform the second command.
 
 About
 -----
 
-Mirror Crypt is a handy tool to easily encrypt/decrypt ASCII text using a
-mirror field algorithm with rotating mirrors.
+Mirror Crypt is a handy tool to easily encrypt/decrypt ASCII text using an
+adaptive mirror field algorithm.
 
 A traditional mirror field produces the same output character for the same
 input character, not disimilar to a simple substitution cipher, making it
 a weak form of encryption.
 
-Mirror Crypt employes a method of spinning the mirrors clockwise each time
+Mirror Crypt employes adaptive mirrors wjos orientation spins clockwise each time
 they are encountered in the encryption/decryption of a character. This produces
 a different, highly unpredictable result for each input character, even
 if they are the same.
@@ -76,21 +117,7 @@ $ sudo make uninstall
 Usage
 -----
 
-The first time you use `mirrorcrypt` you will need to use the `-a` option
-to auto-create your default mirror field file, which essentially serves
-as your personal private key.
-
-```
-$ printf "hello world" | mirrorcrypt -a
-ggYt~Vy[mYg
-```
-
-From that point on you no longer need the `-a` option.
-
-```
-$ printf "hello world" | mirrorcrypt
-ggYt~Vy[mYg
-```
+COMING SOON
 
 Config Dir
 ----------
