@@ -2,9 +2,20 @@ Mirror Crypt
 ============
 
 A command line encryption/decryption tool for ASCII text using a
-modified mirror field algorithm.
+spinning mirror field algorithm.
 
-![Screen Cap](http://i.imgur.com/KHJn3FI.gif)
+![Screen Cap](http://i.imgur.com/Rr8LW9n.gif)
+
+Quick Examples
+--------------
+
+**Example #1** - Encrypting/Decrypting a short string.
+
+**Example #2** - Encrypting/Decrypting the contents of a ASCII file.
+
+**Example #3** - Encrypting/Decrypting the contents of a binary file using a base64 encoder.
+
+**Example #4** - Dual key encryption.
 
 About
 -----
