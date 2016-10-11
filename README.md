@@ -15,9 +15,9 @@ Quick Examples
 
 ```
 $ printf "Attack at Dawn" | mrrcrypt
-w]M_0FSWAqMmD~
+tjrWeoPXAFIcvo
 
-$ printf "w]M_0FSWAqMmD~" | mrrcrypt
+$ printf "tjrWeoPXAFIcvo" | mrrcrypt
 Attack at Dawn
 
 ```
