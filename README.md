@@ -77,13 +77,8 @@ duplicate characters in the same positions.
 This makes for weak, easily defeatable encryption.
 
 Mirror Crypt employs an *adaptive* mirror field algorithm. For each
-character of input, mirrors in the field will change orientation,
-producing different output character for each identical input character.
-
-Since the placement and orientation of all the mirrors in the field serves
-as a unique private key, each character of input is essentially given
-it's own unique private key, which can only be derived with the private
-key of the character preceeding it.
+character of input, the orientation of the mirrors will change, creating
+a unique mirror field and therefore unique output, even for identical characters.
 
 The result is a highly unpredictable, seemingly random output.
 
@@ -93,6 +88,10 @@ Input | Output
 ----- | ------
 Mississippi | LWBZe8Bq<zo
 Attack at Dawn | w]M_0FSWAqMmD~
+
+It is as if each character of input is given it's own unique private key,
+which can only be derived with the private key of the character preceeding
+it.
 
 Download and Install
 --------------------
