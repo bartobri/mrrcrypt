@@ -4,7 +4,7 @@ Mirror Crypt
 A command line encryption/decryption tool for ASCII text using a
 spinning mirror field algorithm.
 
-![Screen Cap](http://i.imgur.com/Rr8LW9n.gif)
+![Screen Cap](http://i.imgur.com/mh8efa2.gif)
 
 Quick Examples
 --------------
