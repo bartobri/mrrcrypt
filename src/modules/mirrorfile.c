@@ -14,6 +14,7 @@
 
 #define MIRROR_FILE_NAME "default"
 #define MIRROR_FILE_PATH ".config/mirrorcrypt/"
+#define MIRROR_DENSITY   6
 
 // Static chars
 static FILE *mirrorFile;
@@ -93,7 +94,7 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	// Write mirror data to file
 	for (r = 0; r < width; ++r) {
 		for (c = 0; c < width; ++c) {
-			switch (rand() % 5) {
+			switch (rand() % MIRROR_DENSITY) {
 				case 1:
 					fprintf(config, "/");
 					break;
