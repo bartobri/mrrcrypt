@@ -107,14 +107,8 @@ int main(int argc, char *argv[]) {
 			// Break out of loop if we reached the end of the mirror file
 			if (ch == EOF)
 				break;
-			
-			// Evaluate mirror file character
-			if (ch == '\n')
-				if (c == 0)
-					--c;
-				else
-					main_shutdown("Invalid mirror file. Width does not conform.");
-			else if (ch == '/')
+
+			if (ch == '/')
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
 				mirrorfield_set_type(r, c, MIRROR_BACKWARD);

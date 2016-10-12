@@ -101,7 +101,6 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 					break;
 			}
 		}
-		fprintf(config, "\n");
 	}
 	fclose(config);
 
