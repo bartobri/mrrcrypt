@@ -9,6 +9,9 @@
 #include <time.h>
 #include <sys/stat.h>
 
+#include "main.h"
+#include "modules/mirrorfile.h"
+
 #define MIRROR_FILE_NAME "default"
 #define MIRROR_FILE_PATH ".config/mirrorcrypt/"
 
@@ -53,6 +56,7 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	char *mirrorFilePath = MIRROR_FILE_PATH;
 	char *mirrorFilePathName;
 	char *mirrorFileFullPathName;
+	char *shuffledChars;
 	
 	// Set mirror file name to default if NULL
 	if (mirrorFileName == NULL)
@@ -102,9 +106,54 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 			}
 		}
 	}
+	
+	// Shuffle and write character data to file
+	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
+	strcpy(shuffledChars, SUPPORTED_CHARS);
+	fprintf(config, "%s", mirrorfile_shuffle_string(shuffledChars, 1000));
+	
+	/*
+	char *sChars = SUPPORTED_CHARS;
+	for (i = 0; sChars[i] != '\0'; ++i) {
+		int i2;
+		int c = 0;
+		for (i2 = 0; shuffledChars[i2] != '\0'; ++i2) {
+			if (sChars[i] == shuffledChars[i2]) {
+				++c;
+			}
+		}
+		printf("%i count for %c\n", c, sChars[i]);
+	}
+	*/
+	
+	
+	// Close mirror file
 	fclose(config);
 
 	return 1;
+}
+
+char *mirrorfile_shuffle_string(char *str, int p) {
+	int i, sIndex, rIndex;
+	char c1, c2;
+	
+	sIndex = (rand() % strlen(str));
+	rIndex = sIndex;
+	c1 = str[rIndex];
+	for (i = 0; i < p; ++i) {
+		
+		// rIndex can't equal sIndex. sIndex is reserved for the
+		// placement of the last character shuffled.
+		while ((rIndex = (rand() % strlen(str))) == sIndex)
+			;
+		
+		c2 = str[rIndex];
+		str[rIndex] = c1;
+		c1 = c2;
+	}
+	str[sIndex] = c1;
+	
+	return str;
 }
 
 int mirrorfile_next_char(void) {
