@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
 	int o, r, c, ch, i;
 	int autoCreate       = 0;
 	char *version        = VERSION;
-	char *supportedChars = SUPPORTED_CHARS;
 	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = NULL;
 	
@@ -70,11 +69,11 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Unable to read HOME environment variable.");
 	
 	// Validate supported character count is square
-	if (strlen(supportedChars) % 4 != 0)
+	if (strlen(SUPPORTED_CHARS) % 4 != 0)
 		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
 
 	// Validate supported character count is compatible with grid width
-	if (strlen(supportedChars) / 4 != GRID_SIZE)
+	if (strlen(SUPPORTED_CHARS) / 4 != GRID_SIZE)
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
@@ -112,53 +111,67 @@ int main(int argc, char *argv[]) {
 			main_shutdown("Could not open mirror file. Use -a to auto-create.");
 	}
 
-	// Populate Mirror Field
+	// Populate mirror placement and orientation in mirror field
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
-			// Set adjacent characters
-			if (r == 0)
-				mirrorfield_set_charup(r, c, supportedChars[c]);
-			if (c == 0)
-				mirrorfield_set_charleft(r, c, supportedChars[(GRID_SIZE * 2) + r]);
-			if (c == (GRID_SIZE - 1))
-				mirrorfield_set_charright(r, c, supportedChars[GRID_SIZE + r]);
-			if (r == (GRID_SIZE - 1))
-				mirrorfield_set_chardown(r, c, supportedChars[(GRID_SIZE * 3) + c]);
-
-			// Set mirror type
+			// Get next character
 			ch = mirrorfile_next_char();
 
-			// Shutdown if mirror file is not open
-			if (ch == -2)
-				main_shutdown("Could not read from mirror file. Mirror file not open.");
-			
-			// Break out of loop if we reached the end of the mirror file
-			if (ch == EOF)
-				break;
-			
-			// Evaluate mirror file character
-			if (ch == '\n')
-				if (c == 0)
-					--c;
-				else
-					main_shutdown("Invalid mirror file. Width does not conform.");
-			else if (ch == '/')
+			if (ch == '/')
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
 			else if (ch == '\\')
 				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
 			else if (ch == ' ')
 				mirrorfield_set_type(r, c, MIRROR_NONE);
 			else
-				main_shutdown("Invalid character in mirror file.");
+				main_shutdown("Invalid mirror file. Incorrect size or content.");
 
 		}
-		if (ch == EOF)
-			break;
 	}
 	
-	if (r != GRID_SIZE && c != GRID_SIZE)
-		main_shutdown("Invalid mirror file. Incorrect size.");
+	// Populate mirror field perimeter characters
+	for (i = 0; i < (int)strlen(SUPPORTED_CHARS); ++i) {
+
+		// Get next character
+		ch = mirrorfile_next_char();
+		
+		if (ch == EOF)
+			main_shutdown("Invalid mirror file. Incorrect size or content.");
+		
+		// Make sure character is supported
+		if (index(SUPPORTED_CHARS, ch) == NULL)
+			main_shutdown("Invalid mirror file. Incorrect size or content.");
+			
+		// Make sure character isn't duplicated
+		for (r = 0; r < GRID_SIZE; ++r) {
+			for (c = 0; c < GRID_SIZE; ++c) {
+				
+				if (mirrorfield_get_charup(r, c) == ch)
+					main_shutdown("Invalid mirror file. Incorrect size or content.");
+				
+				if (mirrorfield_get_charleft(r, c) == ch)
+					main_shutdown("Invalid mirror file. Incorrect size or content.");
+				
+				if (mirrorfield_get_charright(r, c) == ch)
+					main_shutdown("Invalid mirror file. Incorrect size or content.");
+				
+				if (mirrorfield_get_chardown(r, c) == ch)
+					main_shutdown("Invalid mirror file. Incorrect size or content.");
+
+			}
+		}
+		
+		// Character is valid, set it
+		if (i < GRID_SIZE)
+			mirrorfield_set_charup(0, i, ch);
+		else if (i < GRID_SIZE * 2)
+			mirrorfield_set_charright(i - GRID_SIZE, GRID_SIZE - 1, ch);
+		else if (i < GRID_SIZE * 3)
+			mirrorfield_set_charleft(i - (GRID_SIZE * 2), 0, ch);
+		else if (i < GRID_SIZE * 4)
+			mirrorfield_set_chardown(GRID_SIZE - 1, i - (GRID_SIZE * 3), ch);
+	}
 
 	// Close mirror file
 	mirrorfile_close();
@@ -265,37 +278,33 @@ int main(int argc, char *argv[]) {
 		waddch(wInput, ch);
 		wrefresh(wInput);
 
-		int direction;
+		int direction = 0;
 		char ech = 0;
 
-		for (i = 0; supportedChars[i] != '\0'; ++i)
-			if (supportedChars[i] == ch)
-				break;
-
 		// If character not supported, just print it and continue the loop
-		if (supportedChars[i] == '\0') {
+		if (index(SUPPORTED_CHARS, ch) == NULL) {
 			waddch(wResult, ch);
 			wrefresh(wResult);
 			continue;
 		}
 
 		// Determining starting row/col and starting direction
-		if (i < GRID_SIZE) {
-			r = 0;
-			c = i;
-			direction = DIR_DOWN;
-		} else if (i >= GRID_SIZE && i < (GRID_SIZE * 2)) {
-			r = i - GRID_SIZE;
-			c = GRID_SIZE - 1;
-			direction = DIR_LEFT;
-		} else if (i >= (GRID_SIZE * 2) && i < (GRID_SIZE * 3)) {
-			r = i - (GRID_SIZE * 2);
-			c = 0;
-			direction = DIR_RIGHT;
-		} else {
-			r = GRID_SIZE - 1;
-			c = i - (GRID_SIZE * 3);
-			direction = DIR_UP;
+		for (r = 0; r < GRID_SIZE; ++r) {
+			for (c = 0; c < GRID_SIZE; ++c) {
+				if (mirrorfield_get_charup(r, c) == ch)
+					direction = DIR_DOWN;
+				else if (mirrorfield_get_charleft(r, c) == ch)
+					direction = DIR_RIGHT;
+				else if (mirrorfield_get_charright(r, c) == ch)
+					direction = DIR_LEFT;
+				else if (mirrorfield_get_chardown(r, c) == ch)
+					direction = DIR_UP;
+				
+				if (direction)
+					break;
+			}
+			if (direction)
+				break;
 		}
 		
 		// Show cursor over starting char

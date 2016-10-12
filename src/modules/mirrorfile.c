@@ -112,21 +112,6 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	strcpy(shuffledChars, SUPPORTED_CHARS);
 	fprintf(config, "%s", mirrorfile_shuffle_string(shuffledChars, 1000));
 	
-	/*
-	char *sChars = SUPPORTED_CHARS;
-	for (i = 0; sChars[i] != '\0'; ++i) {
-		int i2;
-		int c = 0;
-		for (i2 = 0; shuffledChars[i2] != '\0'; ++i2) {
-			if (sChars[i] == shuffledChars[i2]) {
-				++c;
-			}
-		}
-		printf("%i count for %c\n", c, sChars[i]);
-	}
-	*/
-	
-	
 	// Close mirror file
 	fclose(config);
 
