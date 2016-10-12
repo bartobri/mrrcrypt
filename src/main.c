@@ -103,10 +103,6 @@ int main(int argc, char *argv[]) {
 			// Shutdown if mirror file is not open
 			if (ch == -2)
 				main_shutdown("Could not read from mirror file. Mirror file not open.");
-			
-			// Break out of loop if we reached the end of the mirror file
-			if (ch == EOF)
-				break;
 
 			if (ch == '/')
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
@@ -115,15 +111,10 @@ int main(int argc, char *argv[]) {
 			else if (ch == ' ')
 				mirrorfield_set_type(r, c, MIRROR_NONE);
 			else
-				main_shutdown("Invalid character in mirror file.");
+				main_shutdown("Invalid mirror file. Incorrect size or content.");
 
 		}
-		if (ch == EOF)
-			break;
 	}
-	
-	if (r != GRID_SIZE && c != GRID_SIZE)
-		main_shutdown("Invalid mirror file. Incorrect size.");
 
 	// Close mirror file
 	mirrorfile_close();
