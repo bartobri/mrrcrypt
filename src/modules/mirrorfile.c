@@ -111,6 +111,7 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
 	strcpy(shuffledChars, SUPPORTED_CHARS);
 	fprintf(config, "%s", mirrorfile_shuffle_string(shuffledChars, 1000));
+	free(shuffledChars);
 	
 	// Close mirror file
 	fclose(config);
