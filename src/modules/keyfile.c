@@ -10,91 +10,91 @@
 #include <sys/stat.h>
 
 #include "main.h"
-#include "modules/mirrorfile.h"
+#include "modules/keyfile.h"
 
 #define MIRROR_DENSITY   6
 
 // Static chars
-static FILE *mirrorFile;
+static FILE *keyFile;
 
-void mirrorfile_init(void) {
-	mirrorFile = NULL;
+void keyfile_init(void) {
+	keyFile = NULL;
 }
 
-int mirrorfile_open(char *mirrorFileName) {
+int keyfile_open(char *keyFileName) {
 	char *homeDir        = getenv("HOME");
-	char *mirrorFilePath = DEFAULT_KEY_PATH;
-	char *mirrorFilePathName;
-	char *mirrorFileFullPathName;
+	char *keyFilePath = DEFAULT_KEY_PATH;
+	char *keyFilePathName;
+	char *keyFileFullPathName;
 	
 	// Set mirror file name to default if NULL
-	if (mirrorFileName == NULL)
-		mirrorFileName = DEFAULT_KEY_NAME;
+	if (keyFileName == NULL)
+		keyFileName = DEFAULT_KEY_NAME;
 	
 	// Return if we don't have a home directory
 	if (homeDir == NULL)
 		return 0;
 	
 	// Combine mirror file path and name in to one string.
-	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
-	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
+	keyFilePathName = malloc(strlen(keyFilePath) + strlen(keyFileName) + 1);
+	sprintf(keyFilePathName, "%s%s", keyFilePath, keyFileName);
 	
 	// Build mirror file path
-	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
-	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
+	keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
+	sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
 
-	mirrorFile = fopen(mirrorFileFullPathName, "r");
+	keyFile = fopen(keyFileFullPathName, "r");
 	
-	free(mirrorFilePathName);
-	free(mirrorFileFullPathName);
+	free(keyFilePathName);
+	free(keyFileFullPathName);
 	
-	if (mirrorFile == NULL)
+	if (keyFile == NULL)
 		return 0;
 	
 	return 1;
 }
 
-int mirrorfile_create(char *mirrorFileName, int width) {
+int keyfile_create(char *keyFileName, int width) {
 	int i, r, c;
 	struct stat sb;
 	FILE *config;
 	char *homeDir        = getenv("HOME");
-	char *mirrorFilePath = DEFAULT_KEY_PATH;
-	char *mirrorFilePathName;
-	char *mirrorFileFullPathName;
+	char *keyFilePath = DEFAULT_KEY_PATH;
+	char *keyFilePathName;
+	char *keyFileFullPathName;
 	char *shuffledChars;
 	
 	// Set mirror file name to default if NULL
-	if (mirrorFileName == NULL)
-		mirrorFileName = DEFAULT_KEY_NAME;
+	if (keyFileName == NULL)
+		keyFileName = DEFAULT_KEY_NAME;
 	
 	// Return if we don't have a home directory
 	if (homeDir == NULL)
 		return 0;
 	
 	// Combine mirror file path and name in to one string.
-	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
-	sprintf(mirrorFilePathName, "%s%s", mirrorFilePath, mirrorFileName);
+	keyFilePathName = malloc(strlen(keyFilePath) + strlen(keyFileName) + 1);
+	sprintf(keyFilePathName, "%s%s", keyFilePath, keyFileName);
 	
 	// Build mirror file path
-	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
-	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
+	keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
+	sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
 
 	// Check subdirs and create them if needed
-	if (strchr(mirrorFileFullPathName, '/') != NULL) {
-		for (i = 1; mirrorFileFullPathName[i] != '\0'; ++i) {
-			if (mirrorFileFullPathName[i] == '/') {
-				mirrorFileFullPathName[i] = '\0';
-				if (stat(mirrorFileFullPathName, &sb) != 0)
-					if (mkdir(mirrorFileFullPathName, 0700) == -1)
+	if (strchr(keyFileFullPathName, '/') != NULL) {
+		for (i = 1; keyFileFullPathName[i] != '\0'; ++i) {
+			if (keyFileFullPathName[i] == '/') {
+				keyFileFullPathName[i] = '\0';
+				if (stat(keyFileFullPathName, &sb) != 0)
+					if (mkdir(keyFileFullPathName, 0700) == -1)
 						return 0;
-				mirrorFileFullPathName[i] = '/';
+				keyFileFullPathName[i] = '/';
 			}
 		}
 	}
 
 	// Now lets open the mirror file
-	if ((config = fopen(mirrorFileFullPathName, "w")) == NULL)
+	if ((config = fopen(keyFileFullPathName, "w")) == NULL)
 		return 0;
 
 	// Seed my random number generator
@@ -120,7 +120,7 @@ int mirrorfile_create(char *mirrorFileName, int width) {
 	// Shuffle and write character data to file
 	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
 	strcpy(shuffledChars, SUPPORTED_CHARS);
-	fprintf(config, "%s", mirrorfile_shuffle_string(shuffledChars, 1000));
+	fprintf(config, "%s", keyfile_shuffle_string(shuffledChars, 1000));
 	free(shuffledChars);
 	
 	// Close mirror file
@@ -129,7 +129,7 @@ int mirrorfile_create(char *mirrorFileName, int width) {
 	return 1;
 }
 
-char *mirrorfile_shuffle_string(char *str, int p) {
+char *keyfile_shuffle_string(char *str, int p) {
 	int i, sIndex, rIndex;
 	char c1, c2;
 	
@@ -152,16 +152,16 @@ char *mirrorfile_shuffle_string(char *str, int p) {
 	return str;
 }
 
-int mirrorfile_next_char(void) {
-	if (mirrorFile != NULL)
-		return fgetc(mirrorFile);
+int keyfile_next_char(void) {
+	if (keyFile != NULL)
+		return fgetc(keyFile);
 	
 	return -2;
 }
 
-void mirrorfile_close(void) {
-	if (mirrorFile != NULL) {
-		fclose(mirrorFile);
-		mirrorFile = NULL;
+void keyfile_close(void) {
+	if (keyFile != NULL) {
+		fclose(keyFile);
+		keyFile = NULL;
 	}
 }

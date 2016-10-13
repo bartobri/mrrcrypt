@@ -11,7 +11,7 @@
 #include <stdbool.h>
 
 #include "main.h"
-#include "modules/mirrorfile.h"
+#include "modules/keyfile.h"
 #include "modules/mirrorfield.h"
 #include "modules/visitedmirrors.h"
 
@@ -31,10 +31,10 @@ int main(int argc, char *argv[]) {
 	int o, r, c, ch, i;
 	int autoCreate       = 0;
 	char *version        = VERSION;
-	char *mirrorFileName = DEFAULT_KEY_NAME;
+	char *keyFileName    = DEFAULT_KEY_NAME;
 	
 	// Run module init functions
-	mirrorfile_init();
+	keyfile_init();
 	mirrorfield_init();
 	visitedmirrors_init();
 	
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 				autoCreate = 1;
 				break;
 			case 'm':
-				mirrorFileName = optarg;
+				keyFileName = optarg;
 				break;
 			case 'v':
 				printf("mirrorcrypt version %s\n", version);
@@ -68,13 +68,13 @@ int main(int argc, char *argv[]) {
 	}
 	
 	// Turn on autoCreate flag for default key file
-	if (strcmp(DEFAULT_KEY_NAME, mirrorFileName) == 0)
+	if (strcmp(DEFAULT_KEY_NAME, keyFileName) == 0)
 		autoCreate = 1;
 	
 	// Ppen mirror file
-	while (mirrorfile_open(mirrorFileName) == 0) {
+	while (keyfile_open(keyFileName) == 0) {
 		if (autoCreate) {
-			if (mirrorfile_create(mirrorFileName, GRID_SIZE) == 0) {
+			if (keyfile_create(keyFileName, GRID_SIZE) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
 		} else
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
 			// Get next character
-			ch = mirrorfile_next_char();
+			ch = keyfile_next_char();
 
 			if (ch == '/')
 				mirrorfield_set_type(r, c, MIRROR_FORWARD);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 	for (i = 0; i < (int)strlen(SUPPORTED_CHARS); ++i) {
 
 		// Get next character
-		ch = mirrorfile_next_char();
+		ch = keyfile_next_char();
 		
 		if (ch == EOF)
 			main_shutdown("Invalid mirror file. Incorrect size or content.");
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Close mirror file
-	mirrorfile_close();
+	keyfile_close();
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
@@ -272,7 +272,7 @@ void main_shutdown(const char *errmsg) {
 	printf("Shutting down. Reason: %s\n", errmsg);
 	
 	// Close mirror file (if open)
-	mirrorfile_close();
+	keyfile_close();
 	
 	// Shutdown
 	exit(1);
