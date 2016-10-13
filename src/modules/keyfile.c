@@ -21,15 +21,11 @@ void keyfile_init(void) {
 	keyFile = NULL;
 }
 
-int keyfile_open(char *keyFileName) {
-	char *homeDir        = getenv("HOME");
+int keyfile_open(char *keyFileName, int autoCreate) {
+	char *homeDir = getenv("HOME");
 	char *keyFilePath = DEFAULT_KEY_PATH;
 	char *keyFilePathName;
 	char *keyFileFullPathName;
-	
-	// Set mirror file name to default if NULL
-	if (keyFileName == NULL)
-		keyFileName = DEFAULT_KEY_NAME;
 	
 	// Return if we don't have a home directory
 	if (homeDir == NULL)
@@ -43,7 +39,14 @@ int keyfile_open(char *keyFileName) {
 	keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
 	sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
 
-	keyFile = fopen(keyFileFullPathName, "r");
+	while ((keyFile = fopen(keyFileFullPathName, "r")) == NULL) {
+		if (autoCreate) {
+			if (keyfile_create(keyFileFullPathName)) {
+				continue;
+			} 
+		} 
+		break;
+	}
 	
 	free(keyFilePathName);
 	free(keyFileFullPathName);
@@ -54,31 +57,12 @@ int keyfile_open(char *keyFileName) {
 	return 1;
 }
 
-int keyfile_create(char *keyFileName, int width) {
+int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
+	int width = GRID_SIZE;
 	struct stat sb;
 	FILE *config;
-	char *homeDir        = getenv("HOME");
-	char *keyFilePath = DEFAULT_KEY_PATH;
-	char *keyFilePathName;
-	char *keyFileFullPathName;
 	char *shuffledChars;
-	
-	// Set mirror file name to default if NULL
-	if (keyFileName == NULL)
-		keyFileName = DEFAULT_KEY_NAME;
-	
-	// Return if we don't have a home directory
-	if (homeDir == NULL)
-		return 0;
-	
-	// Combine mirror file path and name in to one string.
-	keyFilePathName = malloc(strlen(keyFilePath) + strlen(keyFileName) + 1);
-	sprintf(keyFilePathName, "%s%s", keyFilePath, keyFileName);
-	
-	// Build mirror file path
-	keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
-	sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
 
 	// Check subdirs and create them if needed
 	if (strchr(keyFileFullPathName, '/') != NULL) {

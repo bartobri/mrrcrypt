@@ -7,8 +7,8 @@
 #define KEYFILE_H 1
 
 void  keyfile_init(void);
-int   keyfile_open(char *);
-int   keyfile_create(char *, int);
+int   keyfile_open(char *, int);
+int   keyfile_create(char *);
 char *keyfile_shuffle_string(char *, int);
 int   keyfile_next_char(void);
 void  keyfile_close(void);

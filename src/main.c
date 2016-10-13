@@ -71,14 +71,12 @@ int main(int argc, char *argv[]) {
 	if (strcmp(DEFAULT_KEY_NAME, keyFileName) == 0)
 		autoCreate = 1;
 	
-	// Ppen mirror file
-	while (keyfile_open(keyFileName) == 0) {
-		if (autoCreate) {
-			if (keyfile_create(keyFileName, GRID_SIZE) == 0) {
-				main_shutdown("Could not auto-create mirror file.");
-			}
-		} else
-			main_shutdown("Could not open mirror file. Use -a to auto-create.");
+	// Open mirror file
+	if (keyfile_open(keyFileName, autoCreate) == 0) {
+		if (autoCreate)
+			main_shutdown("Could not auto-create key file. Make sure $HOME is set to a writable directory.");
+		else
+			main_shutdown("Key file not found. Use -a to auto-create.");
 	}
 
 	// Populate mirror placement and orientation in mirror field
@@ -260,6 +258,7 @@ int main(int argc, char *argv[]) {
 		}
 		putchar(ech);
 		
+		// Rotate mirrors
 		mirrorfield_rotate();
 	}
 
