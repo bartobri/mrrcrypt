@@ -47,12 +47,12 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
-	while ((o = getopt(argc, argv, "am:v")) != -1) {
+	while ((o = getopt(argc, argv, "ak:v")) != -1) {
 		switch (o) {
 			case 'a':
 				autoCreate = 1;
 				break;
-			case 'm':
+			case 'k':
 				keyFileName = optarg;
 				break;
 			case 'v':

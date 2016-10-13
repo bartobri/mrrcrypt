@@ -47,12 +47,12 @@ separate key required for decryption. Nether one can decrypt the file without
 the consent of the other. This is how they can accomplish this.
 
 ```
-$ cat secrets.txt | mrrcrypt -a -m bobs_key | mrrcrypt -a -m johns_key > secrets.encrypted
+$ cat secrets.txt | mrrcrypt -a -k bobs_key | mrrcrypt -a -k johns_key > secrets.encrypted
 
-$ cat secrets.encrypted | mrrcrypt -m johns_key | mrrcrypt -m bobs_key > secrets.txt
+$ cat secrets.encrypted | mrrcrypt -k johns_key | mrrcrypt -k bobs_key > secrets.txt
 ```
 
-The `-m <name>` option specifies a mirror file to use, and the `-a`
+The `-k <name>` option specifies a mirror file to use, and the `-a`
 option auto-creates it if it doesn't exist. After performing the first
 command to create two new keys and encrypt the file, they each copy
 their respective key files for themselves and delete the originals. Then
