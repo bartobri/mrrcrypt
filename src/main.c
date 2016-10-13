@@ -31,17 +31,12 @@ int main(int argc, char *argv[]) {
 	int o, r, c, ch, i;
 	int autoCreate       = 0;
 	char *version        = VERSION;
-	char *homeDir        = getenv("HOME");
 	char *mirrorFileName = DEFAULT_KEY_NAME;
 	
 	// Run module init functions
 	mirrorfile_init();
 	mirrorfield_init();
 	visitedmirrors_init();
-
-	// Die if we don't have a home directory
-	if (homeDir == NULL)
-		main_shutdown("Unable to read HOME environment variable.");
 	
 	// Validate supported character count is square
 	if (strlen(SUPPORTED_CHARS) % 4 != 0)
@@ -77,9 +72,9 @@ int main(int argc, char *argv[]) {
 		autoCreate = 1;
 	
 	// Ppen mirror file
-	while (mirrorfile_open(homeDir, mirrorFileName) == 0) {
+	while (mirrorfile_open(mirrorFileName) == 0) {
 		if (autoCreate) {
-			if (mirrorfile_create(homeDir, mirrorFileName, GRID_SIZE) == 0) {
+			if (mirrorfile_create(mirrorFileName, GRID_SIZE) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
 		} else

@@ -21,8 +21,8 @@ void mirrorfile_init(void) {
 	mirrorFile = NULL;
 }
 
-int mirrorfile_open(char *homeDir, char *mirrorFileName) {
-	int r = 1;
+int mirrorfile_open(char *mirrorFileName) {
+	char *homeDir        = getenv("HOME");
 	char *mirrorFilePath = DEFAULT_KEY_PATH;
 	char *mirrorFilePathName;
 	char *mirrorFileFullPathName;
@@ -30,6 +30,10 @@ int mirrorfile_open(char *homeDir, char *mirrorFileName) {
 	// Set mirror file name to default if NULL
 	if (mirrorFileName == NULL)
 		mirrorFileName = DEFAULT_KEY_NAME;
+	
+	// Return if we don't have a home directory
+	if (homeDir == NULL)
+		return 0;
 	
 	// Combine mirror file path and name in to one string.
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
@@ -39,19 +43,22 @@ int mirrorfile_open(char *homeDir, char *mirrorFileName) {
 	mirrorFileFullPathName = malloc(strlen(mirrorFilePathName) + strlen(homeDir) + 2);
 	sprintf(mirrorFileFullPathName, "%s/%s", homeDir, mirrorFilePathName);
 
-	if ((mirrorFile = fopen(mirrorFileFullPathName, "r")) == NULL)
-		r = 0;
+	mirrorFile = fopen(mirrorFileFullPathName, "r");
 	
 	free(mirrorFilePathName);
 	free(mirrorFileFullPathName);
 	
-	return r;
+	if (mirrorFile == NULL)
+		return 0;
+	
+	return 1;
 }
 
-int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
+int mirrorfile_create(char *mirrorFileName, int width) {
 	int i, r, c;
 	struct stat sb;
 	FILE *config;
+	char *homeDir        = getenv("HOME");
 	char *mirrorFilePath = DEFAULT_KEY_PATH;
 	char *mirrorFilePathName;
 	char *mirrorFileFullPathName;
@@ -60,6 +67,10 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	// Set mirror file name to default if NULL
 	if (mirrorFileName == NULL)
 		mirrorFileName = DEFAULT_KEY_NAME;
+	
+	// Return if we don't have a home directory
+	if (homeDir == NULL)
+		return 0;
 	
 	// Combine mirror file path and name in to one string.
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
