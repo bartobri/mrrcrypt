@@ -8,7 +8,7 @@
 
 #define VERSION          "0.1.0"
 #define DEFAULT_KEY_NAME "default"
-#define DEFAULT_KEY_PATH ".config/mirrorcrypt/"
+#define DEFAULT_KEY_PATH ".config/mrrcrypt/"
 #define GRID_SIZE        24
 #define SUPPORTED_CHARS  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+{}[]|\\:; \n\t\"'<>,.?/~"
 
