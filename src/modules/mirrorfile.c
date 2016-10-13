@@ -12,8 +12,6 @@
 #include "main.h"
 #include "modules/mirrorfile.h"
 
-#define MIRROR_FILE_NAME "default"
-#define MIRROR_FILE_PATH ".config/mirrorcrypt/"
 #define MIRROR_DENSITY   6
 
 // Static chars
@@ -25,13 +23,13 @@ void mirrorfile_init(void) {
 
 int mirrorfile_open(char *homeDir, char *mirrorFileName) {
 	int r = 1;
-	char *mirrorFilePath = MIRROR_FILE_PATH;
+	char *mirrorFilePath = DEFAULT_KEY_PATH;
 	char *mirrorFilePathName;
 	char *mirrorFileFullPathName;
 	
 	// Set mirror file name to default if NULL
 	if (mirrorFileName == NULL)
-		mirrorFileName = MIRROR_FILE_NAME;
+		mirrorFileName = DEFAULT_KEY_NAME;
 	
 	// Combine mirror file path and name in to one string.
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);
@@ -54,14 +52,14 @@ int mirrorfile_create(char *homeDir, char *mirrorFileName, int width) {
 	int i, r, c;
 	struct stat sb;
 	FILE *config;
-	char *mirrorFilePath = MIRROR_FILE_PATH;
+	char *mirrorFilePath = DEFAULT_KEY_PATH;
 	char *mirrorFilePathName;
 	char *mirrorFileFullPathName;
 	char *shuffledChars;
 	
 	// Set mirror file name to default if NULL
 	if (mirrorFileName == NULL)
-		mirrorFileName = MIRROR_FILE_NAME;
+		mirrorFileName = DEFAULT_KEY_NAME;
 	
 	// Combine mirror file path and name in to one string.
 	mirrorFilePathName = malloc(strlen(mirrorFilePath) + strlen(mirrorFileName) + 1);

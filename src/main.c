@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 	int autoCreate       = 0;
 	char *version        = VERSION;
 	char *homeDir        = getenv("HOME");
-	char *mirrorFileName = NULL;
+	char *mirrorFileName = DEFAULT_KEY_NAME;
 	
 	// Run module init functions
 	mirrorfile_init();
@@ -72,9 +72,13 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	// open mirror file
+	// Turn on autoCreate flag for default key file
+	if (strcmp(DEFAULT_KEY_NAME, mirrorFileName) == 0)
+		autoCreate = 1;
+	
+	// Ppen mirror file
 	while (mirrorfile_open(homeDir, mirrorFileName) == 0) {
-		if (autoCreate || mirrorFileName == NULL) {
+		if (autoCreate) {
 			if (mirrorfile_create(homeDir, mirrorFileName, GRID_SIZE) == 0) {
 				main_shutdown("Could not auto-create mirror file.");
 			}
