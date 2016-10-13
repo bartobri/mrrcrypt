@@ -37,6 +37,7 @@
 #define MIN_COLS                     80
 
 // Function prototypes
+void main_draw_field(WINDOW *, int);
 void main_shutdown(const char *);
 
 int main(int argc, char *argv[]) {
@@ -216,57 +217,7 @@ int main(int argc, char *argv[]) {
 	scrollok(wResult, true);
 	wrefresh(wResult);
 	
-	// Draw mirror field in grid window
-	for (r = -1; r <= GRID_SIZE; ++r) {
-
-		wmove(wGrid, r + 3, (termSizeCols - (GRID_SIZE * 2)) / 2);
-
-		for (c = -1; c <= GRID_SIZE; ++c) {
-			
-			if (r == -1 && c == -1)                     // Upper left corner
-				waddch(wGrid, ' ');
-			else if (r == -1 && c == GRID_SIZE)         // Upper right corner
-				waddch(wGrid, ' ');
-			else if (r == GRID_SIZE && c == -1)         // Lower left corner
-				waddch(wGrid, ' ');
-			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
-				waddch(wGrid, ' ');
-			else if (r == -1) {                           // Top chars
-				ch = mirrorfield_get_charup(r + 1, c);
-				if (isspace(ch))
-					waddch(wGrid, ' ');
-				else
-					waddch(wGrid, ch);
-			} else if (c == GRID_SIZE) {                   // Right chars
-				ch = mirrorfield_get_charright(r, c - 1);
-				if (isspace(ch))
-					waddch(wGrid, ' ');
-				else
-					waddch(wGrid, ch);
-			} else if (r == GRID_SIZE) {                  // Bottom chars
-				ch = mirrorfield_get_chardown(r - 1, c);
-				if (isspace(ch))
-					waddch(wGrid, ' ');
-				else
-					waddch(wGrid, ch);
-			} else if (c == -1) {                         // Left chars
-				ch = mirrorfield_get_charleft(r, c + 1);
-				if (isspace(ch))
-					waddch(wGrid, ' ');
-				else
-					waddch(wGrid, ch);
-			} else if (mirrorfield_get_type(r, c) == MIRROR_FORWARD)
-				waddch(wGrid, '/');
-			else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD)
-				waddch(wGrid, '\\');
-			else
-				waddch(wGrid, ' ');
-			
-			waddch(wGrid, ' ');
-
-		}
-	}
-	wrefresh(wGrid);
+	main_draw_field(wGrid, termSizeCols);
 	
 	// Position cursor in input/result window
 	wmove(wResult, 1, 0);
@@ -317,6 +268,9 @@ int main(int argc, char *argv[]) {
 		else if (direction == DIR_UP)
 			wmove(wGrid, r + 4, ((termSizeCols - (GRID_SIZE * 2)) / 2) + (c*2) + 2);
 		wrefresh(wGrid);
+		nanosleep(&ts, NULL);
+		nanosleep(&ts, NULL);
+		nanosleep(&ts, NULL);
 		nanosleep(&ts, NULL);
 		
 		// Clear visited points
@@ -425,6 +379,9 @@ int main(int argc, char *argv[]) {
 		}
 		waddch(wResult, ech);
 		wrefresh(wResult);
+		
+		mirrorfield_rotate();
+		main_draw_field(wGrid, termSizeCols);
 	}
 	
 	// Set input to keyboard
@@ -439,6 +396,64 @@ int main(int argc, char *argv[]) {
 	endwin();
 
 	return 0;
+}
+
+void main_draw_field(WINDOW *wGrid, int termSizeCols) {
+	int r, c;
+	char ch;
+	
+	for (r = -1; r <= GRID_SIZE; ++r) {
+
+		wmove(wGrid, r + 3, (termSizeCols - (GRID_SIZE * 2)) / 2);
+
+		for (c = -1; c <= GRID_SIZE; ++c) {
+			
+			if (r == -1 && c == -1)                     // Upper left corner
+				waddch(wGrid, ' ');
+			else if (r == -1 && c == GRID_SIZE)         // Upper right corner
+				waddch(wGrid, ' ');
+			else if (r == GRID_SIZE && c == -1)         // Lower left corner
+				waddch(wGrid, ' ');
+			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
+				waddch(wGrid, ' ');
+			else if (r == -1) {                           // Top chars
+				ch = mirrorfield_get_charup(r + 1, c);
+				if (isspace(ch))
+					waddch(wGrid, ' ');
+				else
+					waddch(wGrid, ch);
+			} else if (c == GRID_SIZE) {                   // Right chars
+				ch = mirrorfield_get_charright(r, c - 1);
+				if (isspace(ch))
+					waddch(wGrid, ' ');
+				else
+					waddch(wGrid, ch);
+			} else if (r == GRID_SIZE) {                  // Bottom chars
+				ch = mirrorfield_get_chardown(r - 1, c);
+				if (isspace(ch))
+					waddch(wGrid, ' ');
+				else
+					waddch(wGrid, ch);
+			} else if (c == -1) {                         // Left chars
+				ch = mirrorfield_get_charleft(r, c + 1);
+				if (isspace(ch))
+					waddch(wGrid, ' ');
+				else
+					waddch(wGrid, ch);
+			} else if (mirrorfield_get_type(r, c) == MIRROR_FORWARD)
+				waddch(wGrid, '/');
+			else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD)
+				waddch(wGrid, '\\');
+			else if (mirrorfield_get_type(r, c) == MIRROR_STRAIGHT)
+				waddch(wGrid, '-');
+			else
+				waddch(wGrid, ' ');
+			
+			waddch(wGrid, ' ');
+
+		}
+	}
+	wrefresh(wGrid);
 }
 
 void main_shutdown(const char *errmsg) {

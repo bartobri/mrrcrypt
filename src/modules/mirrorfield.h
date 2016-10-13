@@ -17,5 +17,6 @@ char mirrorfield_get_charup(int, int);
 char mirrorfield_get_chardown(int, int);
 char mirrorfield_get_charleft(int, int);
 char mirrorfield_get_charright(int, int);
+void mirrorfield_rotate();
 
 #endif

@@ -94,4 +94,38 @@ char mirrorfield_get_charright(int r, int c) {
 	return 0;
 }
 
+void mirrorfield_rotate() {
+	int r, c;
+	char last, next;
+	
+	// Start with 0,0 char
+	last = grid[0][0].charUp;
+
+	// Rotate top chars
+	for (c = 1; c < GRID_SIZE; ++c) {
+		next = grid[0][c].charUp;
+		grid[0][c].charUp = last;
+		last = next;
+	}
+	// Rotate right chars
+	for (r = 0; r < GRID_SIZE; ++r) {
+		next = grid[r][GRID_SIZE - 1].charRight;
+		grid[r][GRID_SIZE - 1].charRight = last;
+		last = next;
+	}
+	// Rotate left chars
+	for (r = 0; r < GRID_SIZE; ++r) {
+		next = grid[r][0].charLeft;
+		grid[r][0].charLeft = last;
+		last = next;
+	}
+	// Rotate bottom chars
+	for (c = 0; c < GRID_SIZE; ++c) {
+		next = grid[GRID_SIZE - 1][c].charDown;
+		grid[GRID_SIZE - 1][c].charDown = last;
+		last = next;
+	}
+	grid[0][0].charUp = last;
+}
+
 

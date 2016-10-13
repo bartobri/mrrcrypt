@@ -260,6 +260,8 @@ int main(int argc, char *argv[]) {
 
 		}
 		putchar(ech);
+		
+		mirrorfield_rotate();
 	}
 
 	return 0;
