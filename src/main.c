@@ -80,36 +80,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Read keyfile and build mirror field
-	for (i = 0; ;++i) {
-		
-		// Get next keyfile char
-		ch = keyfile_next_char();
-
-		// Mirror placement
-		if (i < GRID_SIZE * GRID_SIZE) {
-			if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch))
-				mirrorfield_set_type(i / GRID_SIZE, i % GRID_SIZE, ch);
-			else
-				main_shutdown("Invalid key file. Incorrect size or content.");
-
-			continue;
-		}
-		
-		// Perimeter Characters
-		if (i - (GRID_SIZE * GRID_SIZE) < (int)strlen(SUPPORTED_CHARS)) {
-			if (ch != '\0' && strchr(SUPPORTED_CHARS, ch) && !mirrorfield_has_char(ch))
-				mirrorfield_set_char(ch);
-			else
-				main_shutdown("Invalid key file. Incorrect size or content.");
-
-			continue;
-		}
-		
-		break;
-	}
+	for (i = 0; (ch = keyfile_next_char()) != EOF; ++i)
+		if ((mirrorfield_set(i, ch)) == 0)
+			break;
 
 	// Close mirror file
 	keyfile_close();
+	
+	// TODO validate mirror field here
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {

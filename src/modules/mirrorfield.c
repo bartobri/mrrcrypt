@@ -3,6 +3,8 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
+#include <string.h>
+
 #include "main.h"
 
 // Gridpoint Structure
@@ -34,56 +36,43 @@ void mirrorfield_init(void) {
 	}
 }
 
+int mirrorfield_set(int i, char ch) {
+	
+	// Set Mirror Char
+	if (i < GRID_SIZE * GRID_SIZE) {
+		if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch)) {
+			grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = ch;
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	// Set Perimeter Char
+	if (i - (GRID_SIZE * GRID_SIZE) < (int)strlen(SUPPORTED_CHARS)) {
+		i -= (GRID_SIZE * GRID_SIZE);
+		if (ch != '\0' && strchr(SUPPORTED_CHARS, ch)) {
+			if (i < GRID_SIZE)
+				grid[0][i].charUp = ch;
+			else if (i < GRID_SIZE * 2)
+				grid[i-GRID_SIZE][GRID_SIZE-1].charRight = ch;
+			else if (i < GRID_SIZE * 3)
+				grid[i-(GRID_SIZE*2)][0].charLeft = ch;
+			else if (i < GRID_SIZE * 4)
+				grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown = ch;
+				
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	return 0;
+}
+
 void mirrorfield_set_type(int r, int c, int value) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		grid[r][c].mirrorType = value;
-}
-
-/*
- * Adds character to the next empty perimter slot in the order of
- * top, right, left, down.
- */
-void mirrorfield_set_char(char value) {
-	int i;
-	
-	for (i = 0; i < GRID_SIZE * 4; ++i) {
-		
-		// top
-		if (i < GRID_SIZE) {
-			if (grid[0][i].charUp == 0) {
-				grid[0][i].charUp = value;
-				break;
-			}
-			continue;
-		}
-		
-		// right
-		if (i < GRID_SIZE * 2) {
-			if (grid[i-GRID_SIZE][GRID_SIZE-1].charRight == 0) {
-				grid[i-GRID_SIZE][GRID_SIZE-1].charRight = value;
-				break;
-			}
-			continue;
-		}
-		
-		// left
-		if (i < GRID_SIZE * 3) {
-			if (grid[i-(GRID_SIZE*2)][0].charLeft == 0) {
-				grid[i-(GRID_SIZE*2)][0].charLeft = value;
-				break;
-			}
-			continue;
-		}
-		
-		// top
-		if (i < GRID_SIZE * 4) {
-			if (grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown == 0) {
-				grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown = value;
-				break;
-			}
-			continue;
-		}
-	}
 }
 
 void mirrorfield_set_charup(int r, int c, char value) {
@@ -137,47 +126,6 @@ char mirrorfield_get_charleft(int r, int c) {
 char mirrorfield_get_charright(int r, int c) {
 	if (r < GRID_SIZE && c < GRID_SIZE)
 		return grid[r][c].charRight;
-	
-	return 0;
-}
-
-int mirrorfield_has_char(char ch) {
-	int i;
-
-	for (i = 0; i < GRID_SIZE * 4; ++i) {
-		
-		// top
-		if (i < GRID_SIZE) {
-			if (grid[0][i].charUp == ch)
-				return 1;
-
-			continue;
-		}
-		
-		// right
-		if (i < GRID_SIZE * 2) {
-			if (grid[i-GRID_SIZE][GRID_SIZE-1].charRight == ch)
-				return 1;
-
-			continue;
-		}
-		
-		// left
-		if (i < GRID_SIZE * 3) {
-			if (grid[i-(GRID_SIZE*2)][0].charLeft == ch)
-				return 1;
-
-			continue;
-		}
-		
-		// top
-		if (i < GRID_SIZE * 4) {
-			if (grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown == ch)
-				return 1;
-
-			continue;
-		}
-	}
 	
 	return 0;
 }
