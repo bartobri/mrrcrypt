@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 
 		// Mirror placement
 		if (i < GRID_SIZE * GRID_SIZE) {
-			if (strchr(SUPPORTED_MIRROR_TYPES, ch))
+			if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch))
 				mirrorfield_set_type(i / GRID_SIZE, i % GRID_SIZE, ch);
 			else
 				main_shutdown("Invalid mirror file. Incorrect size or content.");
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 		
 		// Perimeter Characters
 		if (i - (GRID_SIZE * GRID_SIZE) < (int)strlen(SUPPORTED_CHARS)) {
-			if (strchr(SUPPORTED_CHARS, ch) && !mirrorfield_has_char(ch))
+			if (ch != '\0' && strchr(SUPPORTED_CHARS, ch) && !mirrorfield_has_char(ch))
 				mirrorfield_set_char(ch);
 			else
 				main_shutdown("Invalid mirror file. Incorrect size or content.");
@@ -197,7 +197,7 @@ int main(int argc, char *argv[]) {
 		char ech = 0;
 
 		// If character not supported, just print it and continue the loop
-		if (index(SUPPORTED_CHARS, ch) == NULL) {
+		if (ch == '\0' || index(SUPPORTED_CHARS, ch) == NULL) {
 			waddch(wResult, ch);
 			wrefresh(wResult);
 			continue;
