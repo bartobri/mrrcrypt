@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 			if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch))
 				mirrorfield_set_type(i / GRID_SIZE, i % GRID_SIZE, ch);
 			else
-				main_shutdown("Invalid mirror file. Incorrect size or content.");
+				main_shutdown("Invalid key file. Incorrect size or content.");
 
 			continue;
 		}
@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
 			if (ch != '\0' && strchr(SUPPORTED_CHARS, ch) && !mirrorfield_has_char(ch))
 				mirrorfield_set_char(ch);
 			else
-				main_shutdown("Invalid mirror file. Incorrect size or content.");
+				main_shutdown("Invalid key file. Incorrect size or content.");
 
 			continue;
 		}
