@@ -15,10 +15,10 @@
 #include "modules/mirrorfield.h"
 #include "modules/visitedmirrors.h"
 
-#define MIRROR_NONE      0
-#define MIRROR_FORWARD   1
-#define MIRROR_BACKWARD  2
-#define MIRROR_STRAIGHT  3
+#define MIRROR_NONE      32
+#define MIRROR_FORWARD   47
+#define MIRROR_BACKWARD  92
+#define MIRROR_STRAIGHT  45
 #define DIR_UP           1
 #define DIR_DOWN         2
 #define DIR_LEFT         3
@@ -79,66 +79,33 @@ int main(int argc, char *argv[]) {
 			main_shutdown("Key file not found. Use -a to auto-create.");
 	}
 
-	// Populate mirror placement and orientation in mirror field
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
+	// Read keyfile and build mirror field
+	for (i = 0; ;++i) {
+		
+		// Get next keyfile char
+		ch = keyfile_next_char();
 
-			// Get next character
-			ch = keyfile_next_char();
-
-			if (ch == '/')
-				mirrorfield_set_type(r, c, MIRROR_FORWARD);
-			else if (ch == '\\')
-				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
-			else if (ch == ' ')
-				mirrorfield_set_type(r, c, MIRROR_NONE);
+		// Mirror placement
+		if (i < GRID_SIZE * GRID_SIZE) {
+			if (strchr(SUPPORTED_MIRROR_TYPES, ch))
+				mirrorfield_set_type(i / GRID_SIZE, i % GRID_SIZE, ch);
 			else
 				main_shutdown("Invalid mirror file. Incorrect size or content.");
 
-		}
-	}
-	
-	// Populate mirror field perimeter characters
-	for (i = 0; i < (int)strlen(SUPPORTED_CHARS); ++i) {
-
-		// Get next character
-		ch = keyfile_next_char();
-		
-		if (ch == EOF)
-			main_shutdown("Invalid mirror file. Incorrect size or content.");
-		
-		// Make sure character is supported
-		if (index(SUPPORTED_CHARS, ch) == NULL)
-			main_shutdown("Invalid mirror file. Incorrect size or content.");
-			
-		// Make sure character isn't duplicated
-		for (r = 0; r < GRID_SIZE; ++r) {
-			for (c = 0; c < GRID_SIZE; ++c) {
-				
-				if (mirrorfield_get_charup(r, c) == ch)
-					main_shutdown("Invalid mirror file. Incorrect size or content.");
-				
-				if (mirrorfield_get_charleft(r, c) == ch)
-					main_shutdown("Invalid mirror file. Incorrect size or content.");
-				
-				if (mirrorfield_get_charright(r, c) == ch)
-					main_shutdown("Invalid mirror file. Incorrect size or content.");
-				
-				if (mirrorfield_get_chardown(r, c) == ch)
-					main_shutdown("Invalid mirror file. Incorrect size or content.");
-
-			}
+			continue;
 		}
 		
-		// Character is valid, set it
-		if (i < GRID_SIZE)
-			mirrorfield_set_charup(0, i, ch);
-		else if (i < GRID_SIZE * 2)
-			mirrorfield_set_charright(i - GRID_SIZE, GRID_SIZE - 1, ch);
-		else if (i < GRID_SIZE * 3)
-			mirrorfield_set_charleft(i - (GRID_SIZE * 2), 0, ch);
-		else if (i < GRID_SIZE * 4)
-			mirrorfield_set_chardown(GRID_SIZE - 1, i - (GRID_SIZE * 3), ch);
+		// Perimeter Characters
+		if (i - (GRID_SIZE * GRID_SIZE) < (int)strlen(SUPPORTED_CHARS)) {
+			if (strchr(SUPPORTED_CHARS, ch) && !mirrorfield_has_char(ch))
+				mirrorfield_set_char(ch);
+			else
+				main_shutdown("Invalid mirror file. Incorrect size or content.");
+
+			continue;
+		}
+		
+		break;
 	}
 
 	// Close mirror file
@@ -151,7 +118,7 @@ int main(int argc, char *argv[]) {
 		char ech = 0;
 
 		// If character not supported, just print it and continue the loop
-		if (index(SUPPORTED_CHARS, ch) == NULL) {
+		if (strchr(SUPPORTED_CHARS, ch) == NULL) {
 			putchar(ch);
 			continue;
 		}
