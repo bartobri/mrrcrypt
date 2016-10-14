@@ -130,6 +130,74 @@ char mirrorfield_get_charright(int r, int c) {
 	return 0;
 }
 
+int mirrorfield_validate(void) {
+	int i, r, c;
+	char perimeters[GRID_SIZE * 4];
+	
+	// init perimeters array
+	memset(perimeters, 0, GRID_SIZE * 4);
+	
+	// init i
+	i = 0;
+
+	// Traverse grid
+	for (r = 0; r < GRID_SIZE; ++r) {
+		for (c = 0; c < GRID_SIZE; ++c) {
+
+			// Check top chars
+			if (r == 0) {
+				if (!grid[r][c].charUp || !strchr(SUPPORTED_CHARS, grid[r][c].charUp))
+					return 0;
+
+				if (strchr(perimeters, grid[r][c].charUp))
+					return 0;
+				else
+					perimeters[i++] = grid[r][c].charUp;
+			}
+			
+			// Check right chars
+			if (c == GRID_SIZE - 1) {
+				if (!grid[r][c].charRight || !strchr(SUPPORTED_CHARS, grid[r][c].charRight))
+					return 0;
+				
+				if (strchr(perimeters, grid[r][c].charRight))
+					return 0;
+				else
+					perimeters[i++] = grid[r][c].charRight;
+			}
+			
+			// Check left chars
+			if (c == 0) {
+				if (!grid[r][c].charLeft || !strchr(SUPPORTED_CHARS, grid[r][c].charLeft))
+					return 0;
+				
+				if (strchr(perimeters, grid[r][c].charLeft))
+					return 0;
+				else
+					perimeters[i++] = grid[r][c].charLeft;
+			}
+			
+			// Check bottom chars
+			if (r == GRID_SIZE - 1) {
+				if (!grid[r][c].charDown || !strchr(SUPPORTED_CHARS, grid[r][c].charDown))
+					return 0;
+				
+				if (strchr(perimeters, grid[r][c].charDown))
+					return 0;
+				else
+					perimeters[i++] = grid[r][c].charDown;
+			}
+			
+			// Check mirror type
+			if (!grid[r][c].mirrorType || !strchr(SUPPORTED_MIRROR_TYPES, grid[r][c].mirrorType))
+				return 0;
+			
+		}
+	}
+	
+	return 1;
+}
+
 void mirrorfield_rotate() {
 	int r, c;
 	char last, next;
