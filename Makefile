@@ -26,9 +26,6 @@ all: $(EXES)
 
 mrrcrypt: $(OBJ_MODS)/keyfile.o $(OBJ_MODS)/mirrorfield.o $(OBJ)/main.o | $(BIN)
 	$(CC) $(CFLAGS) -o $(BIN)/$@ $^
-	
-mrrcryptv: $(OBJ_MODS)/keyfile.o $(OBJ_MODS)/mirrorfield.o $(OBJ)/mainv.o | $(BIN)
-	$(CC) $(CFLAGS) -o $(BIN)/$@ $^ -lncurses
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CC) $(CFLAGS) -o $@ -c $<
