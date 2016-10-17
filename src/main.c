@@ -9,7 +9,6 @@
 #include <unistd.h> 
 #include <ctype.h>
 
-
 #include "main.h"
 #include "modules/keyfile.h"
 #include "modules/mirrorfield.h"
@@ -20,6 +19,7 @@ void main_shutdown(const char *);
 int main(int argc, char *argv[]) {
 	int o, i, ch;
 	int autoCreate       = 0;
+	int debug            = 0;
 	char *version        = VERSION;
 	char *keyFileName    = DEFAULT_KEY_NAME;
 	
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
-	while ((o = getopt(argc, argv, "ak:v")) != -1) {
+	while ((o = getopt(argc, argv, "ak:vd")) != -1) {
 		switch (o) {
 			case 'a':
 				autoCreate = 1;
@@ -47,6 +47,9 @@ int main(int argc, char *argv[]) {
 			case 'v':
 				printf("mrrcrypt version %s\n", version);
 				return 0;
+			case 'd':
+				debug = 100;
+				break;
 			case '?':
 				if (isprint(optopt))
 					fprintf (stderr, "Unknown option '-%c'.\n", optopt);
@@ -90,7 +93,7 @@ int main(int argc, char *argv[]) {
 		}
 		
 		// Print encrypted/decrypted char
-		putchar(mirrorfield_crypt_char(ch));
+		putchar(mirrorfield_crypt_char(ch, debug));
 		
 		// Rotate perimeter chars
 		mirrorfield_rotate();

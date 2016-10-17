@@ -3,8 +3,12 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the MIT License. See LICENSE for more details.
 
+#include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <time.h>
 #include "main.h"
+#include "modules/mirrorfield.h"
 
 #define MIRROR_NONE      32
 #define MIRROR_FORWARD   47
@@ -148,10 +152,16 @@ int mirrorfield_validate(void) {
 	return 1;
 }
 
-char mirrorfield_crypt_char(char ch) {
+char mirrorfield_crypt_char(char ch, int debug) {
 	int r, c;
 	int ech = 0;
 	int direction = 0;
+	struct timespec ts;
+	
+	if (debug) {
+		ts.tv_sec = debug / 1000;
+		ts.tv_nsec = (debug % 1000) * 1000000;
+	}
 	
 	// Clear visited mirror points
 	for (r = 0; r < GRID_SIZE; ++r)
@@ -179,6 +189,12 @@ char mirrorfield_crypt_char(char ch) {
 
 	// Traverse through the grid
 	while (ech == 0) {
+		
+		// Draw mirror field if debug flag is set
+		if (debug) {
+			mirrorfield_draw(r, c);
+			nanosleep(&ts, NULL);
+		}
 		
 		// If we hit a mirror that we've already been to, un-rotate it.
 		// This is necessary to preserve the ability to reverse the encryption.
@@ -258,7 +274,7 @@ char mirrorfield_crypt_char(char ch) {
 	return ech;
 }
 
-void mirrorfield_rotate() {
+void mirrorfield_rotate(void) {
 	int r, c;
 	char last, next;
 	
@@ -290,6 +306,77 @@ void mirrorfield_rotate() {
 		last = next;
 	}
 	grid[0][0].charUp = last;
+}
+
+void mirrorfield_draw(int pos_r, int pos_c) {
+	int r, c;
+	
+	// Clear screen
+	printf("\033[H\033[J");
+	
+	// Position cursor
+	printf("\033[%d;%dH", 1, 1);
+	
+	for (r = -1; r <= GRID_SIZE; ++r) {
+
+		//wmove(wGrid, r + 3, (termSizeCols - (GRID_SIZE * 2)) / 2);
+
+		for (c = -1; c <= GRID_SIZE; ++c) {
+			
+			// Highlight cell if r/c match
+			if (r == pos_r && c == pos_c) {
+				printf("\x1B[30m"); // foreground black
+				printf("\x1B[47m"); // background white
+			}
+			
+			// Print apropriate mirror field character
+			if (r == -1 && c == -1)                     // Upper left corner
+				printf(" ");
+			else if (r == -1 && c == GRID_SIZE)         // Upper right corner
+				printf(" ");
+			else if (r == GRID_SIZE && c == -1)         // Lower left corner
+				printf(" ");
+			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
+				printf(" ");
+			else if (r == -1) {                           // Top chars
+				if (isspace(grid[r+1][c].charUp))
+					printf(" ");
+				else
+					printf("%c", grid[r+1][c].charUp);
+			} else if (c == GRID_SIZE) {                   // Right chars
+				if (isspace(grid[r][c-1].charRight))
+					printf(" ");
+				else
+					printf("%c", grid[r][c-1].charRight);
+			} else if (r == GRID_SIZE) {                  // Bottom chars
+				if (isspace(grid[r-1][c].charDown))
+					printf(" ");
+				else
+					printf("%c", grid[r-1][c].charDown);
+			} else if (c == -1) {                         // Left chars
+				if (isspace(grid[r][c+1].charLeft))
+					printf(" ");
+				else
+					printf("%c", grid[r][c+1].charLeft);
+			} else if (grid[r][c].mirrorType == MIRROR_FORWARD)
+				printf("/");
+			else if (grid[r][c].mirrorType == MIRROR_BACKWARD)
+				printf("\\");
+			else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
+				printf("-");
+			else
+				printf(" ");
+			
+			// Un-Highlight cell if r/c match
+			if (r == pos_r && c == pos_c)
+				printf("\x1B[0m");
+			
+			//printf(" ");
+
+		}
+		printf("\n");
+	}
+	printf("\n");
 }
 
 
