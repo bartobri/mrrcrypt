@@ -4,7 +4,6 @@
 // under the terms of the MIT License. See LICENSE for more details.
 
 #include <string.h>
-#include "modules/visitedmirrors.h"
 #include "main.h"
 
 #define MIRROR_NONE      32
@@ -23,6 +22,7 @@ struct gridPoint {
 	char charDown;
 	char charLeft;
 	char charRight;
+	int visited;
 };
 
 // Static Variables
@@ -41,6 +41,7 @@ void mirrorfield_init(void) {
 			grid[r][c].charDown = 0;
 			grid[r][c].charLeft = 0;
 			grid[r][c].charRight = 0;
+			grid[r][c].visited = 0;
 		}
 	}
 }
@@ -152,6 +153,11 @@ char mirrorfield_crypt_char(char ch) {
 	int ech = 0;
 	int direction = 0;
 	
+	// Clear visited mirror points
+	for (r = 0; r < GRID_SIZE; ++r)
+		for (c = 0; c < GRID_SIZE; ++c)
+			grid[r][c].visited = 0;
+	
 	// Determining starting row/col and starting direction
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
@@ -170,9 +176,6 @@ char mirrorfield_crypt_char(char ch) {
 		if (direction)
 			break;
 	}
-	
-	// Clear visited points
-	visitedmirrors_clear();
 
 	// Traverse through the grid
 	while (ech == 0) {
@@ -181,7 +184,7 @@ char mirrorfield_crypt_char(char ch) {
 		// This is necessary to preserve the ability to reverse the encryption.
 		// We can not rotate a mirror more than once per character.
 		if (grid[r][c].mirrorType != MIRROR_NONE) {
-			if (visitedmirrors_exists(r, c)) {
+			if (grid[r][c].visited) {
 				if (grid[r][c].mirrorType == MIRROR_FORWARD) {
 					grid[r][c].mirrorType = MIRROR_BACKWARD;
 				} else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
@@ -190,7 +193,7 @@ char mirrorfield_crypt_char(char ch) {
 					grid[r][c].mirrorType = MIRROR_FORWARD;
 				}
 			} else {
-				visitedmirrors_add(r, c);
+				grid[r][c].visited = 1;
 			}
 		}
 
