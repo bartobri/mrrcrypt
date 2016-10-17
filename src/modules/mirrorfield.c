@@ -311,12 +311,15 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 	int r, c;
 	static int resetCursor = 0;
 	
-	if (resetCursor) {
-		printf("\033[%dA", GRID_SIZE + 3);
-		printf("\033[%dD", 1);
-	} else {
-		resetCursor = 1;
-	}
+	// Save cursor position if we need to reset it
+	// Otherwise, clear screen.
+	if (resetCursor)
+		printf("\033[s");
+	else
+		printf("\033[2J");
+
+	// Set cursor position to 0,0
+	printf("\033[H");
 	
 	for (r = -1; r <= GRID_SIZE; ++r) {
 
@@ -378,6 +381,12 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 		printf("\n");
 	}
 	printf("\n");
+	
+	// Restore cursor position if we need to
+	if (resetCursor)
+		printf("\033[u");
+	else
+		resetCursor = 1;
 }
 
 
