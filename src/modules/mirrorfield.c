@@ -192,6 +192,7 @@ char mirrorfield_crypt_char(char ch, int debug) {
 		// Draw mirror field if debug flag is set
 		if (debug) {
 			mirrorfield_draw(r, c);
+			fflush(stdout);
 			nanosleep(&ts, NULL);
 		}
 		
