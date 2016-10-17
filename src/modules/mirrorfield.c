@@ -156,12 +156,11 @@ char mirrorfield_crypt_char(char ch, int debug) {
 	int r, c;
 	int ech = 0;
 	int direction = 0;
-	struct timespec ts;
 	
-	if (debug) {
-		ts.tv_sec = debug / 1000;
-		ts.tv_nsec = (debug % 1000) * 1000000;
-	}
+	// For the debug flag
+	struct timespec ts;
+	ts.tv_sec = debug / 1000;
+	ts.tv_nsec = (debug % 1000) * 1000000;
 	
 	// Clear visited mirror points
 	for (r = 0; r < GRID_SIZE; ++r)
@@ -310,12 +309,14 @@ void mirrorfield_rotate(void) {
 
 void mirrorfield_draw(int pos_r, int pos_c) {
 	int r, c;
+	static int resetCursor = 0;
 	
-	// Clear screen
-	printf("\033[H\033[J");
-	
-	// Position cursor
-	printf("\033[%d;%dH", 1, 1);
+	if (resetCursor) {
+		printf("\033[%dA", GRID_SIZE + 3);
+		printf("\033[%dD", 1);
+	} else {
+		resetCursor = 1;
+	}
 	
 	for (r = -1; r <= GRID_SIZE; ++r) {
 
