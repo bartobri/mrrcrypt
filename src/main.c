@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h> 
 #include <ctype.h>
-#include <stdbool.h>
+
 
 #include "main.h"
 #include "modules/keyfile.h"
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 				keyFileName = optarg;
 				break;
 			case 'v':
-				printf("mirrorcrypt version %s\n", version);
+				printf("mrrcrypt version %s\n", version);
 				return 0;
 			case '?':
 				if (isprint(optopt))
