@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 	if (strcmp(DEFAULT_KEY_NAME, keyFileName) == 0)
 		autoCreate = 1;
 	
-	// Open mirror file
+	// Open key file
 	if (keyfile_open(keyFileName, autoCreate) == 0) {
 		if (autoCreate)
 			main_shutdown("Could not auto-create key file. Make sure $HOME is set to a writable directory.");
@@ -68,12 +68,12 @@ int main(int argc, char *argv[]) {
 			main_shutdown("Key file not found. Use -a to auto-create.");
 	}
 
-	// Read keyfile and build mirror field
+	// Read key file and build mirror field
 	for (i = 0; (ch = keyfile_next_char()) != EOF; ++i)
 		if ((mirrorfield_set(i, ch)) == 0)
 			break;
 
-	// Close mirror file
+	// Close key file
 	keyfile_close();
 	
 	// Validate mirror field contents
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 		// Print encrypted/decrypted char
 		putchar(mirrorfield_crypt_char(ch));
 		
-		// Rotate mirrors
+		// Rotate perimeter chars
 		mirrorfield_rotate();
 	}
 
