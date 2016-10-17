@@ -4,8 +4,17 @@
 // under the terms of the MIT License. See LICENSE for more details.
 
 #include <string.h>
-
+#include "modules/visitedmirrors.h"
 #include "main.h"
+
+#define MIRROR_NONE      32
+#define MIRROR_FORWARD   47
+#define MIRROR_BACKWARD  92
+#define MIRROR_STRAIGHT  45
+#define DIR_UP           1
+#define DIR_DOWN         2
+#define DIR_LEFT         3
+#define DIR_RIGHT        4
 
 // Gridpoint Structure
 struct gridPoint {
@@ -66,66 +75,6 @@ int mirrorfield_set(int i, char ch) {
 			return 0;
 		}
 	}
-	
-	return 0;
-}
-
-void mirrorfield_set_type(int r, int c, int value) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		grid[r][c].mirrorType = value;
-}
-
-void mirrorfield_set_charup(int r, int c, char value) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		grid[r][c].charUp = value;
-}
-
-void mirrorfield_set_chardown(int r, int c, char value) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		grid[r][c].charDown = value;
-}
-
-void mirrorfield_set_charleft(int r, int c, char value) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		grid[r][c].charLeft = value;
-}
-
-void mirrorfield_set_charright(int r, int c, char value) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		grid[r][c].charRight = value;
-}
-
-int mirrorfield_get_type(int r, int c) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		return grid[r][c].mirrorType;
-	
-	return 0;
-}
-
-char mirrorfield_get_charup(int r, int c) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		return grid[r][c].charUp;
-	
-	return 0;
-}
-
-char mirrorfield_get_chardown(int r, int c) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		return grid[r][c].charDown;
-	
-	return 0;
-}
-
-char mirrorfield_get_charleft(int r, int c) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		return grid[r][c].charLeft;
-	
-	return 0;
-}
-
-char mirrorfield_get_charright(int r, int c) {
-	if (r < GRID_SIZE && c < GRID_SIZE)
-		return grid[r][c].charRight;
 	
 	return 0;
 }
@@ -196,6 +145,114 @@ int mirrorfield_validate(void) {
 	}
 	
 	return 1;
+}
+
+char mirrorfield_crypt_char(char ch) {
+	int r, c;
+	int ech = 0;
+	int direction = 0;
+	
+	// Determining starting row/col and starting direction
+	for (r = 0; r < GRID_SIZE; ++r) {
+		for (c = 0; c < GRID_SIZE; ++c) {
+			if (grid[r][c].charUp == ch)
+				direction = DIR_DOWN;
+			else if (grid[r][c].charLeft == ch)
+				direction = DIR_RIGHT;
+			else if (grid[r][c].charRight == ch)
+				direction = DIR_LEFT;
+			else if (grid[r][c].charDown == ch)
+				direction = DIR_UP;
+			
+			if (direction)
+				break;
+		}
+		if (direction)
+			break;
+	}
+	
+	// Clear visited points
+	visitedmirrors_clear();
+
+	// Traverse through the grid
+	while (ech == 0) {
+		
+		// If we hit a mirror that we've already been to, un-rotate it.
+		// This is necessary to preserve the ability to reverse the encryption.
+		// We can not rotate a mirror more than once per character.
+		if (grid[r][c].mirrorType != MIRROR_NONE) {
+			if (visitedmirrors_exists(r, c)) {
+				if (grid[r][c].mirrorType == MIRROR_FORWARD) {
+					grid[r][c].mirrorType = MIRROR_BACKWARD;
+				} else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
+					grid[r][c].mirrorType = MIRROR_STRAIGHT;
+				} else if (grid[r][c].mirrorType == MIRROR_STRAIGHT) {
+					grid[r][c].mirrorType = MIRROR_FORWARD;
+				}
+			} else {
+				visitedmirrors_add(r, c);
+			}
+		}
+
+		// Forward mirror / Change direction and rotate
+		if (grid[r][c].mirrorType == MIRROR_FORWARD) {
+			if (direction == DIR_DOWN)
+				direction = DIR_LEFT;
+			else if (direction == DIR_LEFT)
+				direction = DIR_DOWN;
+			else if (direction == DIR_RIGHT)
+				direction = DIR_UP;
+			else if (direction == DIR_UP)
+				direction = DIR_RIGHT;
+			
+			// Rotate mirror
+			grid[r][c].mirrorType = MIRROR_STRAIGHT;
+		}
+		
+		// Straight mirror - Keep same direction, just rotate
+		else if (grid[r][c].mirrorType == MIRROR_STRAIGHT) {
+
+			// Rotate mirror
+			grid[r][c].mirrorType = MIRROR_BACKWARD;
+		}
+
+		// Backward mirror \ Change direction and rotate
+		else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
+			if (direction == DIR_DOWN)
+				direction = DIR_RIGHT;
+			else if (direction == DIR_LEFT)
+				direction = DIR_UP;
+			else if (direction == DIR_RIGHT)
+				direction = DIR_DOWN;
+			else if (direction == DIR_UP)
+				direction = DIR_LEFT;
+			
+			// Rotate mirror
+			grid[r][c].mirrorType = MIRROR_FORWARD;
+		}
+
+		// Advance position
+		if (direction == DIR_DOWN)
+			++r;
+		else if (direction == DIR_LEFT)
+			--c;
+		else if (direction == DIR_RIGHT)
+			++c;
+		else if (direction == DIR_UP)
+			--r;
+
+		// Check if our position is out of grid bounds. That means we found our char.
+		if (r < 0)
+			ech = grid[0][c].charUp;
+		else if (r >= GRID_SIZE)
+			ech = grid[GRID_SIZE - 1][c].charDown;
+		else if (c < 0)
+			ech = grid[r][0].charLeft;
+		else if (c >= GRID_SIZE)
+			ech = grid[r][GRID_SIZE - 1].charRight;
+	}
+	
+	return ech;
 }
 
 void mirrorfield_rotate() {

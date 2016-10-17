@@ -13,22 +13,12 @@
 #include "main.h"
 #include "modules/keyfile.h"
 #include "modules/mirrorfield.h"
-#include "modules/visitedmirrors.h"
-
-#define MIRROR_NONE      32
-#define MIRROR_FORWARD   47
-#define MIRROR_BACKWARD  92
-#define MIRROR_STRAIGHT  45
-#define DIR_UP           1
-#define DIR_DOWN         2
-#define DIR_LEFT         3
-#define DIR_RIGHT        4
 
 // Function prototypes
 void main_shutdown(const char *);
 
 int main(int argc, char *argv[]) {
-	int o, r, c, ch, i;
+	int o, i, ch;
 	int autoCreate       = 0;
 	char *version        = VERSION;
 	char *keyFileName    = DEFAULT_KEY_NAME;
@@ -36,7 +26,6 @@ int main(int argc, char *argv[]) {
 	// Run module init functions
 	keyfile_init();
 	mirrorfield_init();
-	visitedmirrors_init();
 	
 	// Validate supported character count is square
 	if (strlen(SUPPORTED_CHARS) % 4 != 0)
@@ -94,116 +83,14 @@ int main(int argc, char *argv[]) {
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
 
-		int direction = 0;
-		char ech = 0;
-
 		// If character not supported, just print it and continue the loop
 		if (ch == '\0' || strchr(SUPPORTED_CHARS, ch) == NULL) {
 			putchar(ch);
 			continue;
 		}
-
-		// Determining starting row/col and starting direction
-		for (r = 0; r < GRID_SIZE; ++r) {
-			for (c = 0; c < GRID_SIZE; ++c) {
-				if (mirrorfield_get_charup(r, c) == ch)
-					direction = DIR_DOWN;
-				else if (mirrorfield_get_charleft(r, c) == ch)
-					direction = DIR_RIGHT;
-				else if (mirrorfield_get_charright(r, c) == ch)
-					direction = DIR_LEFT;
-				else if (mirrorfield_get_chardown(r, c) == ch)
-					direction = DIR_UP;
-				
-				if (direction)
-					break;
-			}
-			if (direction)
-				break;
-		}
 		
-		// Clear visited points
-		visitedmirrors_clear();
-
-		// Traverse through the grid
-		while (ech == 0) {
-			
-			// If we hit a mirror that we've already been to, un-rotate it.
-			// This is necessary to preserve the ability to reverse the encryption.
-			// We can not rotate a mirror more than once per character.
-			if (mirrorfield_get_type(r, c) != MIRROR_NONE) {
-				if (visitedmirrors_exists(r, c)) {
-					if (mirrorfield_get_type(r, c) == MIRROR_FORWARD) {
-						mirrorfield_set_type(r, c, MIRROR_BACKWARD);
-					} else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD) {
-						mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
-					} else if (mirrorfield_get_type(r, c) == MIRROR_STRAIGHT) {
-						mirrorfield_set_type(r, c, MIRROR_FORWARD);
-					}
-				} else {
-					visitedmirrors_add(r, c);
-				}
-			}
-
-			// Forward mirror / Change direction and rotate
-			if (mirrorfield_get_type(r, c) == MIRROR_FORWARD) {
-				if (direction == DIR_DOWN)
-					direction = DIR_LEFT;
-				else if (direction == DIR_LEFT)
-					direction = DIR_DOWN;
-				else if (direction == DIR_RIGHT)
-					direction = DIR_UP;
-				else if (direction == DIR_UP)
-					direction = DIR_RIGHT;
-				
-				// Spin mirror
-				mirrorfield_set_type(r, c, MIRROR_STRAIGHT);
-			}
-			
-			// Straight mirror - Keep same direction, just rotate
-			else if (mirrorfield_get_type(r, c) == MIRROR_STRAIGHT) {
-
-				// Spin mirror
-				mirrorfield_set_type(r, c, MIRROR_BACKWARD);
-			}
-
-			// Backward mirror \ Change direction and rotate
-			else if (mirrorfield_get_type(r, c) == MIRROR_BACKWARD) {
-				if (direction == DIR_DOWN)
-					direction = DIR_RIGHT;
-				else if (direction == DIR_LEFT)
-					direction = DIR_UP;
-				else if (direction == DIR_RIGHT)
-					direction = DIR_DOWN;
-				else if (direction == DIR_UP)
-					direction = DIR_LEFT;
-				
-				// Spin mirror
-				mirrorfield_set_type(r, c, MIRROR_FORWARD);
-			}
-
-			// Advance position
-			if (direction == DIR_DOWN)
-				++r;
-			else if (direction == DIR_LEFT)
-				--c;
-			else if (direction == DIR_RIGHT)
-				++c;
-			else if (direction == DIR_UP)
-				--r;
-
-			// Check if our position is out of grid bounds. That means we found our char.
-			if (r < 0)
-				ech = mirrorfield_get_charup(0, c);
-			else if (r >= GRID_SIZE)
-				ech = mirrorfield_get_chardown(GRID_SIZE - 1, c);
-			else if (c < 0)
-				ech = mirrorfield_get_charleft(r, 0);
-			else if (c >= GRID_SIZE)
-				ech = mirrorfield_get_charright(r, GRID_SIZE - 1);
-
-		}
-		putchar(ech);
+		// Print encrypted/decrypted char
+		putchar(mirrorfield_crypt_char(ch));
 		
 		// Rotate mirrors
 		mirrorfield_rotate();

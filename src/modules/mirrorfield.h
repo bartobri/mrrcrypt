@@ -8,17 +8,8 @@
 
 void mirrorfield_init(void);
 int mirrorfield_set(int, char);
-void mirrorfield_set_type(int, int, int);
-void mirrorfield_set_charup(int, int, char);
-void mirrorfield_set_chardown(int, int, char);
-void mirrorfield_set_charleft(int, int, char);
-void mirrorfield_set_charright(int, int, char);
-int  mirrorfield_get_type(int, int);
-char mirrorfield_get_charup(int, int);
-char mirrorfield_get_chardown(int, int);
-char mirrorfield_get_charleft(int, int);
-char mirrorfield_get_charright(int, int);
 int mirrorfield_validate(void);
+char mirrorfield_crypt_char(char);
 void mirrorfield_rotate(void);
 
 #endif

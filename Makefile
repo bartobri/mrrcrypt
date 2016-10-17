@@ -20,7 +20,7 @@ CFLAGS ?= -Wextra -Wall -iquote$(SRC)
 
 .PHONY: all install uninstall clean
 
-EXES = mrrcrypt mrrcryptv
+EXES = mrrcrypt
 
 all: $(EXES)
 
