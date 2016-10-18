@@ -11,6 +11,7 @@
 
 #include "main.h"
 #include "modules/keyfile.h"
+#include "modules/base64.h"
 
 #define MIRROR_DENSITY   6
 
@@ -89,13 +90,13 @@ int keyfile_create(char *keyFileFullPathName) {
 		for (c = 0; c < width; ++c) {
 			switch (rand() % MIRROR_DENSITY) {
 				case 1:
-					fprintf(config, "/");
+					fprintf(config, base64_encode_char('/', B64_NOFORCE));
 					break;
 				case 2:
-					fprintf(config, "\\");
+					fprintf(config, base64_encode_char('\\', B64_NOFORCE));
 					break;
 				default:
-					fprintf(config, " ");
+					fprintf(config, base64_encode_char(' ', B64_NOFORCE));
 					break;
 			}
 		}
@@ -104,7 +105,12 @@ int keyfile_create(char *keyFileFullPathName) {
 	// Shuffle and write character data to file
 	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
 	strcpy(shuffledChars, SUPPORTED_CHARS);
-	fprintf(config, "%s", keyfile_shuffle_string(shuffledChars, 1000));
+	keyfile_shuffle_string(shuffledChars, 1000);
+	for (i = 0; i < (int)strlen(shuffledChars); ++i)
+		if (i + 1 < (int)strlen(shuffledChars))
+			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_NOFORCE));
+		else
+			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_FORCE));
 	free(shuffledChars);
 	
 	// Close mirror file
