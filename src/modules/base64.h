@@ -6,6 +6,10 @@
 #ifndef BASE64_H
 #define BASE64_H 1
 
+#define B64_NOFORCE 0
+#define B64_FORCE   1
+
+char *base64_encode_char(char, int);
 char *base64_encode(char, char, char, int);
 
 #endif
