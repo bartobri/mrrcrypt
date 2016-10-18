@@ -106,11 +106,15 @@ int keyfile_create(char *keyFileFullPathName) {
 	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
 	strcpy(shuffledChars, SUPPORTED_CHARS);
 	keyfile_shuffle_string(shuffledChars, 1000);
+	
+	// Encode shuffled chars to base64 and write to key file
 	for (i = 0; i < (int)strlen(shuffledChars); ++i)
 		if (i + 1 < (int)strlen(shuffledChars))
 			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_NOFORCE));
 		else
 			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_FORCE));
+	
+	// Free allocated memory
 	free(shuffledChars);
 	
 	// Close mirror file
