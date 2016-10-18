@@ -12,6 +12,7 @@
 #include "main.h"
 #include "modules/keyfile.h"
 #include "modules/mirrorfield.h"
+#include "modules/base64.h"
 
 // Function prototypes
 void main_shutdown(const char *);
