@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include "modules/base64.h"
 
-#define INPUT_COUNT  3
-#define OUTPUT_COUNT 4
+#define ENCODE_INPUT_COUNT  3
+#define ENCODE_OUTPUT_COUNT 4
 
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -22,21 +22,21 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 
 char *base64_encode_char(char c, int force) {
 	static char *out = NULL;
-	static char in[INPUT_COUNT];
+	static char in[ENCODE_INPUT_COUNT];
 	static int i = 0;
 	
 	// Allocate memory if not done yet
 	if (out == NULL)
-		out = malloc(OUTPUT_COUNT + 1);
+		out = malloc(ENCODE_OUTPUT_COUNT + 1);
 	
 	// Zeroing output
-	memset(out, 0, OUTPUT_COUNT + 1);
+	memset(out, 0, ENCODE_OUTPUT_COUNT + 1);
 	
 	// Assign input char to next array
 	in[i++] = c;
 	
 	// Get encoded output if we have 3 chars, or if force flag is used
-	if (i == INPUT_COUNT || force) {
+	if (i == ENCODE_INPUT_COUNT || force) {
 		out = base64_encode(in[0], in[1], in[2], i);
 		i = 0;
 	}
@@ -47,10 +47,10 @@ char *base64_encode_char(char c, int force) {
 char *base64_encode(char ch1, char ch2, char ch3, int l) {
 	uint32_t octet_1, octet_2, octet_3;
 	uint32_t combined = 0;
-	static char out[OUTPUT_COUNT + 1];
+	static char out[ENCODE_OUTPUT_COUNT + 1];
 	
 	// Zeroing output
-	memset(out, 0, OUTPUT_COUNT + 1);
+	memset(out, 0, ENCODE_OUTPUT_COUNT + 1);
 	
 	// Assigning octets
 	octet_1 = l >= 1 ? (unsigned char)ch1 : 0;
@@ -74,6 +74,45 @@ char *base64_encode(char ch1, char ch2, char ch3, int l) {
 	} else if (l == 2) {
 		out[3] = '=';
 	}
+	
+	return out;
+}
+
+char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
+	int i, f;
+	uint32_t octet_1, octet_2, octet_3, octet_4;
+	uint32_t combined = 0;
+	static char out[4];
+	
+	// Zeroing output
+	memset(out, 0, 4);
+	
+	// Verify input, return empty string if invalid
+	for (f = 0, i = 0; i < 64; ++i) {
+		if (ch1 == encoding_table[i])
+			++f;
+		if (ch2 == encoding_table[i])
+			++f;
+		if (ch3 == encoding_table[i] || ch3 == '=')
+			++f;
+		if (ch4 == encoding_table[i] || ch4 == '=')
+			++f;
+	}
+	if (f < 4)
+		return out;
+	
+	// Assigning octets
+	octet_1 = (unsigned char)ch1;
+	octet_2 = (unsigned char)ch2;
+	octet_3 = (unsigned char)ch3;
+	octet_4 = (unsigned char)ch4;
+	
+	// Combine octets into a single 32 bit int
+	combined = (octet_1 << 18) + (octet_2 << 12) + (octet_3 << 6) + octet_4;
+	
+	out[0] = (combined >> 16) & 0x3F;
+	out[1] = (combined >> 8) & 0x3F;
+	out[2] = (combined >> 0) & 0x3F;
 	
 	return out;
 }
