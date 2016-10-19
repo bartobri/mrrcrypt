@@ -105,7 +105,7 @@ char *base64_decode_char(char c) {
 }
 
 char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
-	int i, f;
+	int i, f =0;
 	uint32_t octet_1, octet_2, octet_3, octet_4;
 	uint32_t combined = 0;
 	static char out[DECODE_OUTPUT_COUNT + 1];
@@ -113,17 +113,33 @@ char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
 	// Zeroing output
 	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
 	
-	// Verify input, return empty string if invalid
-	for (f = 0, i = 0; i < 64; ++i) {
-		if (ch1 == encoding_table[i])
+	// Change char to decimal index in encoding_table
+	for (i = 0; i < 64; ++i)
+		if (ch1 == encoding_table[i]) {
+			ch1 = i;
 			++f;
-		if (ch2 == encoding_table[i])
+			break;
+		}
+	for (i = 0; i < 64; ++i)
+		if (ch2 == encoding_table[i]) {
+			ch2 = i;
 			++f;
-		if (ch3 == encoding_table[i] || ch3 == '=')
+			break;
+		}
+	for (i = 0; i < 64; ++i)
+		if (ch3 == encoding_table[i]) {
+			ch3 = i;
 			++f;
-		if (ch4 == encoding_table[i] || ch4 == '=')
+			break;
+		}
+	for (i = 0; i < 64; ++i)
+		if (ch4 == encoding_table[i]) {
+			ch4 = i;
 			++f;
-	}
+			break;
+		}
+	
+	// Verify all input chars were found, return empty string if not
 	if (f < 4)
 		return out;
 	
@@ -136,9 +152,9 @@ char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
 	// Combine octets into a single 32 bit int
 	combined = (octet_1 << 18) + (octet_2 << 12) + (octet_3 << 6) + octet_4;
 	
-	out[0] = (combined >> 16) & 0x3F;
-	out[1] = (combined >> 8) & 0x3F;
-	out[2] = (combined >> 0) & 0x3F;
+	out[0] = (combined >> 16) & 0xFF;
+	out[1] = (combined >> 8) & 0xFF;
+	out[2] = (combined >> 0) & 0xFF;
 	
 	return out;
 }

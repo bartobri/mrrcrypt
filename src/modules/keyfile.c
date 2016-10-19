@@ -147,10 +147,19 @@ char *keyfile_shuffle_string(char *str, int p) {
 }
 
 int keyfile_next_char(void) {
-	if (keyFile != NULL)
-		return fgetc(keyFile);
+	char ch;
+	static char *out = "";
 	
-	return -2;
+	while (*out == '\0')
+		if ((ch = fgetc(keyFile)) == EOF)
+			break;
+		else
+			out = base64_decode_char(ch);
+	
+	if (*out == '\0')
+		return EOF;
+	else
+		return *(out++);
 }
 
 void keyfile_close(void) {
