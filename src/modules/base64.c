@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include "modules/base64.h"
 
-#define ENCODE_INPUT_COUNT  3
-#define ENCODE_OUTPUT_COUNT 4
+#define ENCODE_INPUT_COUNT    3
+#define ENCODE_OUTPUT_COUNT   4
+#define DECODE_INPUT_COUNT    ENCODE_OUTPUT_COUNT
+#define DECODE_OUTPUT_COUNT   ENCODE_INPUT_COUNT
 
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -78,14 +80,38 @@ char *base64_encode(char ch1, char ch2, char ch3, int l) {
 	return out;
 }
 
+char *base64_decode_char(char c) {
+	static char *out = NULL;
+	static char in[DECODE_INPUT_COUNT];
+	static int i = 0;
+	
+	// Allocate memory if not done yet
+	if (out == NULL)
+		out = malloc(DECODE_OUTPUT_COUNT + 1);
+	
+	// Zeroing output
+	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
+	
+	// Assign input char to next array
+	in[i++] = c;
+	
+	// Get encoded output if we have 3 chars, or if force flag is used
+	if (i == DECODE_INPUT_COUNT) {
+		out = base64_decode(in[0], in[1], in[2], in[3]);
+		i = 0;
+	}
+	
+	return out;
+}
+
 char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
 	int i, f;
 	uint32_t octet_1, octet_2, octet_3, octet_4;
 	uint32_t combined = 0;
-	static char out[4];
+	static char out[DECODE_OUTPUT_COUNT + 1];
 	
 	// Zeroing output
-	memset(out, 0, 4);
+	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
 	
 	// Verify input, return empty string if invalid
 	for (f = 0, i = 0; i < 64; ++i) {
