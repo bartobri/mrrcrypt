@@ -9,8 +9,8 @@
 #define B64_NOFORCE 0
 #define B64_FORCE   1
 
-char *base64_encode_char(char, int);
-char *base64_encode(char, char, char, int);
+char *base64_encode_char(unsigned char, int);
+char *base64_encode(unsigned char, unsigned char, unsigned char, int);
 unsigned char *base64_decode_char(char);
 unsigned char *base64_decode(char, char, char, char);
 

@@ -22,10 +22,10 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'w', 'x', 'y', 'z', '0', '1', '2', '3',
                                 '4', '5', '6', '7', '8', '9', '+', '/'};
 
-char *base64_encode_char(char c, int force) {
-	static char *out = NULL;
-	static char in[ENCODE_INPUT_COUNT];
+char *base64_encode_char(unsigned char c, int force) {
 	static int i = 0;
+	static unsigned char in[ENCODE_INPUT_COUNT];
+	static char *out = NULL;
 	
 	// Allocate memory if not done yet
 	if (out == NULL)
@@ -46,7 +46,7 @@ char *base64_encode_char(char c, int force) {
 	return out;
 }
 
-char *base64_encode(char ch1, char ch2, char ch3, int l) {
+char *base64_encode(unsigned char ch1, unsigned char ch2, unsigned char ch3, int l) {
 	uint32_t octet_1, octet_2, octet_3;
 	uint32_t combined = 0;
 	static char out[ENCODE_OUTPUT_COUNT + 1];
@@ -55,9 +55,9 @@ char *base64_encode(char ch1, char ch2, char ch3, int l) {
 	memset(out, 0, ENCODE_OUTPUT_COUNT + 1);
 	
 	// Assigning octets
-	octet_1 = l >= 1 ? (unsigned char)ch1 : 0;
-	octet_2 = l >= 2 ? (unsigned char)ch2 : 0;
-	octet_3 = l >= 3 ? (unsigned char)ch3 : 0;
+	octet_1 = l >= 1 ? ch1 : 0;
+	octet_2 = l >= 2 ? ch2 : 0;
+	octet_3 = l >= 3 ? ch3 : 0;
 
 	// Combine octets into a single 32 bit int
 	combined = (octet_1 << 16) + (octet_2 << 8) + octet_3;
