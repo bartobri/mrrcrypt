@@ -64,6 +64,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	struct stat sb;
 	FILE *config;
 	unsigned char perimeterChars[GRID_SIZE * 4];
+	base64 contents = { .index = 0 };
 
 	// Check subdirs and create them if needed
 	if (strchr(keyFileFullPathName, '/') != NULL) {
@@ -90,14 +91,21 @@ int keyfile_create(char *keyFileFullPathName) {
 		for (c = 0; c < width; ++c) {
 			switch (rand() % MIRROR_DENSITY) {
 				case 1:
-					fprintf(config, base64_encode_char('/', B64_NOFORCE));
+					contents.decoded[contents.index++] = '/';
 					break;
 				case 2:
-					fprintf(config, base64_encode_char('\\', B64_NOFORCE));
+					contents.decoded[contents.index++] = '\\';
 					break;
 				default:
-					fprintf(config, base64_encode_char(' ', B64_NOFORCE));
+					contents.decoded[contents.index++] = ' ';
 					break;
+			}
+
+			// If we have max input for the base64 encoder, encode it
+			if (contents.index == BASE64_DECODED_COUNT) {
+				contents = base64_encode(contents);
+				fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
+				contents.index = 0;
 			}
 		}
 	}
@@ -110,11 +118,18 @@ int keyfile_create(char *keyFileFullPathName) {
 	keyfile_shuffle_string(perimeterChars, 2000);
 	
 	// Encode perimeter chars to base64 and write to key file
-	for (i = 0; i < GRID_SIZE * 4; ++i)
-		if (i + 1 < GRID_SIZE * 4)
-			fprintf(config, "%s", base64_encode_char(perimeterChars[i], B64_NOFORCE));
-		else
-			fprintf(config, "%s", base64_encode_char(perimeterChars[i], B64_FORCE));
+	for (i = 0; i < GRID_SIZE * 4; ++i) {
+		contents.decoded[contents.index++] = perimeterChars[i];
+		if (contents.index == BASE64_DECODED_COUNT) {
+			contents = base64_encode(contents);
+			fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
+			contents.index = 0;
+		}
+	}
+	if (contents.index > 0) {
+		contents = base64_encode(contents);
+		fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
+	}
 	
 	// Close mirror file
 	fclose(config);

@@ -8,10 +8,8 @@
 #include <stdlib.h>
 #include "modules/base64.h"
 
-#define ENCODE_INPUT_COUNT    3
-#define ENCODE_OUTPUT_COUNT   4
-#define DECODE_INPUT_COUNT    ENCODE_OUTPUT_COUNT
-#define DECODE_OUTPUT_COUNT   ENCODE_INPUT_COUNT
+#define DECODE_INPUT_COUNT    4
+#define DECODE_OUTPUT_COUNT   3
 
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -22,62 +20,33 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'w', 'x', 'y', 'z', '0', '1', '2', '3',
                                 '4', '5', '6', '7', '8', '9', '+', '/'};
 
-char *base64_encode_char(unsigned char c, int force) {
-	static int i = 0;
-	static unsigned char in[ENCODE_INPUT_COUNT];
-	static char *out = NULL;
-	
-	// Allocate memory if not done yet
-	if (out == NULL)
-		out = malloc(ENCODE_OUTPUT_COUNT + 1);
-	
-	// Zeroing output
-	memset(out, 0, ENCODE_OUTPUT_COUNT + 1);
-	
-	// Assign input char to next array
-	in[i++] = c;
-	
-	// Get encoded output if we have 3 chars, or if force flag is used
-	if (i == ENCODE_INPUT_COUNT || force) {
-		out = base64_encode(in[0], in[1], in[2], i);
-		i = 0;
-	}
-	
-	return out;
-}
-
-char *base64_encode(unsigned char ch1, unsigned char ch2, unsigned char ch3, int l) {
+base64 base64_encode(base64 data) {
 	uint32_t octet_1, octet_2, octet_3;
 	uint32_t combined = 0;
-	static char out[ENCODE_OUTPUT_COUNT + 1];
-	
-	// Zeroing output
-	memset(out, 0, ENCODE_OUTPUT_COUNT + 1);
 	
 	// Assigning octets
-	octet_1 = l >= 1 ? ch1 : 0;
-	octet_2 = l >= 2 ? ch2 : 0;
-	octet_3 = l >= 3 ? ch3 : 0;
+	octet_1 = data.index >= 1 ? data.decoded[0] : 0;
+	octet_2 = data.index >= 2 ? data.decoded[1] : 0;
+	octet_3 = data.index >= 3 ? data.decoded[2] : 0;
 
 	// Combine octets into a single 32 bit int
 	combined = (octet_1 << 16) + (octet_2 << 8) + octet_3;
 	
-	// 00000000 01010101 01010101 01010101
-	
-	out[0] = encoding_table[(combined >> 18) & 0x3F];
-	out[1] = encoding_table[(combined >> 12) & 0x3F];
-	out[2] = encoding_table[(combined >> 6) & 0x3F];
-	out[3] = encoding_table[(combined >> 0) & 0x3F];
+	// Generate encoded chars
+	data.encoded[0] = encoding_table[(combined >> 18) & 0x3F];
+	data.encoded[1] = encoding_table[(combined >> 12) & 0x3F];
+	data.encoded[2] = encoding_table[(combined >> 6) & 0x3F];
+	data.encoded[3] = encoding_table[(combined >> 0) & 0x3F];
 	
 	// Setting trailing chars '=' in accordance with base64 encoding standard
-	if (l == 1) {
-		out[2] = '=';
-		out[3] = '=';
-	} else if (l == 2) {
-		out[3] = '=';
+	if (data.index == 1) {
+		data.encoded[2] = '=';
+		data.encoded[3] = '=';
+	} else if (data.index == 2) {
+		data.encoded[3] = '=';
 	}
 	
-	return out;
+	return data;
 }
 
 unsigned char *base64_decode_char(char c) {
