@@ -133,7 +133,7 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
-		while ((rIndex = (rand() % GRID_SIZE * 4)) == sIndex)
+		while ((rIndex = (rand() % (GRID_SIZE * 4))) == sIndex)
 			;
 		
 		c2 = str[rIndex];
