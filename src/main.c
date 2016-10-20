@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
 	int o, i, ch;
 	int autoCreate       = 0;
 	int debug            = 0;
-	int debugSpeed       = 0;
 	char *version        = VERSION;
 	char *keyFileName    = DEFAULT_KEY_NAME;
 	
@@ -30,7 +29,7 @@ int main(int argc, char *argv[]) {
 	mirrorfield_init();
 
 	// Check arguments
-	while ((o = getopt(argc, argv, "ak:vds:")) != -1) {
+	while ((o = getopt(argc, argv, "ak:vd:")) != -1) {
 		switch (o) {
 			case 'a':
 				autoCreate = 1;
@@ -42,10 +41,7 @@ int main(int argc, char *argv[]) {
 				printf("mrrcrypt version %s\n", version);
 				return 0;
 			case 'd':
-				debug = 100;
-				break;
-			case 's':
-				debugSpeed = atoi(optarg);
+				debug = atoi(optarg);
 				break;
 			case '?':
 				if (isprint(optopt))
@@ -55,10 +51,6 @@ int main(int argc, char *argv[]) {
 				main_shutdown("Invalid command option(s).");
 		}
 	}
-	
-	// Set value of debug to debug speed if both options are used
-	if (debug && debugSpeed)
-		debug = debugSpeed;
 	
 	// Turn on autoCreate flag for default key file
 	if (strcmp(DEFAULT_KEY_NAME, keyFileName) == 0)
