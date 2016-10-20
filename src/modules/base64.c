@@ -80,17 +80,14 @@ char *base64_encode(char ch1, char ch2, char ch3, int l) {
 	return out;
 }
 
-char *base64_decode_char(char c) {
-	static char *out = NULL;
+unsigned char *base64_decode_char(char c) {
+	static unsigned char *out = NULL;
 	static char in[DECODE_INPUT_COUNT];
 	static int i = 0;
 	
 	// Allocate memory if not done yet
 	if (out == NULL)
-		out = malloc(DECODE_OUTPUT_COUNT + 1);
-	
-	// Zeroing output
-	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
+		out = malloc(DECODE_OUTPUT_COUNT);
 	
 	// Assign input char to next array
 	in[i++] = c;
@@ -100,16 +97,17 @@ char *base64_decode_char(char c) {
 		out = base64_decode(in[0], in[1], in[2], in[3]);
 		i = 0;
 	}
-	
+
 	return out;
 }
 
-char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
-	int i, f =0;
+unsigned char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
+	int i;
+	int f = 0;
 	uint32_t octet_1, octet_2, octet_3, octet_4;
 	uint32_t combined = 0;
-	static char out[DECODE_OUTPUT_COUNT + 1];
-	
+	static unsigned char out[DECODE_OUTPUT_COUNT + 1];
+
 	// Zeroing output
 	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
 	
@@ -131,10 +129,18 @@ char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
 			ch3 = i;
 			++f;
 			break;
+		} else if (ch3 == '=') {
+			ch3 = 0;
+			++f;
+			break;
 		}
 	for (i = 0; i < 64; ++i)
 		if (ch4 == encoding_table[i]) {
 			ch4 = i;
+			++f;
+			break;
+		} else if (ch4 == '=') {
+			ch4 = 0;
 			++f;
 			break;
 		}

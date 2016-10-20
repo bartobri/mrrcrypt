@@ -28,14 +28,6 @@ int main(int argc, char *argv[]) {
 	// Run module init functions
 	keyfile_init();
 	mirrorfield_init();
-	
-	// Validate supported character count is square
-	if (strlen(SUPPORTED_CHARS) % 4 != 0)
-		main_shutdown("Invalid character set. Character count must be evenly divisible by 4.");
-
-	// Validate supported character count is compatible with grid width
-	if (strlen(SUPPORTED_CHARS) / 4 != GRID_SIZE)
-		main_shutdown("Invalid character set. Character count does not match grid width.");
 
 	// Check arguments
 	while ((o = getopt(argc, argv, "ak:vds:")) != -1) {
@@ -82,7 +74,7 @@ int main(int argc, char *argv[]) {
 
 	// Read key file and build mirror field
 	for (i = 0; (ch = keyfile_next_char()) != EOF; ++i)
-		if ((mirrorfield_set(i, ch)) == 0)
+		if ((mirrorfield_set(i, (unsigned char)ch)) == 0)
 			break;
 
 	// Close key file
@@ -94,15 +86,9 @@ int main(int argc, char *argv[]) {
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
-
-		// If character not supported, just print it and continue the loop
-		if (ch == '\0' || strchr(SUPPORTED_CHARS, ch) == NULL) {
-			putchar(ch);
-			continue;
-		}
 		
 		// Print encrypted/decrypted char
-		putchar(mirrorfield_crypt_char(ch, debug));
+		putchar(mirrorfield_crypt_char((unsigned char)ch, debug));
 		
 		// Rotate perimeter chars
 		mirrorfield_rotate();

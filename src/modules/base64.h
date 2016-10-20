@@ -11,7 +11,7 @@
 
 char *base64_encode_char(char, int);
 char *base64_encode(char, char, char, int);
-char *base64_decode_char(char);
-char *base64_decode(char, char, char, char);
+unsigned char *base64_decode_char(char);
+unsigned char *base64_decode(char, char, char, char);
 
 #endif

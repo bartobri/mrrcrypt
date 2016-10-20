@@ -22,10 +22,10 @@
 // Gridpoint Structure
 struct gridPoint {
 	int mirrorType;
-	char charUp;
-	char charDown;
-	char charLeft;
-	char charRight;
+	unsigned char charUp;
+	unsigned char charDown;
+	unsigned char charLeft;
+	unsigned char charRight;
 	int visited;
 };
 
@@ -50,7 +50,7 @@ void mirrorfield_init(void) {
 	}
 }
 
-int mirrorfield_set(int i, char ch) {
+int mirrorfield_set(int i, unsigned char ch) {
 	
 	// Set Mirror Char
 	if (i < GRID_SIZE * GRID_SIZE) {
@@ -63,30 +63,27 @@ int mirrorfield_set(int i, char ch) {
 	}
 	
 	// Set Perimeter Char
-	if (i - (GRID_SIZE * GRID_SIZE) < (int)strlen(SUPPORTED_CHARS)) {
+	if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 4) {
 		i -= (GRID_SIZE * GRID_SIZE);
-		if (ch != '\0' && strchr(SUPPORTED_CHARS, ch)) {
-			if (i < GRID_SIZE)
-				grid[0][i].charUp = ch;
-			else if (i < GRID_SIZE * 2)
-				grid[i-GRID_SIZE][GRID_SIZE-1].charRight = ch;
-			else if (i < GRID_SIZE * 3)
-				grid[i-(GRID_SIZE*2)][0].charLeft = ch;
-			else if (i < GRID_SIZE * 4)
-				grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown = ch;
-				
-			return 1;
-		} else {
-			return 0;
-		}
+
+		if (i < GRID_SIZE)
+			grid[0][i].charUp = ch;
+		else if (i < GRID_SIZE * 2)
+			grid[i-GRID_SIZE][GRID_SIZE-1].charRight = ch;
+		else if (i < GRID_SIZE * 3)
+			grid[i-(GRID_SIZE*2)][0].charLeft = ch;
+		else if (i < GRID_SIZE * 4)
+			grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown = ch;
+			
+		return 1;
 	}
 	
 	return 0;
 }
 
 int mirrorfield_validate(void) {
-	int i, r, c;
-	char perimeters[GRID_SIZE * 4];
+	int i, i2, r, c;
+	unsigned char perimeters[GRID_SIZE * 4];
 	
 	// init perimeters array
 	memset(perimeters, 0, GRID_SIZE * 4);
@@ -98,50 +95,22 @@ int mirrorfield_validate(void) {
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
-			// Check top chars
-			if (r == 0) {
-				if (!grid[r][c].charUp || !strchr(SUPPORTED_CHARS, grid[r][c].charUp))
-					return 0;
+			// Store top chars
+			if (r == 0)
+				perimeters[i++] = grid[r][c].charUp;
 
-				if (strchr(perimeters, grid[r][c].charUp))
-					return 0;
-				else
-					perimeters[i++] = grid[r][c].charUp;
-			}
-			
-			// Check right chars
-			if (c == GRID_SIZE - 1) {
-				if (!grid[r][c].charRight || !strchr(SUPPORTED_CHARS, grid[r][c].charRight))
-					return 0;
-				
-				if (strchr(perimeters, grid[r][c].charRight))
-					return 0;
-				else
-					perimeters[i++] = grid[r][c].charRight;
-			}
-			
-			// Check left chars
-			if (c == 0) {
-				if (!grid[r][c].charLeft || !strchr(SUPPORTED_CHARS, grid[r][c].charLeft))
-					return 0;
-				
-				if (strchr(perimeters, grid[r][c].charLeft))
-					return 0;
-				else
-					perimeters[i++] = grid[r][c].charLeft;
-			}
-			
-			// Check bottom chars
-			if (r == GRID_SIZE - 1) {
-				if (!grid[r][c].charDown || !strchr(SUPPORTED_CHARS, grid[r][c].charDown))
-					return 0;
-				
-				if (strchr(perimeters, grid[r][c].charDown))
-					return 0;
-				else
-					perimeters[i++] = grid[r][c].charDown;
-			}
-			
+			// Store right chars
+			if (c == GRID_SIZE - 1)
+				perimeters[i++] = grid[r][c].charRight;
+
+			// Store left chars
+			if (c == 0)
+				perimeters[i++] = grid[r][c].charLeft;
+
+			// Store bottom chars
+			if (r == GRID_SIZE - 1)
+				perimeters[i++] = grid[r][c].charDown;
+
 			// Check mirror type
 			if (!grid[r][c].mirrorType || !strchr(SUPPORTED_MIRROR_TYPES, grid[r][c].mirrorType))
 				return 0;
@@ -149,12 +118,18 @@ int mirrorfield_validate(void) {
 		}
 	}
 	
+	// Check for duplicate perimeter chars
+	for (i = 0; i < GRID_SIZE * 4; ++i)
+		for (i2 = i+1; i2 < GRID_SIZE * 4; ++i2)
+			if (perimeters[i] == perimeters[i2])
+				return 0;
+	
 	return 1;
 }
 
-char mirrorfield_crypt_char(char ch, int debug) {
-	int r, c;
-	int ech = 0;
+unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
+	int r, c, found = 0;
+	unsigned char ech;
 	int direction = 0;
 	
 	// For the debug flag
@@ -170,13 +145,13 @@ char mirrorfield_crypt_char(char ch, int debug) {
 	// Determining starting row/col and starting direction
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].charUp == ch)
+			if (r == 0 && grid[r][c].charUp == ch)
 				direction = DIR_DOWN;
-			else if (grid[r][c].charLeft == ch)
+			else if (c == 0 && grid[r][c].charLeft == ch)
 				direction = DIR_RIGHT;
-			else if (grid[r][c].charRight == ch)
+			else if (c == GRID_SIZE - 1 && grid[r][c].charRight == ch)
 				direction = DIR_LEFT;
-			else if (grid[r][c].charDown == ch)
+			else if (r == GRID_SIZE - 1 && grid[r][c].charDown == ch)
 				direction = DIR_UP;
 			
 			if (direction)
@@ -187,7 +162,7 @@ char mirrorfield_crypt_char(char ch, int debug) {
 	}
 
 	// Traverse through the grid
-	while (ech == 0) {
+	while (!found) {
 		
 		// Draw mirror field if debug flag is set
 		if (debug) {
@@ -261,14 +236,19 @@ char mirrorfield_crypt_char(char ch, int debug) {
 			--r;
 
 		// Check if our position is out of grid bounds. That means we found our char.
-		if (r < 0)
+		if (r < 0) {
 			ech = grid[0][c].charUp;
-		else if (r >= GRID_SIZE)
+			found = 1;
+		} else if (r >= GRID_SIZE) {
 			ech = grid[GRID_SIZE - 1][c].charDown;
-		else if (c < 0)
+			found = 1;
+		} else if (c < 0) {
 			ech = grid[r][0].charLeft;
-		else if (c >= GRID_SIZE)
+			found = 1;
+		} else if (c >= GRID_SIZE) {
 			ech = grid[r][GRID_SIZE - 1].charRight;
+			found = 1;
+		}
 	}
 	
 	return ech;
@@ -324,8 +304,6 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 	
 	for (r = -1; r <= GRID_SIZE; ++r) {
 
-		//wmove(wGrid, r + 3, (termSizeCols - (GRID_SIZE * 2)) / 2);
-
 		for (c = -1; c <= GRID_SIZE; ++c) {
 			
 			// Highlight cell if r/c match
@@ -336,47 +314,33 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 			
 			// Print apropriate mirror field character
 			if (r == -1 && c == -1)                     // Upper left corner
-				printf(" ");
+				printf("%2c", ' ');
 			else if (r == -1 && c == GRID_SIZE)         // Upper right corner
-				printf(" ");
+				printf("%2c", ' ');
 			else if (r == GRID_SIZE && c == -1)         // Lower left corner
-				printf(" ");
+				printf("%2c", ' ');
 			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
-				printf(" ");
+				printf("%2c", ' ');
 			else if (r == -1) {                           // Top chars
-				if (isspace(grid[r+1][c].charUp))
-					printf(" ");
-				else
-					printf("%c", grid[r+1][c].charUp);
+				printf("%2x", grid[r+1][c].charUp);
 			} else if (c == GRID_SIZE) {                   // Right chars
-				if (isspace(grid[r][c-1].charRight))
-					printf(" ");
-				else
-					printf("%c", grid[r][c-1].charRight);
+				printf("%2x", grid[r][c-1].charRight);
 			} else if (r == GRID_SIZE) {                  // Bottom chars
-				if (isspace(grid[r-1][c].charDown))
-					printf(" ");
-				else
-					printf("%c", grid[r-1][c].charDown);
+				printf("%2x", grid[r-1][c].charDown);
 			} else if (c == -1) {                         // Left chars
-				if (isspace(grid[r][c+1].charLeft))
-					printf(" ");
-				else
-					printf("%c", grid[r][c+1].charLeft);
+				printf("%2x", grid[r][c+1].charLeft);
 			} else if (grid[r][c].mirrorType == MIRROR_FORWARD)
-				printf("/");
+				printf("%2c", '/');
 			else if (grid[r][c].mirrorType == MIRROR_BACKWARD)
-				printf("\\");
+				printf("%2c", '\\');
 			else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
-				printf("-");
+				printf("%2c", '-');
 			else
-				printf(" ");
+				printf("%2c", ' ');
 			
 			// Un-Highlight cell if r/c match
 			if (r == pos_r && c == pos_c)
 				printf("\x1B[0m");
-			
-			//printf(" ");
 
 		}
 		printf("\n");

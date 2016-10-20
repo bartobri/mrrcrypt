@@ -13,7 +13,7 @@
 #include "modules/keyfile.h"
 #include "modules/base64.h"
 
-#define MIRROR_DENSITY   6
+#define MIRROR_DENSITY   20
 
 // Static chars
 static FILE *keyFile;
@@ -63,7 +63,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	int width = GRID_SIZE;
 	struct stat sb;
 	FILE *config;
-	char *shuffledChars;
+	unsigned char shuffledChars[GRID_SIZE * 4];
 
 	// Check subdirs and create them if needed
 	if (strchr(keyFileFullPathName, '/') != NULL) {
@@ -102,20 +102,19 @@ int keyfile_create(char *keyFileFullPathName) {
 		}
 	}
 	
-	// Shuffle and write character data to file
-	shuffledChars = malloc(strlen(SUPPORTED_CHARS) + 1);
-	strcpy(shuffledChars, SUPPORTED_CHARS);
+	// Generate perimeter characters
+	for (i = 0; i < GRID_SIZE * 4; i++)
+		shuffledChars[i] = i;
+		
+	// Shuffle perimeter characters
 	keyfile_shuffle_string(shuffledChars, 1000);
 	
 	// Encode shuffled chars to base64 and write to key file
-	for (i = 0; i < (int)strlen(shuffledChars); ++i)
-		if (i + 1 < (int)strlen(shuffledChars))
-			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_NOFORCE));
+	for (i = 0; i < GRID_SIZE * 4; ++i)
+		if (i + 1 < GRID_SIZE * 4)
+			fprintf(config, "%s", base64_encode_char(shuffledChars[i], B64_NOFORCE));
 		else
-			fprintf(config, "%s", base64_encode_char(*(shuffledChars + i), B64_FORCE));
-	
-	// Free allocated memory
-	free(shuffledChars);
+			fprintf(config, "%s", base64_encode_char(shuffledChars[i], B64_FORCE));
 	
 	// Close mirror file
 	fclose(config);
@@ -123,18 +122,18 @@ int keyfile_create(char *keyFileFullPathName) {
 	return 1;
 }
 
-char *keyfile_shuffle_string(char *str, int p) {
+unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 	int i, sIndex, rIndex;
-	char c1, c2;
+	unsigned char c1, c2;
 	
-	sIndex = (rand() % strlen(str));
+	sIndex = (rand() % GRID_SIZE * 4);
 	rIndex = sIndex;
 	c1 = str[rIndex];
 	for (i = 0; i < p; ++i) {
 		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
-		while ((rIndex = (rand() % strlen(str))) == sIndex)
+		while ((rIndex = (rand() % GRID_SIZE * 4)) == sIndex)
 			;
 		
 		c2 = str[rIndex];
@@ -148,18 +147,20 @@ char *keyfile_shuffle_string(char *str, int p) {
 
 int keyfile_next_char(void) {
 	char ch;
-	static char *out = "";
-	
-	while (*out == '\0')
-		if ((ch = fgetc(keyFile)) == EOF)
-			break;
-		else
-			out = base64_decode_char(ch);
-	
-	if (*out == '\0')
-		return EOF;
-	else
-		return *(out++);
+	static int i = 3;
+	static unsigned char *out = NULL;
+
+	if (i == 3) {
+		while (i-- >= 0) {
+			if ((ch = fgetc(keyFile)) == EOF)
+				return EOF;
+			else
+				out = base64_decode_char(ch);
+		}
+		i = 0;
+	}
+
+	return (int)out[i++];
 }
 
 void keyfile_close(void) {

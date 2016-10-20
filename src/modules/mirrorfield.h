@@ -7,9 +7,9 @@
 #define MIRRORFIELD_H 1
 
 void mirrorfield_init(void);
-int mirrorfield_set(int, char);
+int mirrorfield_set(int, unsigned char);
 int mirrorfield_validate(void);
-char mirrorfield_crypt_char(char, int);
+unsigned char mirrorfield_crypt_char(unsigned char, int);
 void mirrorfield_rotate(void);
 void mirrorfield_draw(int, int);
 

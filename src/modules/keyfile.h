@@ -9,8 +9,8 @@
 void  keyfile_init(void);
 int   keyfile_open(char *, int);
 int   keyfile_create(char *);
-char *keyfile_shuffle_string(char *, int);
-int   keyfile_next_char(void);
+unsigned char *keyfile_shuffle_string(unsigned char *, int);
+int keyfile_next_char(void);
 void  keyfile_close(void);
 
 #endif
