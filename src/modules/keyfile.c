@@ -63,7 +63,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	int width = GRID_SIZE;
 	struct stat sb;
 	FILE *config;
-	unsigned char shuffledChars[GRID_SIZE * 4];
+	unsigned char perimeterChars[GRID_SIZE * 4];
 
 	// Check subdirs and create them if needed
 	if (strchr(keyFileFullPathName, '/') != NULL) {
@@ -104,17 +104,17 @@ int keyfile_create(char *keyFileFullPathName) {
 	
 	// Generate perimeter characters
 	for (i = 0; i < GRID_SIZE * 4; i++)
-		shuffledChars[i] = i;
+		perimeterChars[i] = i;
 		
 	// Shuffle perimeter characters
-	keyfile_shuffle_string(shuffledChars, 1000);
+	keyfile_shuffle_string(perimeterChars, 2000);
 	
-	// Encode shuffled chars to base64 and write to key file
+	// Encode perimeter chars to base64 and write to key file
 	for (i = 0; i < GRID_SIZE * 4; ++i)
 		if (i + 1 < GRID_SIZE * 4)
-			fprintf(config, "%s", base64_encode_char(shuffledChars[i], B64_NOFORCE));
+			fprintf(config, "%s", base64_encode_char(perimeterChars[i], B64_NOFORCE));
 		else
-			fprintf(config, "%s", base64_encode_char(shuffledChars[i], B64_FORCE));
+			fprintf(config, "%s", base64_encode_char(perimeterChars[i], B64_FORCE));
 	
 	// Close mirror file
 	fclose(config);
