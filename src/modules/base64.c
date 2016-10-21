@@ -8,9 +8,6 @@
 #include <stdlib.h>
 #include "modules/base64.h"
 
-#define DECODE_INPUT_COUNT    4
-#define DECODE_OUTPUT_COUNT   3
-
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
                                 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
@@ -49,87 +46,63 @@ base64 base64_encode(base64 data) {
 	return data;
 }
 
-unsigned char *base64_decode_char(char c) {
-	static unsigned char *out = NULL;
-	static char in[DECODE_INPUT_COUNT];
-	static int i = 0;
-	
-	// Allocate memory if not done yet
-	if (out == NULL)
-		out = malloc(DECODE_OUTPUT_COUNT);
-	
-	// Assign input char to next array
-	in[i++] = c;
-	
-	// Get encoded output if we have 3 chars, or if force flag is used
-	if (i == DECODE_INPUT_COUNT) {
-		out = base64_decode(in[0], in[1], in[2], in[3]);
-		i = 0;
-	}
-
-	return out;
-}
-
-unsigned char *base64_decode(char ch1, char ch2, char ch3, char ch4) {
-	int i;
-	int f = 0;
+base64 base64_decode(base64 data) {
+	int i, f = 0;
 	uint32_t octet_1, octet_2, octet_3, octet_4;
 	uint32_t combined = 0;
-	static unsigned char out[DECODE_OUTPUT_COUNT + 1];
-
-	// Zeroing output
-	memset(out, 0, DECODE_OUTPUT_COUNT + 1);
 	
-	// Change char to decimal index in encoding_table
+	// Change encoded chars to decimal index in encoding_table
 	for (i = 0; i < 64; ++i)
-		if (ch1 == encoding_table[i]) {
-			ch1 = i;
+		if (data.encoded[0] == encoding_table[i]) {
+			data.encoded[0] = i;
 			++f;
 			break;
 		}
 	for (i = 0; i < 64; ++i)
-		if (ch2 == encoding_table[i]) {
-			ch2 = i;
+		if (data.encoded[1] == encoding_table[i]) {
+			data.encoded[1] = i;
 			++f;
 			break;
 		}
 	for (i = 0; i < 64; ++i)
-		if (ch3 == encoding_table[i]) {
-			ch3 = i;
+		if (data.encoded[2] == encoding_table[i]) {
+			data.encoded[2] = i;
 			++f;
 			break;
-		} else if (ch3 == '=') {
-			ch3 = 0;
+		} else if (data.encoded[2] == '=') {
+			data.encoded[2] = 0;
 			++f;
 			break;
 		}
 	for (i = 0; i < 64; ++i)
-		if (ch4 == encoding_table[i]) {
-			ch4 = i;
+		if (data.encoded[3] == encoding_table[i]) {
+			data.encoded[3] = i;
 			++f;
 			break;
-		} else if (ch4 == '=') {
-			ch4 = 0;
+		} else if (data.encoded[3] == '=') {
+			data.encoded[3] = 0;
 			++f;
 			break;
 		}
 	
-	// Verify all input chars were found, return empty string if not
-	if (f < 4)
-		return out;
+	// Verify all input chars were found, return with error if not
+	if (f < 4) {
+		data.error = 1;
+		return data;
+	}
 	
 	// Assigning octets
-	octet_1 = (unsigned char)ch1;
-	octet_2 = (unsigned char)ch2;
-	octet_3 = (unsigned char)ch3;
-	octet_4 = (unsigned char)ch4;
+	octet_1 = (unsigned char)data.encoded[0];
+	octet_2 = (unsigned char)data.encoded[1];
+	octet_3 = (unsigned char)data.encoded[2];
+	octet_4 = (unsigned char)data.encoded[3];
 	
 	// Combine octets into a single 32 bit int
 	combined = (octet_1 << 18) + (octet_2 << 12) + (octet_3 << 6) + octet_4;
 	
-	out[0] = (combined >> 16) & 0xFF;
-	out[1] = (combined >> 8) & 0xFF;
-	out[2] = (combined >> 0) & 0xFF;
+	data.decoded[0] = (combined >> 16) & 0xFF;
+	data.decoded[1] = (combined >> 8) & 0xFF;
+	data.decoded[2] = (combined >> 0) & 0xFF;
 	
-	return out;
+	return data;
 }

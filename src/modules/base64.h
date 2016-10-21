@@ -13,10 +13,10 @@ typedef struct {
 	char encoded[BASE64_ENCODED_COUNT];
 	unsigned char decoded[BASE64_DECODED_COUNT];
 	int index;
+	int error;
 } base64;
 
 base64 base64_encode(base64);
-unsigned char *base64_decode_char(char);
-unsigned char *base64_decode(char, char, char, char);
+base64 base64_decode(base64);
 
 #endif

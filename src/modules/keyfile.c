@@ -161,21 +161,23 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 }
 
 int keyfile_next_char(void) {
-	char ch;
-	static int i = 3;
-	static unsigned char *out = NULL;
+	static base64 contents = { .index = BASE64_DECODED_COUNT, .error = 0 };
 
-	if (i == 3) {
-		while (i-- >= 0) {
-			if ((ch = fgetc(keyFile)) == EOF)
+	if (contents.index == BASE64_DECODED_COUNT) {
+		contents.index = 0;
+
+		while (contents.index < BASE64_ENCODED_COUNT)
+			if ((contents.encoded[contents.index++] = fgetc(keyFile)) == EOF)
 				return EOF;
-			else
-				out = base64_decode_char(ch);
-		}
-		i = 0;
+
+		contents = base64_decode(contents);
+		if (contents.error)
+			return EOF;
+		else
+			contents.index = 0;
 	}
 
-	return (int)out[i++];
+	return (int)contents.decoded[contents.index++];
 }
 
 void keyfile_close(void) {
