@@ -321,15 +321,15 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 				printf("%2c", ' ');
 			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
 				printf("%2c", ' ');
-			else if (r == -1) {                           // Top chars
+			else if (r == -1)                           // Top chars
 				printf("%2x", grid[r+1][c].charUp);
-			} else if (c == GRID_SIZE) {                   // Right chars
+			else if (c == GRID_SIZE)                    // Right chars
 				printf("%2x", grid[r][c-1].charRight);
-			} else if (r == GRID_SIZE) {                  // Bottom chars
+			else if (r == GRID_SIZE)                    // Bottom chars
 				printf("%2x", grid[r-1][c].charDown);
-			} else if (c == -1) {                         // Left chars
+			else if (c == -1)                           // Left chars
 				printf("%2x", grid[r][c+1].charLeft);
-			} else if (grid[r][c].mirrorType == MIRROR_FORWARD)
+			else if (grid[r][c].mirrorType == MIRROR_FORWARD)
 				printf("%2c", '/');
 			else if (grid[r][c].mirrorType == MIRROR_BACKWARD)
 				printf("%2c", '\\');
