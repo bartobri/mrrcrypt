@@ -137,11 +137,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	ts.tv_sec = debug / 1000;
 	ts.tv_nsec = (debug % 1000) * 1000000;
 	
-	// Clear visited mirror points
-	for (r = 0; r < GRID_SIZE; ++r)
-		for (c = 0; c < GRID_SIZE; ++c)
-			grid[r][c].visited = 0;
-	
 	// Determining starting row/col and starting direction
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
@@ -174,21 +169,10 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		// If we hit a mirror that we've already been to, un-rotate it.
 		// This is necessary to preserve the ability to reverse the encryption.
 		// We can not rotate a mirror more than once per character.
-		if (grid[r][c].mirrorType != MIRROR_NONE) {
-			if (grid[r][c].visited) {
-				if (grid[r][c].mirrorType == MIRROR_FORWARD) {
-					grid[r][c].mirrorType = MIRROR_BACKWARD;
-				} else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
-					grid[r][c].mirrorType = MIRROR_STRAIGHT;
-				} else if (grid[r][c].mirrorType == MIRROR_STRAIGHT) {
-					grid[r][c].mirrorType = MIRROR_FORWARD;
-				}
-			} else {
-				grid[r][c].visited = 1;
-			}
-		}
+		if (grid[r][c].mirrorType != MIRROR_NONE)
+			grid[r][c].visited = 1;
 
-		// Forward mirror / Change direction and rotate
+		// Change direction if we hit a mirror
 		if (grid[r][c].mirrorType == MIRROR_FORWARD) {
 			if (direction == DIR_DOWN)
 				direction = DIR_LEFT;
@@ -198,20 +182,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				direction = DIR_UP;
 			else if (direction == DIR_UP)
 				direction = DIR_RIGHT;
-			
-			// Rotate mirror
-			grid[r][c].mirrorType = MIRROR_STRAIGHT;
-		}
-		
-		// Straight mirror - Keep same direction, just rotate
-		else if (grid[r][c].mirrorType == MIRROR_STRAIGHT) {
-
-			// Rotate mirror
-			grid[r][c].mirrorType = MIRROR_BACKWARD;
-		}
-
-		// Backward mirror \ Change direction and rotate
-		else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
+		} else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
 			if (direction == DIR_DOWN)
 				direction = DIR_RIGHT;
 			else if (direction == DIR_LEFT)
@@ -220,9 +191,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				direction = DIR_DOWN;
 			else if (direction == DIR_UP)
 				direction = DIR_LEFT;
-			
-			// Rotate mirror
-			grid[r][c].mirrorType = MIRROR_FORWARD;
 		}
 
 		// Advance position
@@ -251,6 +219,22 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 	}
 	
+	// Rotate visited mirrors and reset to zero
+	for (r = 0; r < GRID_SIZE; ++r)
+		for (c = 0; c < GRID_SIZE; ++c)
+			if (grid[r][c].visited) {
+				if (grid[r][c].mirrorType == MIRROR_BACKWARD)
+					grid[r][c].mirrorType = MIRROR_FORWARD;
+				else if (grid[r][c].mirrorType == MIRROR_FORWARD)
+					grid[r][c].mirrorType = MIRROR_STRAIGHT;
+				else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
+					grid[r][c].mirrorType = MIRROR_BACKWARD;
+
+				grid[r][c].visited = 0;
+			}
+				
+	
+	// Return crypted char
 	return ech;
 }
 
