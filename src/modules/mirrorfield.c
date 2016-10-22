@@ -128,7 +128,7 @@ int mirrorfield_validate(void) {
 }
 
 unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
-	int r, c, found = 0;
+	int r, c;
 	unsigned char ech;
 	int direction = 0;
 	
@@ -162,7 +162,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	}
 
 	// Traverse through the grid
-	while (!found) {
+	while (1) {
 		
 		// Draw mirror field if debug flag is set
 		if (debug) {
@@ -238,16 +238,16 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		// Check if our position is out of grid bounds. That means we found our char.
 		if (r < 0) {
 			ech = grid[0][c].charUp;
-			found = 1;
+			break;
 		} else if (r >= GRID_SIZE) {
 			ech = grid[GRID_SIZE - 1][c].charDown;
-			found = 1;
+			break;
 		} else if (c < 0) {
 			ech = grid[r][0].charLeft;
-			found = 1;
+			break;
 		} else if (c >= GRID_SIZE) {
 			ech = grid[r][GRID_SIZE - 1].charRight;
-			found = 1;
+			break;
 		}
 	}
 	
