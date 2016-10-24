@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	
 	// Validate mirror field contents
 	if (mirrorfield_validate() == 0)
-		main_shutdown("Invalid key file. Invalid content.");
+		main_shutdown("Key file error. Invalid content.");
 
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
