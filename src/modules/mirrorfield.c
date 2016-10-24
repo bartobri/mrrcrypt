@@ -238,7 +238,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	return ech;
 }
 
-void mirrorfield_rotate(void) {
+void mirrorfield_roll(void) {
 	int r, c;
 	char last, next;
 	

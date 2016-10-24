@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 		putchar(mirrorfield_crypt_char((unsigned char)ch, debug));
 		
 		// Rotate perimeter chars
-		mirrorfield_rotate();
+		mirrorfield_roll();
 	}
 
 	return 0;
