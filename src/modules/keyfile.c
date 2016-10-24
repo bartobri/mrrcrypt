@@ -60,6 +60,7 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 
 int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
+	int w = 0;
 	int width = GRID_SIZE;
 	struct stat sb;
 	FILE *config;
@@ -106,6 +107,10 @@ int keyfile_create(char *keyFileFullPathName) {
 				contents = base64_encode(contents);
 				fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
 				contents.index = 0;
+
+				// Newline after every 72 chars (18 * 4)
+				if (++w % 18 == 0)
+					fprintf(config, "\n");
 			}
 		}
 	}
@@ -124,11 +129,19 @@ int keyfile_create(char *keyFileFullPathName) {
 			contents = base64_encode(contents);
 			fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
 			contents.index = 0;
+			
+			// Newline after every 72 chars (18 * 4)
+			if (++w % 18 == 0)
+				fprintf(config, "\n");
 		}
 	}
 	if (contents.index > 0) {
 		contents = base64_encode(contents);
 		fprintf(config, "%c%c%c%c", contents.encoded[0], contents.encoded[1], contents.encoded[2], contents.encoded[3]);
+
+		// Newline after every 72 chars (18 * 4)
+		if (++w % 18 == 0)
+			fprintf(config, "\n");
 	}
 	
 	// Close mirror file
@@ -166,9 +179,15 @@ int keyfile_next_char(void) {
 	if (contents.index == BASE64_DECODED_COUNT) {
 		contents.index = 0;
 
-		while (contents.index < BASE64_ENCODED_COUNT)
-			if ((contents.encoded[contents.index++] = fgetc(keyFile)) == EOF)
+		while (contents.index < BASE64_ENCODED_COUNT) {
+			contents.encoded[contents.index] = fgetc(keyFile);
+			if (contents.encoded[contents.index] == EOF)
 				return EOF;
+			else if (contents.encoded[contents.index] == '\n')
+				continue;
+			else
+				++contents.index;
+		}
 
 		contents = base64_decode(contents);
 		if (contents.error)
