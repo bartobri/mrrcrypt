@@ -50,7 +50,12 @@ void mirrorfield_init(void) {
 	}
 }
 
-int mirrorfield_set(int i, unsigned char ch) {
+int mirrorfield_set(unsigned char ch) {
+	static int i = -1;
+	int t;
+
+	// Increment our static counter
+	++i;
 	
 	// Set Mirror Char
 	if (i < GRID_SIZE * GRID_SIZE) {
@@ -64,17 +69,17 @@ int mirrorfield_set(int i, unsigned char ch) {
 	
 	// Set Perimeter Char
 	if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 4) {
-		i -= (GRID_SIZE * GRID_SIZE);
+		t = i - (GRID_SIZE * GRID_SIZE);
 
-		if (i < GRID_SIZE)
-			grid[0][i].charUp = ch;
-		else if (i < GRID_SIZE * 2)
-			grid[i-GRID_SIZE][GRID_SIZE-1].charRight = ch;
-		else if (i < GRID_SIZE * 3)
-			grid[i-(GRID_SIZE*2)][0].charLeft = ch;
-		else if (i < GRID_SIZE * 4)
-			grid[GRID_SIZE-1][i-(GRID_SIZE*3)].charDown = ch;
-			
+		if (t < GRID_SIZE)
+			grid[0][t].charUp = ch;
+		else if (t < GRID_SIZE * 2)
+			grid[t-GRID_SIZE][GRID_SIZE-1].charRight = ch;
+		else if (t < GRID_SIZE * 3)
+			grid[t-(GRID_SIZE*2)][0].charLeft = ch;
+		else if (t < GRID_SIZE * 4)
+			grid[GRID_SIZE-1][t-(GRID_SIZE*3)].charDown = ch;
+
 		return 1;
 	}
 	

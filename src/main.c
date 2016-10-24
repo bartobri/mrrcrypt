@@ -18,7 +18,7 @@
 void main_shutdown(const char *);
 
 int main(int argc, char *argv[]) {
-	int o, i, ch;
+	int o, ch;
 	int autoCreate       = 0;
 	int debug            = 0;
 	char *version        = VERSION;
@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Read key file and build mirror field
-	for (i = 0; (ch = keyfile_next_char()) != EOF; ++i)
-		if ((mirrorfield_set(i, (unsigned char)ch)) == 0)
+	while ((ch = keyfile_next_char()) != EOF)
+		if ((mirrorfield_set((unsigned char)ch)) == 0)
 			break;
 
 	// Close key file
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 		// Print encrypted/decrypted char
 		putchar(mirrorfield_crypt_char((unsigned char)ch, debug));
 		
-		// Rotate perimeter chars
+		// Roll perimeter chars
 		mirrorfield_roll();
 	}
 
