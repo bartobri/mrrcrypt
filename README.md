@@ -1,9 +1,9 @@
 mrrcrypt
 ========
 
-A command line encryption/decryption tool using an adaptive rolling mirror field algorithm.
+A command line encryption/decryption tool using an adaptive mirror field algorithm.
 
-*mrrcrypt Visualizer*
+*Debug Mode (-d)*
 
 ![Screen Cap](http://i.imgur.com/mh8efa2.gif)
 
@@ -56,7 +56,7 @@ About
 -----
 
 Mirror Crypt is a command line encryption/decryption tool using an **adaptive
-rolling mirror field** algorithm.
+mirror field** algorithm.
 
 A traditional mirror field encryption algorithm is very similar to a
 simple substitution cipher. For every identical character of input, an
