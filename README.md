@@ -1,10 +1,9 @@
-Mirror Crypt
-============
+mrrcrypt
+========
 
-A command line encryption/decryption tool for ASCII text using an
-adaptive mirror field algorithm.
+A command line encryption/decryption tool using an adaptive rolling mirror field algorithm.
 
-*Mirror Crypt Visualizer*
+*mrrcrypt Visualizer*
 
 ![Screen Cap](http://i.imgur.com/mh8efa2.gif)
 
@@ -14,45 +13,39 @@ Quick Examples
 **Encrypting/Decrypting a Short String**
 
 ```
-$ printf "Attack at Dawn" | mrrcrypt
-tjrWeoPXAFIcvo
+# Encrypt
+$ printf "Attack at Dawn" | mrrcrypt > string.encrypted
 
-$ printf "tjrWeoPXAFIcvo" | mrrcrypt
+# Decrypt
+$ cat string.encrypted | mrrcrypt
 Attack at Dawn
 
 ```
 
-**Encrypting/Decrypting the Contents of a ASCII File**
+**Encrypting/Decrypting the Contents of a File**
 
 ```
-$ cat secrets.txt | mrrcrypt > secrets.encrypted
+# Encrypt
+$ cat secret.jpg | mrrcrypt > secret.jpg.encrypted
 
-$ cat secrets.encrypted | mrrcrypt > secrets.txt
-```
-
-**Encrypting/Decrypting the Contents of a Binary File**
-
-This method uses a base64 encoder to convert the binary file to ASCII before encrypting.
-
-```
-$ cat secret_photo.jpg | base64 | mrrcrypt > secret_photo.jpg.encrypted
-
-$ cat secret_photo.jpg.encrypted | mrrcrypt | base64 --decode > secret_photo.jpg
+# Decrypt
+$ cat secret.jpg.encrypted | mrrcrypt > secret.jpg
 ```
 
 **Dual Key Encryption/Decryption**
 
-Suppose Bob and John want to encrypt a file such that they each hold a
-separate key required for decryption. Nether one can decrypt the file without
-the consent of the other. This is how they can accomplish this.
+Suppose Bob and John want to encrypt a file so that they each hold a
+distinct key required for decryption. Here is how they can accomplish this.
 
 ```
-$ cat secrets.txt | mrrcrypt -a -k bobs_key | mrrcrypt -a -k johns_key > secrets.encrypted
+# Encrypt
+$ cat secret.txt | mrrcrypt -a -k bobs_key | mrrcrypt -a -k johns_key > secret.txt.encrypted
 
-$ cat secrets.encrypted | mrrcrypt -k johns_key | mrrcrypt -k bobs_key > secrets.txt
+# Decrypt
+$ cat secret.txt.encrypted | mrrcrypt -k johns_key | mrrcrypt -k bobs_key > secret.txt
 ```
 
-The `-k <name>` option specifies a mirror file to use, and the `-a`
+The `-k <name>` option specifies a key file to use, and the `-a`
 option auto-creates it if it doesn't exist. After performing the first
 command to create two new keys and encrypt the file, they each copy
 their respective key files for themselves and delete the originals. Then
@@ -62,8 +55,8 @@ perform the second command.
 About
 -----
 
-Mirror Crypt is a command line encryption/decryption tool for ASCII text
-using an adaptive mirror field algorithm.
+Mirror Crypt is a command line encryption/decryption tool using an **adaptive
+rolling mirror field** algorithm.
 
 A traditional mirror field encryption algorithm is very similar to a
 simple substitution cipher. For every identical character of input, an
