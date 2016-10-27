@@ -51,42 +51,23 @@ perform the second command.
 About MrrCrypt
 --------------
 
-MrrCrypt is a command line encryption/decryption tool using an **adaptive
-mirror field** algorithm.
+MrrCrypt is a command-line tool for encryption/decryption. It
+processes data through a 64x64-byte adaptive mirror field to produce a highly
+unpredictable pattern of bits as output, the results of which can only be
+reversed by the same mirror field permutation that produced it. The particular mirror
+field permutation used for encryption therefore also serves as the key for decryption.
 
-What is a mirror field?
+There are over 1.94*10^1954 possible key permutations, countless times more
+than the number of atoms beleived to be on planet earth.
 
-A traditional (non-adaptive) mirror field is a construct whereby you are
-given a square grid, and inside the grid is a random assortment of mirrors
-orientated diagonlly. Around the outside of the grid are the characters to
-be encrypted/decrypted. If you imagine standing along the perimeter of the
-grid in the position of the character you wish to encrypt, and look straight
-in to the mirror field, the mirrors will reflect the encrypted character.
+The first time you run `mrrcrypt`, a new randomized key is created for you.
+This is your default key. mrrcrypt will use this key when no other
+is specified. More keys can be generated and used as needed. See **Usage**
+for more info.
 
-A small mirror field works like this:
+**What is an adaptive mirror field?**
 
-```
-                  A B C D E F G H
-                 -----------------
-               Q : : : :\: : : :/: I
-                 -----------------
-               R :\: : : :/: : : : J
-                 -----------------
-               S : : :/: : : :/: : K
-                 -----------------
-   Input       T : : :\: : :\: : : J      Output
-  -------  ==>   -----------------   ==> --------
-  "ABCDE"      U : :/: : :\: : : : M     "EUSHA"
-                 -----------------
-               V : : : :/: : : :\: N
-                 -----------------
-               W :\:/: : : : : : : O
-                 -----------------
-               X : : : : : :/:\: : P
-                 -----------------
-                  Y Z 1 2 3 4 5 6
-```
-
+TODO
 
 Download and Install
 --------------------
@@ -124,11 +105,6 @@ $ sudo make uninstall
 
 Usage
 -----
-
-COMING SOON
-
-Config Dir
-----------
 
 TODO
 
