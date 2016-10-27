@@ -1,4 +1,4 @@
-mrrcrypt
+MrrCrypt
 ========
 
 A command line encryption/decryption tool using an adaptive mirror field algorithm.
@@ -51,36 +51,38 @@ perform the second command.
 About
 -----
 
-Mirror Crypt is a command line encryption/decryption tool using an **adaptive
+MrrCrypt is a command line encryption/decryption tool using an **adaptive
 mirror field** algorithm.
 
-A traditional mirror field encryption algorithm is very similar to a
-simple substitution cipher. For every identical character of input, an
-identical character of output is produced. For example, given an input
-string of "Mississippi", which contains many duplicate characters, the
-output will also contain duplicate characters in the same positions.
+What is a mirror field?
 
-"Mississippi" -> Substitution Cypher (or Mirror Field) -> "jTaaTaaTxxT"
+A traditional (non-adaptive) mirror field is a construct whereby you are
+given a square grid, and inside the grid is a random assortment of mirrors
+orientated diagonlly. Around the outside of the grid are the characters to
+be encrypted/decrypted. It looks like this:
 
-This makes for weak, easily defeatable encryption.
+```
+   A B C D E F G H
+  -----------------
+Q : : : :\: : : : : I
+  -----------------
+R :\: : : : : : : : J
+  -----------------
+S : : : : : : :/: : K
+  -----------------
+T : : :\: : : : : : J
+  -----------------
+U : : : : :\: : : : M
+  -----------------
+V : : : : : : : :\: N
+  -----------------
+W : :/: : : : : : : O
+  -----------------
+X : : : : : :/: : : P
+  -----------------
+   Y Z 1 2 3 4 5 6
+```
 
-Mirror Crypt employs an *adaptive* mirror field algorithm. For each
-character of input, the orientation of the mirrors change, creating
-a unique mirror field permutation and therefore generating unique output,
-even for identical characters.
-
-The result is a highly unpredictable, seemingly random output.
-
-Example:
-
-Input | Output
------ | ------
-Mississippi | 2bqK$CGj8n5
-Attack at Dawn | tjrWeoPXAFIcvo
-
-The number of total possible mirror field permutations is:
-
-3^(24*24) = 6.63e+274
 
 Download and Install
 --------------------
