@@ -48,8 +48,8 @@ their respective key files for themselves and delete the originals. Then
 to decrypt, they each copy their key files to the original location and
 perform the second command.
 
-About
------
+About MrrCrypt
+--------------
 
 MrrCrypt is a command line encryption/decryption tool using an **adaptive
 mirror field** algorithm.
@@ -59,28 +59,32 @@ What is a mirror field?
 A traditional (non-adaptive) mirror field is a construct whereby you are
 given a square grid, and inside the grid is a random assortment of mirrors
 orientated diagonlly. Around the outside of the grid are the characters to
-be encrypted/decrypted. It looks like this:
+be encrypted/decrypted. If you imagine standing along the perimeter of the
+grid in the position of the character you wish to encrypt, and look straight
+in to the mirror field, the mirrors will reflect the encrypted character.
+
+A small mirror field works like this:
 
 ```
-   A B C D E F G H
-  -----------------
-Q : : : :\: : : : : I
-  -----------------
-R :\: : : : : : : : J
-  -----------------
-S : : : : : : :/: : K
-  -----------------
-T : : :\: : : : : : J
-  -----------------
-U : : : : :\: : : : M
-  -----------------
-V : : : : : : : :\: N
-  -----------------
-W : :/: : : : : : : O
-  -----------------
-X : : : : : :/: : : P
-  -----------------
-   Y Z 1 2 3 4 5 6
+                  A B C D E F G H
+                 -----------------
+               Q : : : :\: : : :/: I
+                 -----------------
+               R :\: : : :/: : : : J
+                 -----------------
+               S : : :/: : : :/: : K
+                 -----------------
+   Input       T : : :\: : :\: : : J      Output
+  -------  ==>   -----------------   ==> --------
+  "ABCDE"      U : :/: : :\: : : : M     "EUSHA"
+                 -----------------
+               V : : : :/: : : :\: N
+                 -----------------
+               W :\:/: : : : : : : O
+                 -----------------
+               X : : : : : :/:\: : P
+                 -----------------
+                  Y Z 1 2 3 4 5 6
 ```
 
 
