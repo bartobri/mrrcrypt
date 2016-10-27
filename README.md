@@ -5,7 +5,7 @@ A command line encryption/decryption tool using an adaptive mirror field algorit
 
 *Debug Mode (-d)*
 
-![Screen Cap](http://i.imgur.com/mh8efa2.gif)
+![Screen Cap](http://i.imgur.com/OoQ4WRx.gif)
 
 Quick Examples
 --------------
