@@ -143,23 +143,30 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	ts.tv_nsec = (debug % 1000) * 1000000;
 	
 	// Determining starting row/col and starting direction
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
-			if (r == 0 && grid[r][c].charUp == ch)
+	if (!direction)
+		for (r = 0, c = 0; c < GRID_SIZE; ++c)
+			if (grid[r][c].charUp == ch) {
 				direction = DIR_DOWN;
-			else if (c == 0 && grid[r][c].charLeft == ch)
-				direction = DIR_RIGHT;
-			else if (c == GRID_SIZE - 1 && grid[r][c].charRight == ch)
-				direction = DIR_LEFT;
-			else if (r == GRID_SIZE - 1 && grid[r][c].charDown == ch)
-				direction = DIR_UP;
-			
-			if (direction)
 				break;
-		}
-		if (direction)
-			break;
-	}
+			}
+	if (!direction)
+		for (r = GRID_SIZE-1, c = 0; c < GRID_SIZE; ++c)
+			if (grid[r][c].charDown == ch) {
+				direction = DIR_UP;
+				break;
+			}
+	if (!direction)
+		for (r = 0, c = 0; r < GRID_SIZE && !direction; ++r)
+			if (grid[r][c].charLeft == ch) {
+				direction = DIR_RIGHT;
+				break;
+			}
+	if (!direction)
+		for (r = 0, c = GRID_SIZE-1; r < GRID_SIZE; ++r)
+			if (grid[r][c].charRight == ch) {
+				direction = DIR_LEFT;
+				break;
+			}
 
 	// Traverse through the grid
 	while (1) {
