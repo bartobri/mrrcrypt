@@ -135,19 +135,11 @@ $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 
 -k key_name
 
-Specify a key to use. "key_name" is required.
+Specify an alternate key to use. "key_name" is required.
 
 -a
 
-Auto-create a new key if the one specified with `-k key_name` does not exist.
-
--d *ms*
-
-Debug mode. This draws the mirror field and animates the decryption process
-for debugging purposes. You will need a BIG console window to fit the
-entire miror field, minimum 134x68. "ms" specifies the time in milliseconds
-for each step through the mirror field. Values around the mirror field
-perimeter are represented in hexidecimal.
+Auto-create a new key if the one specified by `-k key_name` does not exist.
 
 ```
 # Create a new key called "bobs_key" for encryption
@@ -157,6 +149,14 @@ $ echo "This is my secret message" | mrrcrypt -a -k bobs_key > bobs_message.txt
 $ cat bobs_message.txt | mrrcrypt -k bobs_key
 This is my secret message
 ```
+
+-d *ms*
+
+Debug mode. This draws the mirror field and animates the decryption process
+for debugging purposes. You will need a BIG console window to fit the
+entire miror field, minimum 134x68. "ms" specifies the time in milliseconds
+for each step through the mirror field. Values around the mirror field
+perimeter are represented in hexidecimal.
 
 **Key Management**
 
