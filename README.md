@@ -106,25 +106,17 @@ $ sudo make uninstall
 Usage
 -----
 
-Pipe data to the `mrrcrypt` executable and it will produce encrypted
-output using the specified key, or using the default key if not specified.
-
-The keys also work in reverse. Pipe encrypted data to the `mrrcrypt`
-executable and it will produce decrypted output. The same key used to
-encrypt the data must be specified.
+`mrrcrypt` reads data from stdin, processes it through a mirror field
+algorithm, and writes the results to stdout. Use I/O redirection for
+generating input and capturing output.
 
 **Basic Encryption**
 
 ```
 # Encrypt a String
-$ echo "This is my secret" | mrrcrypt
+$ echo "This is my secret" | mrrcrypt > secret_string.encrypted
 
-# Encrypt a File (Text and Binary)
-$ cat secret.txt | mrrcrypt
-$ cat secret_photo.jpg | mrrcrypt
-
-# Store the Encrypted Output to a File
-$ cat secret.txt | mrrcrypt > secret.txt.encrypted
+# Encrypting a file
 $ cat secret_photo.jpg | mrrcrypt > secret_photo.jpg.encrypted
 ```
 
@@ -132,12 +124,49 @@ $ cat secret_photo.jpg | mrrcrypt > secret_photo.jpg.encrypted
 
 ```
 # Decrypt a File
-$ cat secrets.txt.encrypted | mrrcrypt
+$ cat secret_string.encrypted | mrrcrypt
+This is my secret
 
-# Redirect Decrypted Output to a File
-$ cat secrets.txt.encrypted | mrrcrypt > secrets.txt
+# Capture Output to a File
 $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 ```
+
+**Command Line Options**
+
+-k key_name
+    Specify a key to use. "key_name" is required.
+
+-a
+    Auto-create a new key if the one specified with `-k key_name` does not exist.
+
+```
+# Create a new key called "bobs_key" for encryption
+$ echo "This is my secret message" | mrrcrypt -a -k bobs_key > bobs_message.txt
+
+# Specify the key "bobs_key" for decryption
+$ cat bobs_message.txt | mrrcrypt -k bobs_key
+This is my secret message
+```
+
+**Key Management**
+
+Keys are stored in `$HOME/.config/mrrcrypt/`
+
+The first time you run `mrrcrypt` it will automatically generate a unique
+default key. The default key will be used when no key is specified.
+
+You may wish to share your default key (or any other key) with others so
+they can decrypt your messages. Keys that are shared by other individuals
+must be copied to the above directory so they can be used with the
+`-k key_name` option.
+
+Note that "key_name" coresponds to the name of the key file. If John
+encrypts messages using his "default" key file and gives a copy to Bob so he
+can decrypt them, Bob should rename the file to "johns_key" so he does not
+overwrite his own default key file. Then Bob can use `-k johns_key` when
+decrypting data sent from John.
+
+Keys are stored in Base64 encoded format.
 
 License
 -------
