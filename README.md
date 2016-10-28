@@ -106,7 +106,38 @@ $ sudo make uninstall
 Usage
 -----
 
-TODO
+Pipe data to the `mrrcrypt` executable and it will produce encrypted
+output using the specified key, or using the default key if not specified.
+
+The keys also work in reverse. Pipe encrypted data to the `mrrcrypt`
+executable and it will produce decrypted output. The same key used to
+encrypt the data must be specified.
+
+**Basic Encryption**
+
+```
+# Encrypt a String
+$ echo "This is my secret" | mrrcrypt
+
+# Encrypt a File (Text and Binary)
+$ cat secret.txt | mrrcrypt
+$ cat secret_photo.jpg | mrrcrypt
+
+# Store the Encrypted Output to a File
+$ cat secret.txt | mrrcrypt > secret.txt.encrypted
+$ cat secret_photo.jpg | mrrcrypt > secret_photo.jpg.encrypted
+```
+
+**Basic Decryption**
+
+```
+# Decrypt a File
+$ cat secrets.txt.encrypted | mrrcrypt
+
+# Redirect Decrypted Output to a File
+$ cat secrets.txt.encrypted | mrrcrypt > secrets.txt
+$ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
+```
 
 License
 -------
