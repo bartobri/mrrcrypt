@@ -88,8 +88,8 @@ $ which git
 ```
 Download and Build:
 ```
-$ git clone https://github.com/bartobri/mirror-crypt.git
-$ cd mirror-crypt
+$ git clone https://github.com/bartobri/mrrcrypt.git
+$ cd mrrcrypt
 $ make
 ```
 
