@@ -7,11 +7,13 @@ first expain what a plain, non-adaptive mirror field is.
 Non-Adaptive Mirror Field
 -------------------------
 
-A **mirror Field** is a square grid that contains randomly placed diagonal
+A **mirror field** is a square grid that contains randomly placed diagonal
 mirrors. Characters that can be encrypted are placed around the perimeter
 of the mirror field. Encryption occurres by standing on the character you
 wish to encrypt and looking straight in to the mirror field. The mirrors
 will reflect back the encrypted character.
+
+Mirror Field Example:
 
 ```
                 A B C D E
