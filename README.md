@@ -52,18 +52,13 @@ About MrrCrypt
 --------------
 
 MrrCrypt is a command-line tool for encryption/decryption. It
-processes data through a 64x64-byte adaptive mirror field to produce a highly
+processes data through an adaptive mirror field algorithm to produce a highly
 unpredictable pattern of bits as output, the results of which can only be
 reversed by the same mirror field permutation that produced it. The particular mirror
 field permutation used for encryption therefore also serves as the key for decryption.
 
 There are over 1.94*10^1954 possible key permutations, countless times more
 than the number of atoms beleived to be on planet earth.
-
-The first time you run `mrrcrypt`, a new randomized key is created for you.
-This is your default key. mrrcrypt will use this key when no other
-is specified. More keys can be generated and used as needed. See **Usage**
-for more info.
 
 **What is an adaptive mirror field?**
 
@@ -106,9 +101,8 @@ $ sudo make uninstall
 Usage
 -----
 
-`mrrcrypt` reads data from stdin, processes it through a mirror field
-algorithm, and writes the results to stdout. Use I/O redirection for
-generating input and capturing output.
+`mrrcrypt` processes data from stdin and writes the results to stdout.
+Use I/O redirection for generating input and capturing output.
 
 **Basic Encryption**
 
@@ -153,10 +147,9 @@ This is my secret message
 -d *ms*
 
 Debug mode. This draws the mirror field and animates the decryption process
-for debugging purposes. You will need a BIG console window to fit the
-entire miror field, minimum 134x68. "ms" specifies the time in milliseconds
-for each step through the mirror field. Values around the mirror field
-perimeter are represented in hexidecimal.
+for debugging purposes. You will need a minimum temrinal size of 134x68.
+"ms" specifies the time in milliseconds for each step through the mirror
+field. Values around the mirror field perimeter are represented in hexidecimal.
 
 **Key Management**
 
