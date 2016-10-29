@@ -13,6 +13,7 @@ of the mirror field. Encryption occurres by standing on the character you
 wish to encrypt and looking straight in to the mirror field. The mirrors
 will reflect back the encrypted character.
 
+```
                 A B C D E
                -----------
               K: :/: :\: :F
@@ -26,6 +27,7 @@ will reflect back the encrypted character.
               O: : :/: :\:J
                -----------
                 P Q R S T
+```
 
 In prqactice, using this sort of mirror field for encryption is weak. The
 same character of output is always produced for the same character of
