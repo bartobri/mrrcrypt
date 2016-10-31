@@ -54,10 +54,15 @@ input, making it easily defeatable.
 Adaptive Mirror Field
 ---------------------
 
-An *adaptive* mirror field mutates itself after a character is processed,
-producing a unique mirror field permutation for the character that follows.
-The mutation of the mirror field is based on the "path" that the previous
-character took through the mirror field. In this sense, each character
-acts as a key for for encrypting/decrypting the character that follows.
+In an *adaptive* mirror field the orientation of the mirrors that are used to process a character change once the processing of that character is complete.
+This produces a unique mirror field permutation for every character and ensures that the same character of input produces a different character of output.
+
+[Animation here]
+
+While this "adaptive" feature is a big improvement, there are still weaknesses in cases where there few mirrors between the input and output characters.
+In a case where there is only one mirror, given that there are only 3 mirror orientations, every third character output would repeat when given all identical input characters.
+To eliminate this issue, the adaptve feature also include *perimiter character rolling*, whereby each character on the perimeter rolls it's position clockwise by 1.
+
+[Animation here]
 
 
