@@ -35,7 +35,29 @@ In prqactice, using this sort of mirror field for encryption is weak. The
 same character of output is always produced for the same character of
 input, making it easily defeatable.
 
+```
+                A B C D E
+               -----------
+              K: :/: :\: :F
+               -----------
+              L: : :\: :/:G
+  Input        -----------       Output
+ ------- ==>  M:\: : :/: :H  ==> -------
+ "CCCCC"       -----------       "EEEEE"
+              N:\:/: : : :I
+               -----------
+              O: : :/: :\:J
+               -----------
+                P Q R S T
+```
+
 Adaptive Mirror Field
 ---------------------
 
-TODO
+An *adaptive* mirror field mutates itself after a character is processed,
+producing a unique mirror field permutation for the character that follows.
+The mutation of the mirror field is based on the "path" that the previous
+character took through the mirror field. In this sense, each character
+acts as a key for for encrypting/decrypting the character that follows.
+
+
