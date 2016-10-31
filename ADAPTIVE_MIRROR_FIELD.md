@@ -60,8 +60,9 @@ This produces a unique mirror field permutation for every character and ensures 
 ![Adaptve Mirror Field](http://i.imgur.com/sp8g4vr.gif)
 
 While this "adaptive" feature is a big improvement, there are still weaknesses in cases where there few mirrors between the input and output characters.
-In a case where there is only one mirror, given that there are only 3 mirror orientations, every third character output would repeat when given all identical input characters.
-To eliminate this issue, the adaptve feature also include *perimiter character rolling*, whereby each character on the perimeter rolls it's position clockwise by 1.
+In a case where there is only one mirror, given that there are only 3 mirror orientations, every third out character would repeat when given all identical input characters.
+
+To eliminate this issue, mrrcrypt employs *perimiter character rolling*, whereby each character on the perimeter rolls it's position clockwise by 1 after every character is processed.
 
 [Animation here]
 
