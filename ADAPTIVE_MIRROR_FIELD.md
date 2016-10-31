@@ -55,9 +55,9 @@ Adaptive Mirror Field
 ---------------------
 
 In an *adaptive* mirror field the orientation of the mirrors that are used to process a character change once the processing of that character is complete.
-This produces a unique mirror field permutation for every character and ensures that the same character of input produces a different character of output.
+This produces a unique mirror field permutation for every character and ensures that duplicate characters of input produce varying characters of output.
 
-[Animation here]
+![Adaptve Mirror Field](http://i.imgur.com/sp8g4vr.gif)
 
 While this "adaptive" feature is a big improvement, there are still weaknesses in cases where there few mirrors between the input and output characters.
 In a case where there is only one mirror, given that there are only 3 mirror orientations, every third character output would repeat when given all identical input characters.
