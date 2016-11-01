@@ -269,18 +269,19 @@ void mirrorfield_roll(void) {
 		grid[r][GRID_SIZE - 1].charRight = last;
 		last = next;
 	}
-	// Rotate left chars
-	for (r = 0; r < GRID_SIZE; ++r) {
-		next = grid[r][0].charLeft;
-		grid[r][0].charLeft = last;
-		last = next;
-	}
 	// Rotate bottom chars
-	for (c = 0; c < GRID_SIZE; ++c) {
+	for (c = GRID_SIZE - 1; c >= 0; --c) {
 		next = grid[GRID_SIZE - 1][c].charDown;
 		grid[GRID_SIZE - 1][c].charDown = last;
 		last = next;
 	}
+	// Rotate left chars
+	for (r = GRID_SIZE - 1; r >= 0; --r) {
+		next = grid[r][0].charLeft;
+		grid[r][0].charLeft = last;
+		last = next;
+	}
+
 	grid[0][0].charUp = last;
 }
 
