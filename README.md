@@ -71,7 +71,7 @@ than the number of atoms beleived to be on planet earth.
 
 **What is an adaptive mirror field?**
 
-TODO
+See [ADAPTIVE_MIRROR_FIELD.md](ADAPTIVE_MIRROR_FIELD.md).
 
 Download and Install
 --------------------
