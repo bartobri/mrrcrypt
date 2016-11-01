@@ -18,12 +18,12 @@ Mirror Field Example:
 ```
                 A B C D E
                -----------
-              K: :/: :\: :F
+              K: :/: :/: :F
                -----------
               L: : :\: :/:G
   Input        -----------       Output
  ------- ==>  M:\: : :/: :H  ==> -------
- "ABCDE"       -----------       "MKEFC"
+ "ABCDE"       -----------       "FKEMC"
               N:\:/: : : :I
                -----------
               O: : :/: :\:J
@@ -38,7 +38,7 @@ input, making it easily defeatable.
 ```
                 A B C D E
                -----------
-              K: :/: :\: :F
+              K: :/: :/: :F
                -----------
               L: : :\: :/:G
   Input        -----------       Output
@@ -64,6 +64,6 @@ In a case where there is only one mirror, given that there are only 3 mirror ori
 
 To eliminate this issue, mrrcrypt employs *perimiter character rolling*, whereby each character on the perimeter rolls it's position clockwise by 1 after every character is processed.
 
-[Animation here]
+![Adaptve Mirror Field](http://i.imgur.com/bKHZ9bl.gif)
 
 
