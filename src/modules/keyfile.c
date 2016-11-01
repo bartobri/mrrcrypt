@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/stat.h>
 
@@ -85,7 +86,7 @@ int keyfile_create(char *keyFileFullPathName) {
 		return 0;
 
 	// Seed my random number generator
-	srand(time(NULL));
+	srand(time(NULL) + getpid());
 
 	// Write mirror data to file
 	for (r = 0; r < width; ++r) {
