@@ -151,7 +151,9 @@ Auto-create a new key if the one specified by `-k key_name` does not exist.
 Debug mode. This draws the mirror field and animates the decryption process
 for debugging purposes. You will need a minimum temrinal size of 134x68.
 "ms" specifies the time in milliseconds for each step through the mirror
-field. Values around the mirror field perimeter are represented in hexidecimal.
+field. Values around the mirror field perimeter are shown in hexidecimal.
+A total of 256 values are represented in the 64x64 grid, one value for
+every possible arrangement of bits in a single byte.
 
 ![MrrCrypt's Mirror Field](http://i.imgur.com/cXrVwqe.jpg)
 
