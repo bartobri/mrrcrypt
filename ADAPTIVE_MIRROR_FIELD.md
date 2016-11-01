@@ -55,16 +55,11 @@ as well as hints to mirror placements and orientations of the mirror field.
 Adaptive Mirror Field
 ---------------------
 
-In an *adaptive* mirror field the orientation of the mirrors are dynamic. They change orientation for each character that is processed through the mirror field.
-This produces a unique mirror field permutation for every character, and ensures that duplicate characters of input produce varying characters of output, eliminating the weaknesses of a traditional mirror field.
-
-![Adaptve Mirror Field](http://i.imgur.com/sp8g4vr.gif)
-
-While this **adaptive** feature is a big improvement, there is still a potential weakness in a case where there are few mirrors between the input and output characters.
-For example, in a case where there is only one mirror, given that there are 3 mirror orientations, every third output character would repeat when given all identical input characters.
-
-To eliminate this issue, MrrCrypt employs *perimiter character rolling*. Each character on the perimeter rolls it's position clockwise by 1 after every character is processed.
+In an *adaptive* mirror field the mirror orientation and perimeter character positions are dynamic.
+For every character that is processed, the mirror field mutates itself in a way that ensures that the same path through the mirror field produces different results.
+The feature creates a unique mirror field permutation for every character, eliminating the weaknesses of a traditional mirror field.
 
 ![Adaptve Mirror Field](http://i.imgur.com/bKHZ9bl.gif)
 
-
+MrrCrypt's Adaptive Mirror Field
+--------------------------------
