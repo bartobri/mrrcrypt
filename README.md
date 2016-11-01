@@ -1,7 +1,7 @@
 MrrCrypt
 ========
 
-A command line encryption/decryption tool using an adaptive mirror field algorithm.
+A command line encryption/decryption tool that uses an adaptive mirror field algorithm.
 
 **Table of Contents**
 
@@ -40,7 +40,7 @@ $ cat secret.jpg.encrypted | mrrcrypt > secret.jpg
 **Dual Key Encryption/Decryption**
 
 Suppose Bob and John want to encrypt a file so that they each hold a
-distinct key required for decryption. Here is how they can accomplish this.
+distinct key required for decryption. MrrCrypt can easily accomplish this.
 
 ```
 # Encrypt
@@ -53,21 +53,17 @@ $ cat secret.txt.encrypted | mrrcrypt -k johns_key | mrrcrypt -k bobs_key > secr
 The `-k <name>` option specifies a key file to use, and the `-a`
 option auto-creates it if it doesn't exist. After performing the first
 command to create two new keys and encrypt the file, they each copy
-their respective key files for themselves and delete the originals. Then
-to decrypt, they each copy their key files to the original location and
-perform the second command.
+their respective key files for themselves (see [Key Management](#key-management))
+and delete the originals. To decrypt, they each copy their key files back
+to the original location and perform the second command.
 
 About MrrCrypt
 --------------
 
 MrrCrypt is a command-line tool for encryption/decryption. It
 processes data through an adaptive mirror field algorithm to produce a highly
-unpredictable pattern of bits as output, the results of which can only be
-reversed by the same mirror field permutation that produced it. The particular mirror
-field permutation used for encryption therefore also serves as the key for decryption.
-
-There are over 1.94*10^1954 possible key permutations, countless times more
-than the number of atoms beleived to be on planet earth.
+unpredictable pattern of bits as output. The unique mirror field permutation
+used for encryption therefore also serves as the key for decryption.
 
 **What is an adaptive mirror field?**
 
@@ -76,8 +72,8 @@ See [ADAPTIVE_MIRROR_FIELD.md](ADAPTIVE_MIRROR_FIELD.md).
 Download and Install
 --------------------
 
-In order to download and build this program, you will need to have git,
-gcc, and make installed. Install them from your package manager if not
+In order to download and build this program, you will need to have `git`,
+`gcc`, and `make` installed. Install them from your package manager if not
 already installed.
 
 ```
@@ -90,7 +86,9 @@ $ which gcc
 $ which git
 /usr/bin/git
 ```
+
 Download and Build:
+
 ```
 $ git clone https://github.com/bartobri/mrrcrypt.git
 $ cd mrrcrypt
@@ -98,11 +96,13 @@ $ make
 ```
 
 Install:
+
 ```
 $ sudo make install
 ```
 
 Uninstall:
+
 ```
 $ sudo make uninstall
 ```
@@ -136,11 +136,13 @@ $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 
 **Command Line Options**
 
--k key_name
+`-k key_name`
 
-Specify an alternate key to use. "key_name" is required.
+Specify a key to use. `key_name` is required. Note that when this option
+is not used, MrrCrypt uses the default key. See [Key Management](#key-management)
+for more info.
 
--a
+`-a`
 
 Auto-create a new key if the one specified by `-k key_name` does not exist.
 
@@ -153,12 +155,14 @@ $ cat bobs_message.txt | mrrcrypt -k bobs_key
 This is my secret message
 ```
 
--d *ms*
+`-d <ms>`
 
 Debug mode. This draws the mirror field and animates the decryption process
 for debugging purposes. You will need a minimum temrinal size of 134x68.
-"ms" specifies the time in milliseconds for each step through the mirror
+<ms> specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are represented in hexidecimal.
+
+TODO: debug image here
 
 Key Management
 --------------
@@ -174,9 +178,9 @@ must be copied to the above directory so they can be used with the
 `-k key_name` option.
 
 Note that "key_name" coresponds to the name of the key file. If John
-encrypts messages using his "default" key file and gives a copy to Bob so he
+encrypts messages using his "default" key file, and gives a copy to Bob so he
 can decrypt them, Bob should rename the file to "johns_key" so he does not
-overwrite his own default key file. Then Bob can use `-k johns_key` when
+overwrite his own default key file. Then Bob can then use `-k johns_key` when
 decrypting data sent from John.
 
 Keys are stored in Base64 encoded format.
