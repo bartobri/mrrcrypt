@@ -9,6 +9,7 @@ A command line encryption/decryption tool using an adaptive mirror field algorit
 2. [About MrrCrypt](#about-mrrcrypt)
 3. [Download and Install](#download-and-install)
 4. [Usage](#usage)
+5. [Key Management](#key-management)
 5. [License](#license)
 
 Quick Examples
@@ -159,7 +160,8 @@ for debugging purposes. You will need a minimum temrinal size of 134x68.
 "ms" specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are represented in hexidecimal.
 
-**Key Management**
+Key Management
+--------------
 
 Keys are stored in `$HOME/.config/mrrcrypt/`
 
