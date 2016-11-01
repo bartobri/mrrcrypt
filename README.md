@@ -153,7 +153,7 @@ for debugging purposes. You will need a minimum temrinal size of 134x68.
 "ms" specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are represented in hexidecimal.
 
-TODO: debug image here
+![MrrCrypt's Mirror Field](http://i.imgur.com/cXrVwqe.jpg)
 
 Key Management
 --------------
