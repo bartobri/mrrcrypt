@@ -146,20 +146,11 @@ for more info.
 
 Auto-create a new key if the one specified by `-k key_name` does not exist.
 
-```
-# Create a new key called "bobs_key" for encryption
-$ echo "This is my secret message" | mrrcrypt -a -k bobs_key > bobs_message.txt
-
-# Specify the key "bobs_key" for decryption
-$ cat bobs_message.txt | mrrcrypt -k bobs_key
-This is my secret message
-```
-
-`-d <ms>`
+`-d ms`
 
 Debug mode. This draws the mirror field and animates the decryption process
 for debugging purposes. You will need a minimum temrinal size of 134x68.
-<ms> specifies the time in milliseconds for each step through the mirror
+"ms" specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are represented in hexidecimal.
 
 TODO: debug image here
