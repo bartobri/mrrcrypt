@@ -4,11 +4,11 @@ MrrCrypt
 MrrCrypt is a simple command-line tool for encrypting and decrypting data
 using an adaptive mirror field algorithm.
 
-See the [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) file for more info.
-
-*Encrypting a message in debug mode:*
+*Adaptive Mirror Field Animation:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/05cBxTQ.gif)
+
+See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for details.
 
 Table of Contents
 -----------------
@@ -134,7 +134,7 @@ $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 `-k key_name`
 
 Specify a key to use. `key_name` is required. Note that when this option
-is not used, MrrCrypt uses the default key. See [Key Management](#key-management)
+is not used, mrrcrypt uses the default key. See [Key Management](#key-management)
 for more info.
 
 `-a`
@@ -144,9 +144,9 @@ Auto-create a new key if the one specified by `-k key_name` does not exist.
 `-d ms`
 
 Debug mode. This draws the mirror field and animates the decryption process
-for debugging purposes. You will need a minimum temrinal size of 134x68.
+for debugging purposes. You will need a minimum terminal size of 134x68.
 "ms" specifies the time in milliseconds for each step through the mirror
-field. Values around the mirror field perimeter are shown in hexidecimal.
+field. Values around the mirror field perimeter are shown in hexadecimal.
 A total of 256 values are represented in the 64x64 grid, one value for
 every possible arrangement of bits in a single byte.
 
@@ -163,7 +163,7 @@ they can decrypt your messages. Keys that are shared by other individuals
 must be copied to the above directory so they can be used with the
 `-k key_name` option.
 
-Note that "key_name" coresponds to the name of the key file. If John
+Note that "key_name" corresponds to the name of the key file. If John
 encrypts messages using his "default" key file, and gives a copy to Bob so he
 can decrypt them, Bob should rename the file to "johns_key" so he does not
 overwrite his own default key file. Then Bob can then use `-k johns_key` when

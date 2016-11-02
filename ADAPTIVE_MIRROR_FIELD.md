@@ -2,7 +2,7 @@ Adaptive Mirror Field
 =====================
 
 To help explain what an adaptive mirror field is, let's
-first expain what a typical, non-adaptive mirror field is.
+first explain what a typical, non-adaptive mirror field is.
 
 Non-Adaptive Mirror Field
 -------------------------
@@ -10,7 +10,7 @@ Non-Adaptive Mirror Field
 A **mirror field** is a square grid that contains randomly placed mirrors
 in a diagonal orientation. Characters that can be encrypted are placed
 around the perimeter of the mirror field. Encryption occurres by standing
-on the character you wish to encrypt, looking straight in to the field,
+on the character you wish to encrypt, looking straight into the field,
 and observing the character that the mirrors reflect back.
 
 Mirror Field Example:
@@ -63,7 +63,7 @@ In an adaptive mirror field, the mirror orientations and position of the perimet
 For every character that is processed:
 
 * The character's path through the mirror field reorients the mirrors it contacts, creating a unique mirror field permutation for the next character.
-* 2. The characters on the perimiter are rolled clockwise.
+* 2. The characters on the perimeter are rolled clockwise.
    
 These two features eliminate identifiable patterns in the output.
 
