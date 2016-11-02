@@ -31,10 +31,10 @@ Mirror Field Example:
                 P Q R S T
 ```
 
-In practice, using a typical mirror field is a weak for of encryption. The
+In practice, using a typical mirror field is a weak form of encryption. The
 same character of output is always produced for the same character of
-input, creating a pattern of output characters similar to those used for input,
-as well as hints to mirror placements and orientations of the mirror field.
+input, creating a pattern of output characters that hint towards those used
+for input.
 
 ```
                 A B C D E
@@ -52,11 +52,20 @@ as well as hints to mirror placements and orientations of the mirror field.
                 P Q R S T
 ```
 
+Given a long enough encrypted message, one could deduce the unencrypted
+message by examining patterns in the output.
+
 Adaptive Mirror Field
 ---------------------
 
-In an *adaptive* mirror field, the mirror orientations and perimeter character positions are dynamic.
-For every character that is processed, the mirror field mutates itself, creating a unique mirror field permutation that ensures the same path through the mirror field will produce different results.
+In an adaptive mirror field, the mirror orientations and position of the perimeter characters are dynamic.
+
+For every character that is processed:
+
+* The character's path through the mirror field reorients the mirrors it contacts, creating a unique mirror field permutation for the next character.
+* 2. The characters on the perimiter are rolled clockwise.
+   
+These two features eliminate identifiable patterns in the output.
 
 ![Adaptve Mirror Field](http://i.imgur.com/bKHZ9bl.gif)
 

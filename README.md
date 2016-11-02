@@ -1,10 +1,10 @@
 MrrCrypt
 ========
 
-MrrCrypt is a command-line tool for encrypting/decrypting data using an
-adaptive mirror field algorithm.
+MrrCrypt is a simple command-line tool for encrypting and decrypting data
+using an adaptive mirror field algorithm.
 
-See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for more info.
+See the [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) file for more info.
 
 *Encrypting a message in debug mode:*
 
