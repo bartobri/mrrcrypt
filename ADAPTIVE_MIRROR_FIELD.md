@@ -56,8 +56,7 @@ Adaptive Mirror Field
 ---------------------
 
 In an *adaptive* mirror field, the mirror orientations and perimeter character positions are dynamic.
-For every character that is processed, the mirror field mutates itself in a way that ensures that the same path through the mirror field produces different results.
-The feature creates a unique mirror field permutation for every character, eliminating the weaknesses of a traditional mirror field.
+For every character that is processed, the mirror field mutates itself, creating a unique mirror field permutation that ensures the same path through the mirror field will produce different results.
 
 ![Adaptve Mirror Field](http://i.imgur.com/bKHZ9bl.gif)
 

@@ -1,19 +1,22 @@
 MrrCrypt
 ========
 
-A command line encryption/decryption tool that uses an adaptive mirror field algorithm.
+MrrCrypt is a command-line tool for encrypting/decrypting data using an
+adaptive mirror field algorithm.
 
-*MrrCrypt encrypting a message in debug mode:*
+See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for more info.
+
+*Encrypting a message in debug mode:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/05cBxTQ.gif)
 
-**Table of Contents**
+Table of Contents
+-----------------
 
 1. [Quick Examples](#quick-examples)
-2. [About MrrCrypt](#about-mrrcrypt)
-3. [Download and Install](#download-and-install)
-4. [Usage](#usage)
-5. [Key Management](#key-management)
+2. [Download and Install](#download-and-install)
+3. [Usage](#usage)
+4. [Key Management](#key-management)
 5. [License](#license)
 
 Quick Examples
@@ -60,18 +63,6 @@ command to create two new keys and encrypt the file, they each copy
 their respective key files for themselves (see [Key Management](#key-management))
 and delete the originals. To decrypt, they each copy their key files back
 to the original location and perform the second command.
-
-About MrrCrypt
---------------
-
-MrrCrypt is a command-line tool for encryption/decryption. It
-processes data through an adaptive mirror field algorithm to produce a highly
-unpredictable pattern of bits as output. The unique mirror field permutation
-used for encryption therefore also serves as the key for decryption.
-
-**What is an adaptive mirror field?**
-
-See [ADAPTIVE_MIRROR_FIELD.md](ADAPTIVE_MIRROR_FIELD.md).
 
 Download and Install
 --------------------
@@ -158,8 +149,6 @@ for debugging purposes. You will need a minimum temrinal size of 134x68.
 field. Values around the mirror field perimeter are shown in hexidecimal.
 A total of 256 values are represented in the 64x64 grid, one value for
 every possible arrangement of bits in a single byte.
-
-![MrrCrypt's Mirror Field](http://i.imgur.com/cXrVwqe.jpg)
 
 Key Management
 --------------
