@@ -178,9 +178,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			nanosleep(&ts, NULL);
 		}
 		
-		// If we hit a mirror that we've already been to, un-rotate it.
-		// This is necessary to preserve the ability to reverse the encryption.
-		// We can not rotate a mirror more than once per character.
+		// Flag the mirrors we visited so we can rotate them
 		if (grid[r][c].mirrorType != MIRROR_NONE)
 			grid[r][c].visited = 1;
 
