@@ -5,7 +5,7 @@ A command line encryption/decryption tool that uses an adaptive mirror field alg
 
 *MrrCrypt encrypting a message in debug mode:*
 
-![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/4GRcmzF.gifv)
+![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/hhg0yDx.gif)
 
 **Table of Contents**
 
