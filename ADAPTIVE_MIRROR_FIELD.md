@@ -63,7 +63,7 @@ In an adaptive mirror field, the mirror orientations and position of the perimet
 For every character that is processed:
 
 * The character's path through the mirror field reorients the mirrors it contacts, creating a unique mirror field permutation for the next character.
-* 2. The characters on the perimeter are rolled clockwise.
+* The characters on the perimeter are rolled clockwise.
    
 These two features eliminate identifiable patterns in the output.
 

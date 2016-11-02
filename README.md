@@ -1,8 +1,8 @@
 MrrCrypt
 ========
 
-MrrCrypt is a simple command-line tool for encrypting and decrypting data
-using an adaptive mirror field algorithm.
+The goal of MrrCrypt is to provide a simple command-line tool for encrypting
+and decrypting data using an adaptive mirror field algorithm.
 
 *Adaptive Mirror Field Animation:*
 
