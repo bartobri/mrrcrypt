@@ -3,6 +3,10 @@ MrrCrypt
 
 A command line encryption/decryption tool that uses an adaptive mirror field algorithm.
 
+*MrrCrypt encrypting a message in debug mode:*
+
+![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/4GRcmzF.gif)
+
 **Table of Contents**
 
 1. [Quick Examples](#quick-examples)
