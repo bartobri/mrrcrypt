@@ -131,9 +131,11 @@ $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 
 **Command Line Options**
 
-`-k key_name`
+`-k key_file`
 
-Specify a key to use. `key_name` is required. Note that when this option
+Specify a key to use. An argument is required. The argument can be the name
+of a key file that exists in the default key directory, or it can be a full
+path to a key file that exists elsewhere on disk. Note that when this option
 is not used, mrrcrypt uses the default key. See [Key Management](#key-management)
 for more info.
 
