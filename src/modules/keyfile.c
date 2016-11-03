@@ -24,8 +24,8 @@ void keyfile_init(void) {
 }
 
 int keyfile_open(char *keyFileName, int autoCreate) {
-	char *homeDir = getenv("HOME");
-	char *keyFilePath = DEFAULT_KEY_PATH;
+	char *homeDir              = getenv("HOME");
+	char *keyFilePath          = DEFAULT_KEY_PATH;
 	char *keyFilePathName;
 	char *keyFileFullPathName;
 	
@@ -33,14 +33,28 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 	if (homeDir == NULL)
 		return 0;
 	
-	// Combine mirror file path and name in to one string.
-	keyFilePathName = malloc(strlen(keyFilePath) + strlen(keyFileName) + 1);
-	sprintf(keyFilePathName, "%s%s", keyFilePath, keyFileName);
+	// Check if we have an absolute path	
+	if (*keyFileName == '/') {
 	
-	// Build mirror file path
-	keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
-	sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
+		// Assign to full path variable
+		keyFileFullPathName = keyFileName;
 
+	} else {
+
+		// Combine default file path and name in to one string.
+		keyFilePathName = malloc(strlen(keyFilePath) + strlen(keyFileName) + 1);
+		sprintf(keyFilePathName, "%s%s", keyFilePath, keyFileName);
+		
+		// Build key file path
+		keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
+		sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
+		
+		// Build key file path
+		keyFileFullPathName = malloc(strlen(keyFilePathName) + strlen(homeDir) + 2);
+		sprintf(keyFileFullPathName, "%s/%s", homeDir, keyFilePathName);
+	}
+
+	// Open key file
 	while ((keyFile = fopen(keyFileFullPathName, "r")) == NULL) {
 		if (autoCreate) {
 			if (keyfile_create(keyFileFullPathName)) {
@@ -50,9 +64,7 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 		break;
 	}
 	
-	free(keyFilePathName);
-	free(keyFileFullPathName);
-	
+	// Return zero if we can't openthe key file
 	if (keyFile == NULL)
 		return 0;
 	

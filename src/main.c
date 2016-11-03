@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 	// Open key file
 	if (keyfile_open(keyFileName, autoCreate) == 0) {
 		if (autoCreate)
-			main_shutdown("Could not auto-create key file. Make sure $HOME is set to a writable directory.");
+			main_shutdown("Could not auto-create key file. Check permissions.");
 		else
 			main_shutdown("Key file not found. Use -a to auto-create.");
 	}
