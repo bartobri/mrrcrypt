@@ -74,7 +74,6 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
 	int w = 0;
-	int width = GRID_SIZE;
 	struct stat sb;
 	FILE *config;
 	unsigned char perimeterChars[GRID_SIZE * 4];
@@ -101,8 +100,8 @@ int keyfile_create(char *keyFileFullPathName) {
 	srand(time(NULL) + getpid());
 
 	// Write mirror data to file
-	for (r = 0; r < width; ++r) {
-		for (c = 0; c < width; ++c) {
+	for (r = 0; r < GRID_SIZE; ++r) {
+		for (c = 0; c < GRID_SIZE; ++c) {
 			switch (rand() % MIRROR_DENSITY) {
 				case 1:
 					contents.decoded[contents.index++] = '/';
