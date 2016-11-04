@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -74,8 +75,10 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
 	int w = 0;
+	uint32_t randseed = 0;
 	struct stat sb;
 	FILE *keyfile;
+	FILE *urandom;
 	unsigned char perimeterChars[GRID_SIZE * 4];
 	base64 contents = { .index = 0 };
 
@@ -92,16 +95,24 @@ int keyfile_create(char *keyFileFullPathName) {
 		}
 	}
 
-	// Now lets open the mirror file
+	// Open the key file
 	if ((keyfile = fopen(keyFileFullPathName, "w")) == NULL)
 		return 0;
-
-	// Seed my random number generator
-	srand(time(NULL) + getpid());
+		
+	// Open the urandom resource
+	if ((urandom = fopen("/dev/urandom", "r")) == NULL)
+		return 0;
 
 	// Write mirror data to file
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
+
+			// (Re)seed our PRNG
+			for (i = 24; i >= 0; i -= 8)
+				randseed += ((uint32_t)fgetc(urandom) << i);
+			srand(randseed);
+
+			// Randomly generate mirror char
 			switch (rand() % MIRROR_DENSITY) {
 				case 1:
 					contents.decoded[contents.index++] = '/';
@@ -126,6 +137,9 @@ int keyfile_create(char *keyFileFullPathName) {
 			}
 		}
 	}
+	
+	// Close urandom resource
+	fclose(urandom);
 	
 	// Generate perimeter characters
 	for (i = 0; i < GRID_SIZE * 4; i++)
