@@ -162,8 +162,7 @@ default key. The default key will be used when no key is specified.
 
 You may wish to share your default key (or any other key) with others so
 they can decrypt your messages. Keys that are shared by other individuals
-must be copied to the above directory so they can be used with the
-`-k key_file` option.
+can be used with the `-k key_file` option.
 
 Note that "key_file" corresponds to the name of the key file. If John
 encrypts messages using his "default" key file, and gives a copy to Bob so he
