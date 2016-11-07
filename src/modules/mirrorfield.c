@@ -4,6 +4,7 @@
 // under the terms of the MIT License. See LICENSE for more details.
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -249,38 +250,41 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 }
 
 void mirrorfield_roll(void) {
-	int r, c;
-	char last, next;
+	int i;
+	int next;
+	int perimeterChars[GRID_SIZE * 4];
 	
-	// Start with 0,0 char
-	last = grid[0][0].charUp;
+	// Generate perimeter characters
+	for (i = 0; i < GRID_SIZE * 4; i++)
+		perimeterChars[i] = i;
+	
+	// Systematically seed our PRNG
+	srand(grid[0][0].charUp);
+	
+	// Pseudo-Randomly mix the perimeter characters
+	for (i = 0; i < GRID_SIZE * 4; i++) {
+		next = rand() % (GRID_SIZE * 4);
+		while (perimeterChars[next] < 0) {
+			if (next == (GRID_SIZE * 4) - 1) {
+				next = 0;
+			} else {
+				next++;
+			}
+		}
+		
+		if (i < GRID_SIZE) {
+			grid[0][i].charUp = (unsigned char)perimeterChars[next];
+		} else if (i < GRID_SIZE * 2) {
+			grid[i - GRID_SIZE][GRID_SIZE - 1].charRight = (unsigned char)perimeterChars[next];
+		} else if (i < GRID_SIZE * 3) {
+			grid[i - (GRID_SIZE * 2)][0].charLeft = (unsigned char)perimeterChars[next];
+		} else if (i < GRID_SIZE * 4) {
+			grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown = (unsigned char)perimeterChars[next];
+		}
+		
+		perimeterChars[next] = -1;
 
-	// Rotate top chars
-	for (c = 1; c < GRID_SIZE; ++c) {
-		next = grid[0][c].charUp;
-		grid[0][c].charUp = last;
-		last = next;
 	}
-	// Rotate right chars
-	for (r = 0; r < GRID_SIZE; ++r) {
-		next = grid[r][GRID_SIZE - 1].charRight;
-		grid[r][GRID_SIZE - 1].charRight = last;
-		last = next;
-	}
-	// Rotate bottom chars
-	for (c = GRID_SIZE - 1; c >= 0; --c) {
-		next = grid[GRID_SIZE - 1][c].charDown;
-		grid[GRID_SIZE - 1][c].charDown = last;
-		last = next;
-	}
-	// Rotate left chars
-	for (r = GRID_SIZE - 1; r >= 0; --r) {
-		next = grid[r][0].charLeft;
-		grid[r][0].charLeft = last;
-		last = next;
-	}
-
-	grid[0][0].charUp = last;
 }
 
 void mirrorfield_draw(int pos_r, int pos_c) {

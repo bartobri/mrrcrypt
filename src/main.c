@@ -79,10 +79,10 @@ int main(int argc, char *argv[]) {
 	// Loop over input one char at a time and encrypt
 	while ((ch = getchar()) != EOF) {
 		
-		// Print encrypted/decrypted char
+		// Print cyphertext
 		putchar(mirrorfield_crypt_char((unsigned char)ch, debug));
 		
-		// Roll perimeter chars
+		// Mix perimeter chars using ech at the PRNG seed
 		mirrorfield_roll();
 	}
 
