@@ -254,7 +254,7 @@ void mirrorfield_roll(void) {
 	int next;
 	int perimeterChars[GRID_SIZE * 4];
 	
-	// Generate perimeter characters
+	// Populate perimeter characters
 	for (i = 0; i < GRID_SIZE * 4; i++)
 		perimeterChars[i] = i;
 	
