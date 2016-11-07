@@ -4,7 +4,6 @@
 // under the terms of the MIT License. See LICENSE for more details.
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
@@ -250,40 +249,62 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 }
 
 void mirrorfield_roll(void) {
-	int i;
-	int next;
+	int i, p;
+	unsigned char c;
+	unsigned char l;
 	int perimeterChars[GRID_SIZE * 4];
 	
-	// Populate perimeter characters
-	for (i = 0; i < GRID_SIZE * 4; i++)
-		perimeterChars[i] = i;
+	// Initialize perimeter array
+	for (i = 0; i < GRID_SIZE * 4; ++i)
+		perimeterChars[i] = -1;
 	
-	// Systematically seed our PRNG
-	srand(grid[0][0].charUp);
+	// Need last grid char to start with
+	l = grid[GRID_SIZE - 1][GRID_SIZE - 1].charDown;
 	
-	// Pseudo-Randomly mix the perimeter characters
-	for (i = 0; i < GRID_SIZE * 4; i++) {
-		next = rand() % (GRID_SIZE * 4);
-		while (perimeterChars[next] < 0) {
-			if (next == (GRID_SIZE * 4) - 1) {
-				next = 0;
-			} else {
-				next++;
-			}
-		}
+	// Re-mix the perimeter characters
+	for (i = 0; i < GRID_SIZE * 4; ++i) {
 		
+		// Get grid char
 		if (i < GRID_SIZE) {
-			grid[0][i].charUp = (unsigned char)perimeterChars[next];
+			c = grid[0][i].charUp;
 		} else if (i < GRID_SIZE * 2) {
-			grid[i - GRID_SIZE][GRID_SIZE - 1].charRight = (unsigned char)perimeterChars[next];
+			c = grid[i - GRID_SIZE][GRID_SIZE - 1].charRight;
 		} else if (i < GRID_SIZE * 3) {
-			grid[i - (GRID_SIZE * 2)][0].charLeft = (unsigned char)perimeterChars[next];
+			c = grid[i - (GRID_SIZE * 2)][0].charLeft;
 		} else if (i < GRID_SIZE * 4) {
-			grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown = (unsigned char)perimeterChars[next];
+			c = grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown;
 		}
 		
-		perimeterChars[next] = -1;
-
+		// Determine next grid position
+		p = (int)c + (int)l;
+		if (p >= (GRID_SIZE * 4))
+			p -= (GRID_SIZE * 4);
+		
+		// If position is taken, increment until we find an empty spot
+		while (perimeterChars[p] >= 0) {
+			++p;
+			if (p > (GRID_SIZE * 4) - 1)
+				p = 0;
+		}
+		
+		// Set new character position
+		perimeterChars[p] = (int)c;
+		
+		// Store c to be used in next interation
+		l = c;
+	}
+	
+	// Write mixed perimeter chars to grid
+	for (i = 0; i < GRID_SIZE * 4; ++i) {
+		if (i < GRID_SIZE) {
+			grid[0][i].charUp = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 2) {
+			grid[i - GRID_SIZE][GRID_SIZE - 1].charRight = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 3) {
+			grid[i - (GRID_SIZE * 2)][0].charLeft = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 4) {
+			grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown = (unsigned char)perimeterChars[i];
+		}
 	}
 }
 
