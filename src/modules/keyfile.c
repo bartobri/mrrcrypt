@@ -79,7 +79,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	struct stat sb;
 	FILE *keyfile;
 	FILE *urandom;
-	unsigned char perimeterChars[GRID_SIZE * 4];
+	unsigned char perimeterChars[GRID_SIZE * 8];
 	base64 contents = { .index = 0 };
 
 	// Check subdirs and create them if needed
@@ -142,14 +142,14 @@ int keyfile_create(char *keyFileFullPathName) {
 	fclose(urandom);
 	
 	// Generate perimeter characters
-	for (i = 0; i < GRID_SIZE * 4; i++)
+	for (i = 0; i < GRID_SIZE * 8; i++)
 		perimeterChars[i] = i;
 		
 	// Shuffle perimeter characters
 	keyfile_shuffle_string(perimeterChars, 2000);
 	
 	// Encode perimeter chars to base64 and write to key file
-	for (i = 0; i < GRID_SIZE * 4; ++i) {
+	for (i = 0; i < GRID_SIZE * 8; ++i) {
 		contents.decoded[contents.index++] = perimeterChars[i];
 		if (contents.index == BASE64_DECODED_COUNT) {
 			contents = base64_encode(contents);
@@ -180,14 +180,14 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 	int i, sIndex, rIndex;
 	unsigned char c1, c2;
 	
-	sIndex = (rand() % GRID_SIZE * 4);
+	sIndex = (rand() % GRID_SIZE * 8);
 	rIndex = sIndex;
 	c1 = str[rIndex];
 	for (i = 0; i < p; ++i) {
 		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
-		while ((rIndex = (rand() % (GRID_SIZE * 4))) == sIndex)
+		while ((rIndex = (rand() % (GRID_SIZE * 8))) == sIndex)
 			;
 		
 		c2 = str[rIndex];

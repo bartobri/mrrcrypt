@@ -22,11 +22,15 @@
 // Gridpoint Structure
 struct gridPoint {
 	int mirrorType;
-	unsigned char charUp;
-	unsigned char charDown;
-	unsigned char charLeft;
-	unsigned char charRight;
 	int visited;
+	unsigned char charUp;
+	unsigned char charUpAlt;
+	unsigned char charDown;
+	unsigned char charDownAlt;
+	unsigned char charLeft;
+	unsigned char charLeftAlt;
+	unsigned char charRight;
+	unsigned char charRightAlt;
 };
 
 // Static Variables
@@ -41,11 +45,15 @@ void mirrorfield_init(void) {
 
 			// Init struct with default values
 			grid[r][c].mirrorType = 0;
-			grid[r][c].charUp = 0;
-			grid[r][c].charDown = 0;
-			grid[r][c].charLeft = 0;
-			grid[r][c].charRight = 0;
 			grid[r][c].visited = 0;
+			grid[r][c].charUp = 0;
+			grid[r][c].charUpAlt = 0;
+			grid[r][c].charDown = 0;
+			grid[r][c].charDownAlt = 0;
+			grid[r][c].charLeft = 0;
+			grid[r][c].charLeftAlt = 0;
+			grid[r][c].charRight = 0;
+			grid[r][c].charRightAlt = 0;
 		}
 	}
 }
@@ -68,7 +76,7 @@ int mirrorfield_set(unsigned char ch) {
 	}
 	
 	// Set Perimeter Char
-	if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 4) {
+	if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 8) {
 		t = i - (GRID_SIZE * GRID_SIZE);
 
 		if (t < GRID_SIZE)
@@ -79,6 +87,14 @@ int mirrorfield_set(unsigned char ch) {
 			grid[t-(GRID_SIZE*2)][0].charLeft = ch;
 		else if (t < GRID_SIZE * 4)
 			grid[GRID_SIZE-1][t-(GRID_SIZE*3)].charDown = ch;
+		else if (t < GRID_SIZE * 5)
+			grid[0][t-(GRID_SIZE*4)].charUpAlt = ch;
+		else if (t < GRID_SIZE * 6)
+			grid[t-(GRID_SIZE*5)][GRID_SIZE-1].charRightAlt = ch;
+		else if (t < GRID_SIZE * 7)
+			grid[t-(GRID_SIZE*6)][0].charLeftAlt = ch;
+		else if (t < GRID_SIZE * 8)
+			grid[GRID_SIZE-1][t-(GRID_SIZE*7)].charDownAlt = ch;
 
 		return 1;
 	}
@@ -88,10 +104,10 @@ int mirrorfield_set(unsigned char ch) {
 
 int mirrorfield_validate(void) {
 	int i, i2, r, c;
-	unsigned char perimeters[GRID_SIZE * 4];
+	unsigned char perimeters[GRID_SIZE * 8];
 	
 	// init perimeters array
-	memset(perimeters, 0, GRID_SIZE * 4);
+	memset(perimeters, 0, GRID_SIZE * 8);
 	
 	// init i
 	i = 0;
@@ -101,20 +117,28 @@ int mirrorfield_validate(void) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
 			// Store top chars
-			if (r == 0)
+			if (r == 0) {
 				perimeters[i++] = grid[r][c].charUp;
+				perimeters[i++] = grid[r][c].charUpAlt;
+			}
 
 			// Store right chars
-			if (c == GRID_SIZE - 1)
+			if (c == GRID_SIZE - 1) {
 				perimeters[i++] = grid[r][c].charRight;
+				perimeters[i++] = grid[r][c].charRightAlt;
+			}
 
 			// Store left chars
-			if (c == 0)
+			if (c == 0) {
 				perimeters[i++] = grid[r][c].charLeft;
+				perimeters[i++] = grid[r][c].charLeftAlt;
+			}
 
 			// Store bottom chars
-			if (r == GRID_SIZE - 1)
+			if (r == GRID_SIZE - 1) {
 				perimeters[i++] = grid[r][c].charDown;
+				perimeters[i++] = grid[r][c].charDownAlt;
+			}
 
 			// Check mirror type
 			if (!grid[r][c].mirrorType || !strchr(SUPPORTED_MIRROR_TYPES, grid[r][c].mirrorType))
@@ -124,8 +148,8 @@ int mirrorfield_validate(void) {
 	}
 	
 	// Check for duplicate perimeter chars
-	for (i = 0; i < GRID_SIZE * 4; ++i)
-		for (i2 = i+1; i2 < GRID_SIZE * 4; ++i2)
+	for (i = 0; i < GRID_SIZE * 8; ++i)
+		for (i2 = i+1; i2 < GRID_SIZE * 8; ++i2)
 			if (perimeters[i] == perimeters[i2])
 				return 0;
 	
@@ -136,6 +160,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int r, c;
 	unsigned char ech;
 	int direction = 0;
+	int isAlt = 0;
 	
 	// For the debug flag
 	struct timespec ts;
@@ -143,30 +168,50 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	ts.tv_nsec = (debug % 1000) * 1000000;
 	
 	// Determining starting row/col and starting direction
-	if (!direction)
+	if (!direction) {
 		for (r = 0, c = 0; c < GRID_SIZE; ++c)
 			if (grid[r][c].charUp == ch) {
 				direction = DIR_DOWN;
 				break;
+			} else if (grid[r][c].charUpAlt == ch) {
+				direction = DIR_DOWN;
+				isAlt = 1;
+				break;
 			}
-	if (!direction)
+	}
+	if (!direction) {
 		for (r = GRID_SIZE-1, c = 0; c < GRID_SIZE; ++c)
 			if (grid[r][c].charDown == ch) {
 				direction = DIR_UP;
 				break;
+			} else if (grid[r][c].charDownAlt == ch) {
+				direction = DIR_UP;
+				isAlt = 1;
+				break;
 			}
-	if (!direction)
+	}
+	if (!direction) {
 		for (r = 0, c = 0; r < GRID_SIZE && !direction; ++r)
 			if (grid[r][c].charLeft == ch) {
 				direction = DIR_RIGHT;
 				break;
+			} else if (grid[r][c].charLeftAlt == ch) {
+				direction = DIR_RIGHT;
+				isAlt = 1;
+				break;
 			}
-	if (!direction)
+	}
+	if (!direction) {
 		for (r = 0, c = GRID_SIZE-1; r < GRID_SIZE; ++r)
 			if (grid[r][c].charRight == ch) {
 				direction = DIR_LEFT;
 				break;
+			} else if (grid[r][c].charRightAlt == ch) {
+				direction = DIR_LEFT;
+				isAlt = 1;
+				break;
 			}
+	}
 
 	// Traverse through the grid
 	while (1) {
@@ -215,16 +260,28 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 
 		// Check if our position is out of grid bounds. That means we found our char.
 		if (r < 0) {
-			ech = grid[0][c].charUp;
+			if (isAlt)
+				ech = grid[0][c].charUpAlt;
+			else
+				ech = grid[0][c].charUp;
 			break;
 		} else if (r >= GRID_SIZE) {
-			ech = grid[GRID_SIZE - 1][c].charDown;
+			if (isAlt)
+				ech = grid[GRID_SIZE - 1][c].charDownAlt;
+			else
+				ech = grid[GRID_SIZE - 1][c].charDown;
 			break;
 		} else if (c < 0) {
-			ech = grid[r][0].charLeft;
+			if (isAlt)
+				ech = grid[r][0].charLeftAlt;
+			else
+				ech = grid[r][0].charLeft;
 			break;
 		} else if (c >= GRID_SIZE) {
-			ech = grid[r][GRID_SIZE - 1].charRight;
+			if (isAlt)
+				ech = grid[r][GRID_SIZE - 1].charRightAlt;
+			else
+				ech = grid[r][GRID_SIZE - 1].charRight;
 			break;
 		}
 	}
@@ -252,17 +309,17 @@ void mirrorfield_roll(void) {
 	int i, p;
 	unsigned char c;
 	unsigned char l;
-	int perimeterChars[GRID_SIZE * 4];
+	int perimeterChars[GRID_SIZE * 8];
 	
 	// Initialize perimeter array
-	for (i = 0; i < GRID_SIZE * 4; ++i)
+	for (i = 0; i < GRID_SIZE * 8; ++i)
 		perimeterChars[i] = -1;
 	
 	// Need last grid char to start with
 	l = grid[GRID_SIZE - 1][GRID_SIZE - 1].charDown;
 	
 	// Re-mix the perimeter characters
-	for (i = 0; i < GRID_SIZE * 4; ++i) {
+	for (i = 0; i < GRID_SIZE * 8; ++i) {
 		
 		// Get grid char
 		if (i < GRID_SIZE) {
@@ -273,17 +330,25 @@ void mirrorfield_roll(void) {
 			c = grid[i - (GRID_SIZE * 2)][0].charLeft;
 		} else if (i < GRID_SIZE * 4) {
 			c = grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown;
+		} else if (i < GRID_SIZE * 5) {
+			c = grid[0][i - (GRID_SIZE * 4)].charUpAlt;
+		} else if (i < GRID_SIZE * 6) {
+			c = grid[i - (GRID_SIZE * 5)][GRID_SIZE - 1].charRightAlt;
+		} else if (i < GRID_SIZE * 7) {
+			c = grid[i - (GRID_SIZE * 6)][0].charLeftAlt;
+		} else if (i < GRID_SIZE * 8) {
+			c = grid[GRID_SIZE - 1][i - (GRID_SIZE * 7)].charDownAlt;
 		}
 		
 		// Determine next grid position
 		p = (int)c + (int)l;
-		if (p >= (GRID_SIZE * 4))
-			p -= (GRID_SIZE * 4);
+		if (p >= (GRID_SIZE * 8))
+			p -= (GRID_SIZE * 8);
 		
 		// If position is taken, increment until we find an empty spot
 		while (perimeterChars[p] >= 0) {
 			++p;
-			if (p > (GRID_SIZE * 4) - 1)
+			if (p > (GRID_SIZE * 8) - 1)
 				p = 0;
 		}
 		
@@ -295,7 +360,7 @@ void mirrorfield_roll(void) {
 	}
 	
 	// Write mixed perimeter chars to grid
-	for (i = 0; i < GRID_SIZE * 4; ++i) {
+	for (i = 0; i < GRID_SIZE * 8; ++i) {
 		if (i < GRID_SIZE) {
 			grid[0][i].charUp = (unsigned char)perimeterChars[i];
 		} else if (i < GRID_SIZE * 2) {
@@ -304,6 +369,14 @@ void mirrorfield_roll(void) {
 			grid[i - (GRID_SIZE * 2)][0].charLeft = (unsigned char)perimeterChars[i];
 		} else if (i < GRID_SIZE * 4) {
 			grid[GRID_SIZE - 1][i - (GRID_SIZE * 3)].charDown = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 5) {
+			grid[0][i - (GRID_SIZE * 4)].charUpAlt = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 6) {
+			grid[i - (GRID_SIZE * 5)][GRID_SIZE - 1].charRightAlt = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 7) {
+			grid[i - (GRID_SIZE * 6)][0].charLeftAlt = (unsigned char)perimeterChars[i];
+		} else if (i < GRID_SIZE * 8) {
+			grid[GRID_SIZE - 1][i - (GRID_SIZE * 7)].charDownAlt = (unsigned char)perimeterChars[i];
 		}
 	}
 }
