@@ -15,7 +15,7 @@
 #include "modules/keyfile.h"
 #include "modules/base64.h"
 
-#define MIRROR_DENSITY   20
+#define MIRROR_DENSITY   10
 
 // Static chars
 static FILE *keyFile;

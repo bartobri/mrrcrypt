@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 		putchar(mirrorfield_crypt_char((unsigned char)ch, debug));
 		
 		// Mix perimeter chars using ech at the PRNG seed
-		mirrorfield_roll();
+		//mirrorfield_roll();
 	}
 
 	return 0;
