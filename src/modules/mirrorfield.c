@@ -161,14 +161,17 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	unsigned char ech;
 	int direction = 0;
 	int isAlt = 0;
-	int startPos;
-	int endPos;
 	unsigned char *startChar;
 	unsigned char *startCharAlt;
+	int            startCharPos;
 	unsigned char *endChar;
 	unsigned char *endCharAlt;
+	int            endCharPos;
 	unsigned char *rollChar;
 	unsigned char *rollCharAlt;
+	int            rollCharPos;
+	unsigned char tempChar;
+	unsigned char tempCharAlt;
 	
 	// For the debug flag
 	struct timespec ts;
@@ -180,7 +183,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		for (r = 0, c = 0; c < GRID_SIZE; ++c) {
 			if (grid[r][c].charUp == ch || grid[r][c].charUpAlt == ch) {
 				direction = DIR_DOWN;
-				startPos = c;
+				startCharPos = c;
 				startChar = &(grid[r][c].charUp);
 				startCharAlt = &(grid[r][c].charUpAlt);
 				if (grid[r][c].charUpAlt == ch)
@@ -193,7 +196,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		for (r = GRID_SIZE-1, c = 0; c < GRID_SIZE; ++c) {
 			if (grid[r][c].charDown == ch || grid[r][c].charDownAlt == ch) {
 				direction = DIR_UP;
-				startPos = c + (GRID_SIZE*3);
+				startCharPos = c + (GRID_SIZE*3);
 				startChar = &(grid[r][c].charDown);
 				startCharAlt = &(grid[r][c].charDownAlt);
 				if (grid[r][c].charDownAlt == ch)
@@ -206,7 +209,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		for (r = 0, c = 0; r < GRID_SIZE && !direction; ++r) {
 			if (grid[r][c].charLeft == ch || grid[r][c].charLeftAlt == ch) {
 				direction = DIR_RIGHT;
-				startPos = r + (GRID_SIZE*2);
+				startCharPos = r + (GRID_SIZE*2);
 				startChar = &(grid[r][c].charLeft);
 				startCharAlt = &(grid[r][c].charLeftAlt);
 				if (grid[r][c].charLeftAlt == ch)
@@ -219,7 +222,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		for (r = 0, c = GRID_SIZE-1; r < GRID_SIZE; ++r) {
 			if (grid[r][c].charRight == ch || grid[r][c].charRightAlt == ch) {
 				direction = DIR_LEFT;
-				startPos = r + GRID_SIZE;
+				startCharPos = r + GRID_SIZE;
 				startChar = &(grid[r][c].charRight);
 				startCharAlt = &(grid[r][c].charRightAlt);
 				if (grid[r][c].charRightAlt == ch)
@@ -278,75 +281,77 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		if (r < 0) {
 			endChar = &(grid[0][c].charUp);
 			endCharAlt = &(grid[0][c].charUpAlt);
-			endPos = c;
+			endCharPos = c;
 			ech = isAlt ? *endCharAlt : *endChar;
 			break;
 		} else if (r >= GRID_SIZE) {
 			endChar = &(grid[GRID_SIZE-1][c].charDown);
 			endCharAlt = &(grid[GRID_SIZE-1][c].charDownAlt);
-			endPos = c + (GRID_SIZE*3);
+			endCharPos = c + (GRID_SIZE*3);
 			ech = isAlt ? *endCharAlt : *endChar;
 			break;
 		} else if (c < 0) {
 			endChar = &(grid[r][0].charLeft);
 			endCharAlt = &(grid[r][0].charLeftAlt);
-			endPos = r + (GRID_SIZE*2);
+			endCharPos = r + (GRID_SIZE*2);
 			ech = isAlt ? *endCharAlt : *endChar;
 			break;
 		} else if (c >= GRID_SIZE) {
 			endChar = &(grid[r][GRID_SIZE-1].charRight);
 			endCharAlt = &(grid[r][GRID_SIZE-1].charRightAlt);
-			endPos = r + GRID_SIZE;
+			endCharPos = r + GRID_SIZE;
 			ech = isAlt ? *endCharAlt : *endChar;
 			break;
 		}
 	}
+	
+	// Swap and criss-cross start and end chars
+	tempChar = *startChar;
+	tempCharAlt = *startCharAlt;
+	*startChar = *endCharAlt;
+	*startCharAlt = *endChar;
+	*endChar = tempCharAlt;
+	*endCharAlt = tempChar;
 
 	// Only roll characters if they are not equal
 	if (((int)*startChar + (int)*startCharAlt) != ((int)*endChar + (int)*endCharAlt)) {
 	
 		// Determine roll character
-		int g;
 		if (((int)*startChar + (int)*startCharAlt) > ((int)*endChar + (int)*endCharAlt)) {
-			g = (startPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
+			rollCharPos = (endCharPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
 		} else {
-			g = (endPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
+			rollCharPos = (startCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
 		}
-		if (g < GRID_SIZE) {
-			rollChar = &(grid[0][g].charUp);
-			rollCharAlt = &(grid[0][g].charUpAlt);
-			//printf("g = %i, r = %i, c = %i, charUp\n", g, 0, g);
-		} else if (g < GRID_SIZE * 2) {
-			rollChar = &(grid[g % GRID_SIZE][GRID_SIZE-1].charRight);
-			rollCharAlt = &(grid[g % GRID_SIZE][GRID_SIZE-1].charRightAlt);
-			//printf("g = %i, r = %i, c = %i, charRight\n", g, g % GRID_SIZE, GRID_SIZE-1);
-		} else if (g < GRID_SIZE * 3) {
-			rollChar = &(grid[g % GRID_SIZE][0].charLeft);
-			rollCharAlt = &(grid[g % GRID_SIZE][0].charLeftAlt);
-			//printf("g = %i, r = %i, c = %i, charUp\n", g, g % GRID_SIZE, 0);
-		} else if (g < GRID_SIZE * 4) {
-			rollChar = &(grid[GRID_SIZE-1][g % GRID_SIZE].charDown);
-			rollCharAlt = &(grid[GRID_SIZE-1][g % GRID_SIZE].charDownAlt);
-			//printf("g = %i, r = %i, c = %i, charUp\n", g, GRID_SIZE-1, g % GRID_SIZE);
+		if (rollCharPos < GRID_SIZE) {
+			rollChar = &(grid[0][rollCharPos].charUp);
+			rollCharAlt = &(grid[0][rollCharPos].charUpAlt);
+		} else if (rollCharPos < GRID_SIZE * 2) {
+			rollChar = &(grid[rollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
+			rollCharAlt = &(grid[rollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
+		} else if (rollCharPos < GRID_SIZE * 3) {
+			rollChar = &(grid[rollCharPos % GRID_SIZE][0].charLeft);
+			rollCharAlt = &(grid[rollCharPos % GRID_SIZE][0].charLeftAlt);
+		} else if (rollCharPos < GRID_SIZE * 4) {
+			rollChar = &(grid[GRID_SIZE-1][rollCharPos % GRID_SIZE].charDown);
+			rollCharAlt = &(grid[GRID_SIZE-1][rollCharPos % GRID_SIZE].charDownAlt);
 		}
 		
 		
 		// Roll characters
-		unsigned char t;
 		if (((int)*startChar + (int)*startCharAlt) > ((int)*endChar + (int)*endCharAlt)) {
-			t = *rollChar;
-			*rollChar = *startCharAlt;
-			*startCharAlt = t;
-			t = *rollCharAlt;
-			*rollCharAlt = *startChar;
-			*startChar = t;
+			tempChar = *rollChar;
+			tempCharAlt = *rollCharAlt;
+			*rollChar = *startChar;
+			*rollCharAlt = *startCharAlt;
+			*startChar = tempChar;
+			*startCharAlt = tempCharAlt;
 		} else {
-			t = *rollChar;
-			*rollChar = *endCharAlt;
-			*endCharAlt = t;
-			t = *rollCharAlt;
-			*rollCharAlt = *endChar;
-			*endChar = t;
+			tempChar = *rollChar;
+			tempCharAlt = *rollCharAlt;
+			*rollChar = *endChar;
+			*rollCharAlt = *endCharAlt;
+			*endChar = tempChar;
+			*endCharAlt = tempCharAlt;
 		}
 	}
 	
