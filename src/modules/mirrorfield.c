@@ -322,6 +322,10 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		} else {
 			rollCharPos = (startCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
 		}
+		// Prevent roll loops
+		if (rollCharPos == 0) {
+			rollCharPos += GRID_SIZE;
+		}
 		if (rollCharPos < GRID_SIZE) {
 			rollChar = &(grid[0][rollCharPos].charUp);
 			rollCharAlt = &(grid[0][rollCharPos].charUpAlt);
