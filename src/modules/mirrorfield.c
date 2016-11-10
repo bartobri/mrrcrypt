@@ -167,11 +167,15 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	unsigned char *endChar;
 	unsigned char *endCharAlt;
 	int            endCharPos;
-	unsigned char *rollChar;
-	unsigned char *rollCharAlt;
-	int            rollCharPos;
+	unsigned char *startRollChar;
+	unsigned char *startRollCharAlt;
+	int            startRollCharPos;
+	unsigned char *endRollChar;
+	unsigned char *endRollCharAlt;
+	int            endRollCharPos;
 	unsigned char tempChar;
 	unsigned char tempCharAlt;
+	//int           tempCharPos;
 	
 	// For the debug flag
 	struct timespec ts;
@@ -305,60 +309,86 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 	}
 	
+	/*
 	// Swap and criss-cross start and end chars
 	tempChar = *startChar;
 	tempCharAlt = *startCharAlt;
+	tempCharPos = startCharPos;
 	*startChar = *endCharAlt;
 	*startCharAlt = *endChar;
+	startCharPos = endCharPos;
 	*endChar = tempCharAlt;
 	*endCharAlt = tempChar;
-
-	// Only roll characters if they are not equal
-	if (((int)*startChar + (int)*startCharAlt) != ((int)*endChar + (int)*endCharAlt)) {
+	endCharPos = tempCharPos;
+	*/
 	
-		// Determine roll character
-		if (((int)*startChar + (int)*startCharAlt) > ((int)*endChar + (int)*endCharAlt)) {
-			rollCharPos = (endCharPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
-		} else {
-			rollCharPos = (startCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
-		}
-		// Prevent roll loops
-		if (rollCharPos == 0) {
-			rollCharPos += GRID_SIZE;
-		}
-		if (rollCharPos < GRID_SIZE) {
-			rollChar = &(grid[0][rollCharPos].charUp);
-			rollCharAlt = &(grid[0][rollCharPos].charUpAlt);
-		} else if (rollCharPos < GRID_SIZE * 2) {
-			rollChar = &(grid[rollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
-			rollCharAlt = &(grid[rollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
-		} else if (rollCharPos < GRID_SIZE * 3) {
-			rollChar = &(grid[rollCharPos % GRID_SIZE][0].charLeft);
-			rollCharAlt = &(grid[rollCharPos % GRID_SIZE][0].charLeftAlt);
-		} else if (rollCharPos < GRID_SIZE * 4) {
-			rollChar = &(grid[GRID_SIZE-1][rollCharPos % GRID_SIZE].charDown);
-			rollCharAlt = &(grid[GRID_SIZE-1][rollCharPos % GRID_SIZE].charDownAlt);
-		}
-		
-		
-		// Roll characters
-		if (((int)*startChar + (int)*startCharAlt) > ((int)*endChar + (int)*endCharAlt)) {
-			tempChar = *rollChar;
-			tempCharAlt = *rollCharAlt;
-			*rollChar = *startChar;
-			*rollCharAlt = *startCharAlt;
-			*startChar = tempChar;
-			*startCharAlt = tempCharAlt;
-		} else {
-			tempChar = *rollChar;
-			tempCharAlt = *rollCharAlt;
-			*rollChar = *endChar;
-			*rollCharAlt = *endCharAlt;
-			*endChar = tempChar;
-			*endCharAlt = tempCharAlt;
-		}
+	// Roll start char
+	startRollCharPos = (startCharPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
+	endRollCharPos = (endCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
+	
+	// Characters can't roll to their own position or the other char position
+	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos) {
+		startRollCharPos = (startRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
+	}
+	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos) {
+		endRollCharPos = (endRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
 	}
 	
+	// Characters can't roll to the same position
+	if (startRollCharPos == endRollCharPos) {
+		// do nothing for now...
+	} else {
+	
+		// Roll start char
+		if (startRollCharPos < GRID_SIZE) {
+			startRollChar = &(grid[0][startRollCharPos].charUp);
+			startRollCharAlt = &(grid[0][startRollCharPos].charUpAlt);
+		} else if (startRollCharPos < GRID_SIZE * 2) {
+			startRollChar = &(grid[startRollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
+			startRollCharAlt = &(grid[startRollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
+		} else if (startRollCharPos < GRID_SIZE * 3) {
+			startRollChar = &(grid[startRollCharPos % GRID_SIZE][0].charLeft);
+			startRollCharAlt = &(grid[startRollCharPos % GRID_SIZE][0].charLeftAlt);
+		} else if (startRollCharPos < GRID_SIZE * 4) {
+			startRollChar = &(grid[GRID_SIZE-1][startRollCharPos % GRID_SIZE].charDown);
+			startRollCharAlt = &(grid[GRID_SIZE-1][startRollCharPos % GRID_SIZE].charDownAlt);
+		}
+		if (isAlt) {
+			tempCharAlt = *startCharAlt;
+			*startCharAlt = *startRollCharAlt;
+			*startRollCharAlt = tempCharAlt;
+		} else {
+			tempChar = *startChar;
+			*startChar = *startRollChar;
+			*startRollChar = tempChar;
+		}
+		
+		// Roll end char
+		if (endRollCharPos < GRID_SIZE) {
+			endRollChar = &(grid[0][endRollCharPos].charUp);
+			endRollCharAlt = &(grid[0][endRollCharPos].charUpAlt);
+		} else if (endRollCharPos < GRID_SIZE * 2) {
+			endRollChar = &(grid[endRollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
+			endRollCharAlt = &(grid[endRollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
+		} else if (endRollCharPos < GRID_SIZE * 3) {
+			endRollChar = &(grid[endRollCharPos % GRID_SIZE][0].charLeft);
+			endRollCharAlt = &(grid[endRollCharPos % GRID_SIZE][0].charLeftAlt);
+		} else if (endRollCharPos < GRID_SIZE * 4) {
+			endRollChar = &(grid[GRID_SIZE-1][endRollCharPos % GRID_SIZE].charDown);
+			endRollCharAlt = &(grid[GRID_SIZE-1][endRollCharPos % GRID_SIZE].charDownAlt);
+		}
+		if (isAlt) {
+			tempCharAlt = *endCharAlt;
+			*endCharAlt = *endRollCharAlt;
+			*endRollCharAlt = tempCharAlt;
+		} else {
+			tempChar = *endChar;
+			*endChar = *endRollChar;
+			*endRollChar = tempChar;
+		}
+	
+	}
+
 	// Rotate visited mirrors and reset to zero
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
@@ -373,8 +403,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				grid[r][c].visited = 0;
 			}
 		}
-	}
-				
+	}	
 	
 	// Return crypted char
 	return ech;
