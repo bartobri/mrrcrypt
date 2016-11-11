@@ -175,7 +175,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int            endRollCharPos;
 	unsigned char tempChar;
 	unsigned char tempCharAlt;
-	//int           tempCharPos;
 	
 	static int lastStartCharPos = -1;
 	static int lastEndCharPos = -1;
@@ -312,24 +311,11 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 	}
 	
-	/*
-	// Swap and criss-cross start and end chars
-	tempChar = *startChar;
-	tempCharAlt = *startCharAlt;
-	tempCharPos = startCharPos;
-	*startChar = *endCharAlt;
-	*startCharAlt = *endChar;
-	startCharPos = endCharPos;
-	*endChar = tempCharAlt;
-	*endCharAlt = tempChar;
-	endCharPos = tempCharPos;
-	*/
-	
 	// Roll start char
 	startRollCharPos = (startCharPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
 	endRollCharPos = (endCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
 	
-	// Characters can't roll to their own position or the other char position
+	// Characters can't roll to their own position, to the other char position, or to their previous position
 	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos) {
 		startRollCharPos = (startRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
 	}
