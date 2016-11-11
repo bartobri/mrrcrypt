@@ -355,12 +355,12 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 		if (isAlt) {
 			tempCharAlt = *startCharAlt;
-			*startCharAlt = *startRollCharAlt;
-			*startRollCharAlt = tempCharAlt;
+			*startCharAlt = *startRollChar;
+			*startRollChar = tempCharAlt;
 		} else {
 			tempChar = *startChar;
-			*startChar = *startRollChar;
-			*startRollChar = tempChar;
+			*startChar = *startRollCharAlt;
+			*startRollCharAlt = tempChar;
 		}
 		
 		// Roll end char
@@ -379,12 +379,12 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 		if (isAlt) {
 			tempCharAlt = *endCharAlt;
-			*endCharAlt = *endRollCharAlt;
-			*endRollCharAlt = tempCharAlt;
+			*endCharAlt = *endRollChar;
+			*endRollChar = tempCharAlt;
 		} else {
 			tempChar = *endChar;
-			*endChar = *endRollChar;
-			*endRollChar = tempChar;
+			*endChar = *endRollCharAlt;
+			*endRollCharAlt = tempChar;
 		}
 	
 	}
