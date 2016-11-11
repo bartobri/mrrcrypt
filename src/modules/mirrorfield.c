@@ -177,6 +177,9 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	unsigned char tempCharAlt;
 	//int           tempCharPos;
 	
+	static int lastStartCharPos = -1;
+	static int lastEndCharPos = -1;
+	
 	// For the debug flag
 	struct timespec ts;
 	ts.tv_sec = debug / 1000;
@@ -327,10 +330,10 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	endRollCharPos = (endCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
 	
 	// Characters can't roll to their own position or the other char position
-	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos) {
+	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos) {
 		startRollCharPos = (startRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
 	}
-	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos) {
+	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos || endRollCharPos == lastEndCharPos) {
 		endRollCharPos = (endRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
 	}
 	
@@ -338,7 +341,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	if (startRollCharPos == endRollCharPos) {
 		// do nothing for now...
 	} else {
-	
+
 		// Roll start char
 		if (startRollCharPos < GRID_SIZE) {
 			startRollChar = &(grid[0][startRollCharPos].charUp);
@@ -362,6 +365,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			*startChar = *startRollCharAlt;
 			*startRollCharAlt = tempChar;
 		}
+		lastStartCharPos = startCharPos;
 		
 		// Roll end char
 		if (endRollCharPos < GRID_SIZE) {
@@ -386,6 +390,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			*endChar = *endRollCharAlt;
 			*endRollCharAlt = tempChar;
 		}
+		lastEndCharPos = endCharPos;
 	
 	}
 
