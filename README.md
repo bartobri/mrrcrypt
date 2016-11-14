@@ -1,14 +1,25 @@
 MrrCrypt
 ========
 
-The goal of MrrCrypt is to provide a simple command-line tool for encrypting
-and decrypting data using an adaptive mirror field algorithm.
+The goal of this project is to provide a simple and robust command-line tool
+for encrypting and decrypting data using an adaptive mirror field algorithm.
+
+The algorithm passes testing for output patterns or biases, producing
+output that is indistinguishable from random data.
+
+The number of key permutations is larger than the number of atoms believed
+to be on planet earth, making a brute force attack highly ineffective.
+
+Encryption speed is roughly 4 seconds per megabyte.
+
+The adaptive mirror field algorithm implemented in this project is the first
+of it's kind.
 
 *Adaptive Mirror Field Animation:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
 
-See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for details.
+See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for more details.
 
 Table of Contents
 -----------------
