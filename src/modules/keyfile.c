@@ -15,7 +15,7 @@
 #include "modules/keyfile.h"
 #include "modules/base64.h"
 
-#define MIRROR_DENSITY   6
+#define MIRROR_OUTER_DENSITY   14
 
 // Static chars
 static FILE *keyFile;
@@ -73,7 +73,7 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 }
 
 int keyfile_create(char *keyFileFullPathName) {
-	int i, r, c;
+	int i, r, c, d;
 	int w = 0;
 	uint32_t randseed = 0;
 	struct stat sb;
@@ -111,9 +111,15 @@ int keyfile_create(char *keyFileFullPathName) {
 			for (i = 24; i >= 0; i -= 8)
 				randseed += ((uint32_t)fgetc(urandom) << i);
 			srand(randseed);
+			
+			// Double mirror density in the center
+			if (r > GRID_SIZE / 4 && r < GRID_SIZE - (GRID_SIZE / 4) && c > GRID_SIZE / 4 && c < GRID_SIZE - (GRID_SIZE / 4))
+				d = MIRROR_OUTER_DENSITY / 2;
+			else
+				d = MIRROR_OUTER_DENSITY;
 
 			// Randomly generate mirror char
-			switch (rand() % MIRROR_DENSITY) {
+			switch (rand() % d) {
 				case 1:
 					contents.decoded[contents.index++] = '/';
 					break;
