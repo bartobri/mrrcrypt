@@ -157,11 +157,11 @@ Auto-create a new key if the one specified by `-k key_file` does not exist.
 `-d ms`
 
 Debug mode. This draws the mirror field and animates the decryption process
-for debugging purposes. You will need a minimum terminal size of 134x68.
+for debugging purposes. You will need a minimum terminal size of 75x40.
 "ms" specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are shown in hexadecimal.
-A total of 256 values are represented in the 64x64 grid, one value for
-every possible arrangement of bits in a single byte.
+There is an inner and outer row of values for a total of 256 values represented
+in the 32x32 grid, one for every possible arrangement of bits in a single byte.
 
 Key Management
 --------------
