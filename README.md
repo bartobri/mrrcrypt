@@ -6,7 +6,7 @@ and decrypting data using an adaptive mirror field algorithm.
 
 *Adaptive Mirror Field Animation:*
 
-![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/05cBxTQ.gif)
+![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
 
 See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for details.
 

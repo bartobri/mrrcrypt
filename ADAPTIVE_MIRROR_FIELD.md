@@ -76,4 +76,4 @@ MrrCrypt's mirror field is much larger than the examples above. It is 64x64, the
 
 *MrrCrypt working in debug mode:*
 
-![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/05cBxTQ.gif)
+![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
