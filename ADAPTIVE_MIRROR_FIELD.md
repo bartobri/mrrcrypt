@@ -31,10 +31,10 @@ Mirror Field Example:
                 P Q R S T
 ```
 
-In practice, using a typical mirror field is a weak form of encryption. The
-same character of output is always produced for the same character of
-input, creating a pattern of output characters that hint towards those used
-for input.
+In practice, using a typical mirror field is a weak form of encryption.
+Given the same plaintext character as input, the same cyphertext character
+is produced as output, creating a pattern and providing hints that an attacker
+can use to derive the key.
 
 ```
                 A B C D E
@@ -52,9 +52,6 @@ for input.
                 P Q R S T
 ```
 
-Given a long enough encrypted message, one could deduce the unencrypted
-message by examining patterns in the output.
-
 Adaptive Mirror Field
 ---------------------
 
@@ -63,17 +60,14 @@ In an adaptive mirror field, the mirror orientations and position of the perimet
 For every character that is processed:
 
 * The character's path through the mirror field reorients the mirrors it contacts, creating a unique mirror field permutation for the next character.
-* The characters on the perimeter are rolled clockwise.
+* The plaintext and cyphertext characters are moved to a new perimeter posion.
    
-These two features eliminate identifiable patterns in the output.
-
-![Adaptve Mirror Field](http://i.imgur.com/bKHZ9bl.gif)
+These two features eliminate identifiable patterns in the output, most importantly when given repeating characters as input.
 
 MrrCrypt's Adaptive Mirror Field
 --------------------------------
 
-MrrCrypt's mirror field is much larger than the examples above. It is 64x64, the size needed to accommodate every possible arrangement of bits in a byte.
+MrrCrypt encrypts data 1 byte at a time, so the mirror field was built to accomodate a 256 character alphabet.
+It consists of a 32x32 square grid with two rows of perimeter characters.
 
-*MrrCrypt working in debug mode:*
-
-![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
+![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/UzG0DFV.gif)
