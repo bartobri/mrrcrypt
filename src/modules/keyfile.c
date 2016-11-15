@@ -183,13 +183,24 @@ int keyfile_create(char *keyFileFullPathName) {
 }
 
 unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
-	int i, sIndex, rIndex;
+	int i, s, sIndex, rIndex;
 	unsigned char c1, c2;
+	FILE *urandom;
+	uint32_t randseed = 0;
+	
+	// Open the urandom resource
+	if ((urandom = fopen("/dev/urandom", "r")) == NULL)
+		return 0;
 	
 	sIndex = (rand() % GRID_SIZE * 8);
 	rIndex = sIndex;
 	c1 = str[rIndex];
 	for (i = 0; i < p; ++i) {
+		
+		// (Re)seed our PRNG
+		for (s = 24; s >= 0; s -= 8)
+			randseed += ((uint32_t)fgetc(urandom) << s);
+		srand(randseed);
 		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
@@ -201,6 +212,9 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 		c1 = c2;
 	}
 	str[sIndex] = c1;
+	
+	// Close urandom resource
+	fclose(urandom);
 	
 	return str;
 }
