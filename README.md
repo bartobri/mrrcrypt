@@ -7,8 +7,8 @@ for encrypting and decrypting data using an adaptive mirror field algorithm.
 The algorithm passes testing for output patterns or biases, producing
 output that is indistinguishable from random data.
 
-The number of key permutations is larger than the number of atoms believed
-to be on planet earth, making a brute force attack highly ineffective.
+The key used for encryption and decryption is highly against resilient to
+brute force attacks. The total number of key permutations is: 256!\*3^(32\*32) ≈ 3.2e+995
 
 Encryption speed is roughly 4 seconds per megabyte.
 
