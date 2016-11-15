@@ -70,4 +70,6 @@ MrrCrypt's Adaptive Mirror Field
 MrrCrypt encrypts data 1 byte at a time, so the mirror field was built to accomodate a 256 character alphabet.
 It consists of a 32x32 square grid with two rows of perimeter characters.
 
+In this visualization, characters are represented in hexidecimal.
+
 ![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/UzG0DFV.gif)
