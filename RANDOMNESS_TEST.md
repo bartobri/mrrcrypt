@@ -17,18 +17,18 @@ suggesting that different keys produce the similar random results.
 
 Key  | Bitmap Size | Result
 -----|-------------|-------
-key1 | 320x200     | [LINK](needlink)
-key2 | 320x200     | [LINK](needlink)
-key3 | 320x200     | [LINK](needlink)
-key4 | 320x200     | [LINK](needlink)
-key1 | 640x400     | [LINK](needlink)
-key2 | 640x400     | [LINK](needlink)
-key3 | 640x400     | [LINK](needlink)
-key4 | 640x400     | [LINK](needlink)
-key1 | 1280x800    | [LINK](needlink)
-key2 | 1280x800    | [LINK](needlink)
-key3 | 1280x800    | [LINK](needlink)
-key4 | 1280x800    | [LINK](needlink)
+key1 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test01.bmp)
+key2 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test02.bmp)
+key3 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test03.bmp)
+key4 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test04.bmp)
+key1 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test05.bmp)
+key2 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test06.bmp)
+key3 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test07.bmp)
+key4 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test08.bmp)
+key1 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test09.bmp)
+key2 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test10.bmp)
+key3 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test11.bmp)
+key4 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test12.bmp)
 
 
 NIST and Diehard Tests
