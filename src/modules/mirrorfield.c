@@ -103,12 +103,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int isAlt = 0;
 	int startCharPos;
 	int endCharPos;
-	int startRollCharPos;
-	int endRollCharPos;
-	unsigned char tempChar;
-	
-	static int lastStartCharPos = -1;
-	static int lastEndCharPos = -1;
 	
 	// For the debug flag
 	struct timespec ts;
@@ -240,8 +234,39 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 	}
 	
+	// Roll start and end chars
+	mirrorfield_roll_chars(startCharPos, endCharPos);
+
+	// Rotate visited mirrors and reset to zero
+	for (r = 0; r < GRID_SIZE; ++r) {
+		for (c = 0; c < GRID_SIZE; ++c) {
+			if (grid[r][c].visited) {
+				if (grid[r][c].mirrorType == MIRROR_BACKWARD)
+					grid[r][c].mirrorType = MIRROR_FORWARD;
+				else if (grid[r][c].mirrorType == MIRROR_FORWARD)
+					grid[r][c].mirrorType = MIRROR_STRAIGHT;
+				else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
+					grid[r][c].mirrorType = MIRROR_BACKWARD;
+
+				grid[r][c].visited = 0;
+			}
+		}
+	}	
+
+	// Return crypted char
+	return ech;
+}
+
+void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
+	int startRollCharPos;
+	int endRollCharPos;
+	unsigned char tempChar;
+	
+	static int lastStartCharPos = -1;
+	static int lastEndCharPos = -1;
+
 	// Determine start and end roll chars
-	if (isAlt) {
+	if (startCharPos >= GRID_SIZE * 4) {
 		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
 		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
 	} else {
@@ -279,25 +304,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		lastEndCharPos = endCharPos;
 	
 	}
-
-	// Rotate visited mirrors and reset to zero
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].visited) {
-				if (grid[r][c].mirrorType == MIRROR_BACKWARD)
-					grid[r][c].mirrorType = MIRROR_FORWARD;
-				else if (grid[r][c].mirrorType == MIRROR_FORWARD)
-					grid[r][c].mirrorType = MIRROR_STRAIGHT;
-				else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
-					grid[r][c].mirrorType = MIRROR_BACKWARD;
-
-				grid[r][c].visited = 0;
-			}
-		}
-	}	
-	
-	// Return crypted char
-	return ech;
 }
 
 void mirrorfield_draw(int pos_r, int pos_c) {

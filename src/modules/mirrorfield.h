@@ -10,7 +10,7 @@ void mirrorfield_init(void);
 int mirrorfield_set(unsigned char);
 int mirrorfield_validate(void);
 unsigned char mirrorfield_crypt_char(unsigned char, int);
-void mirrorfield_roll(void);
+void mirrorfield_roll_chars(int, int);
 void mirrorfield_draw(int, int);
 
 #endif
