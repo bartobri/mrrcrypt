@@ -240,7 +240,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 	}
 	
-	// Roll start char
+	// Determine start and end roll chars
 	if (isAlt) {
 		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
 		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
