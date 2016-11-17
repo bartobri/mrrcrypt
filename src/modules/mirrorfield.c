@@ -23,39 +23,25 @@
 struct gridPoint {
 	int mirrorType;
 	int visited;
-	unsigned char charUp;
-	unsigned char charUpAlt;
-	unsigned char charDown;
-	unsigned char charDownAlt;
-	unsigned char charLeft;
-	unsigned char charLeftAlt;
-	unsigned char charRight;
-	unsigned char charRightAlt;
 };
 
 // Static Variables
 static struct gridPoint grid[GRID_SIZE][GRID_SIZE];
+static unsigned char perimeterChars[GRID_SIZE * 8];
 
 void mirrorfield_init(void) {
 	int r, c;
 
-	// Populate Grid
+	// Init struct with default values
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
-
-			// Init struct with default values
 			grid[r][c].mirrorType = 0;
 			grid[r][c].visited = 0;
-			grid[r][c].charUp = 0;
-			grid[r][c].charUpAlt = 0;
-			grid[r][c].charDown = 0;
-			grid[r][c].charDownAlt = 0;
-			grid[r][c].charLeft = 0;
-			grid[r][c].charLeftAlt = 0;
-			grid[r][c].charRight = 0;
-			grid[r][c].charRightAlt = 0;
 		}
 	}
+	
+	// Set perimeter chars to zero
+	memset(perimeterChars, 0, sizeof(perimeterChars));
 }
 
 int mirrorfield_set(unsigned char ch) {
@@ -75,27 +61,10 @@ int mirrorfield_set(unsigned char ch) {
 		}
 	}
 	
-	// Set Perimeter Char
-	if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 8) {
-		t = i - (GRID_SIZE * GRID_SIZE);
-
-		if (t < GRID_SIZE)
-			grid[0][t].charUp = ch;
-		else if (t < GRID_SIZE * 2)
-			grid[t-GRID_SIZE][GRID_SIZE-1].charRight = ch;
-		else if (t < GRID_SIZE * 3)
-			grid[t-(GRID_SIZE*2)][0].charLeft = ch;
-		else if (t < GRID_SIZE * 4)
-			grid[GRID_SIZE-1][t-(GRID_SIZE*3)].charDown = ch;
-		else if (t < GRID_SIZE * 5)
-			grid[0][t-(GRID_SIZE*4)].charUpAlt = ch;
-		else if (t < GRID_SIZE * 6)
-			grid[t-(GRID_SIZE*5)][GRID_SIZE-1].charRightAlt = ch;
-		else if (t < GRID_SIZE * 7)
-			grid[t-(GRID_SIZE*6)][0].charLeftAlt = ch;
-		else if (t < GRID_SIZE * 8)
-			grid[GRID_SIZE-1][t-(GRID_SIZE*7)].charDownAlt = ch;
-
+	// Set Inner Perimeter Chars
+	t = i - (GRID_SIZE * GRID_SIZE);
+	if (t < GRID_SIZE * 8) {
+		perimeterChars[t] = ch;
 		return 1;
 	}
 	
@@ -104,43 +73,11 @@ int mirrorfield_set(unsigned char ch) {
 
 int mirrorfield_validate(void) {
 	int i, i2, r, c;
-	unsigned char perimeters[GRID_SIZE * 8];
-	
-	// init perimeters array
-	memset(perimeters, 0, GRID_SIZE * 8);
-	
-	// init i
-	i = 0;
 
-	// Traverse grid
+	// Check mirrors
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
-			// Store top chars
-			if (r == 0) {
-				perimeters[i++] = grid[r][c].charUp;
-				perimeters[i++] = grid[r][c].charUpAlt;
-			}
-
-			// Store right chars
-			if (c == GRID_SIZE - 1) {
-				perimeters[i++] = grid[r][c].charRight;
-				perimeters[i++] = grid[r][c].charRightAlt;
-			}
-
-			// Store left chars
-			if (c == 0) {
-				perimeters[i++] = grid[r][c].charLeft;
-				perimeters[i++] = grid[r][c].charLeftAlt;
-			}
-
-			// Store bottom chars
-			if (r == GRID_SIZE - 1) {
-				perimeters[i++] = grid[r][c].charDown;
-				perimeters[i++] = grid[r][c].charDownAlt;
-			}
-
-			// Check mirror type
 			if (!grid[r][c].mirrorType || !strchr(SUPPORTED_MIRROR_TYPES, grid[r][c].mirrorType))
 				return 0;
 			
@@ -148,10 +85,13 @@ int mirrorfield_validate(void) {
 	}
 	
 	// Check for duplicate perimeter chars
-	for (i = 0; i < GRID_SIZE * 8; ++i)
-		for (i2 = i+1; i2 < GRID_SIZE * 8; ++i2)
-			if (perimeters[i] == perimeters[i2])
+	for (i = 0; i < GRID_SIZE * 8; ++i) {
+		for (i2 = i+1; i2 < GRID_SIZE * 8; ++i2) {
+			if (perimeterChars[i] == perimeterChars[i2]) {
 				return 0;
+			}
+		}
+	}
 	
 	return 1;
 }
@@ -161,20 +101,11 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	unsigned char ech;
 	int direction = 0;
 	int isAlt = 0;
-	unsigned char *startChar;
-	unsigned char *startCharAlt;
-	int            startCharPos;
-	unsigned char *endChar;
-	unsigned char *endCharAlt;
-	int            endCharPos;
-	unsigned char *startRollChar;
-	unsigned char *startRollCharAlt;
-	int            startRollCharPos;
-	unsigned char *endRollChar;
-	unsigned char *endRollCharAlt;
-	int            endRollCharPos;
+	int startCharPos;
+	int endCharPos;
+	int startRollCharPos;
+	int endRollCharPos;
 	unsigned char tempChar;
-	unsigned char tempCharAlt;
 	
 	static int lastStartCharPos = -1;
 	static int lastEndCharPos = -1;
@@ -184,58 +115,52 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	ts.tv_sec = debug / 1000;
 	ts.tv_nsec = (debug % 1000) * 1000000;
 	
+	// Determine perimeter char location
+	for (startCharPos = 0; startCharPos < GRID_SIZE * 8; ++startCharPos)
+		if (perimeterChars[startCharPos] == ch)
+			break;
+
 	// Determining starting row/col and starting direction
-	if (!direction) {
-		for (r = 0, c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].charUp == ch || grid[r][c].charUpAlt == ch) {
-				direction = DIR_DOWN;
-				startCharPos = c;
-				startChar = &(grid[r][c].charUp);
-				startCharAlt = &(grid[r][c].charUpAlt);
-				if (grid[r][c].charUpAlt == ch)
-					isAlt = 1;
-				break;
-			}
-		}
-	}
-	if (!direction) {
-		for (r = GRID_SIZE-1, c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].charDown == ch || grid[r][c].charDownAlt == ch) {
-				direction = DIR_UP;
-				startCharPos = c + (GRID_SIZE*3);
-				startChar = &(grid[r][c].charDown);
-				startCharAlt = &(grid[r][c].charDownAlt);
-				if (grid[r][c].charDownAlt == ch)
-					isAlt = 1;
-				break;
-			}
-		}
-	}
-	if (!direction) {
-		for (r = 0, c = 0; r < GRID_SIZE && !direction; ++r) {
-			if (grid[r][c].charLeft == ch || grid[r][c].charLeftAlt == ch) {
-				direction = DIR_RIGHT;
-				startCharPos = r + (GRID_SIZE*2);
-				startChar = &(grid[r][c].charLeft);
-				startCharAlt = &(grid[r][c].charLeftAlt);
-				if (grid[r][c].charLeftAlt == ch)
-					isAlt = 1;
-				break;
-			}
-		}
-	}
-	if (!direction) {
-		for (r = 0, c = GRID_SIZE-1; r < GRID_SIZE; ++r) {
-			if (grid[r][c].charRight == ch || grid[r][c].charRightAlt == ch) {
-				direction = DIR_LEFT;
-				startCharPos = r + GRID_SIZE;
-				startChar = &(grid[r][c].charRight);
-				startCharAlt = &(grid[r][c].charRightAlt);
-				if (grid[r][c].charRightAlt == ch)
-					isAlt = 1;
-				break;
-			}
-		}
+	if (startCharPos < GRID_SIZE) {
+		direction = DIR_DOWN;
+		isAlt = 0;
+		r = 0;
+		c = startCharPos;
+	} else if (startCharPos < GRID_SIZE * 2) {
+		direction = DIR_LEFT;
+		isAlt = 0;
+		r = startCharPos - GRID_SIZE;
+		c = GRID_SIZE - 1;
+	} else if (startCharPos < GRID_SIZE * 3) {
+		direction = DIR_RIGHT;
+		isAlt = 0;
+		r = startCharPos - (GRID_SIZE * 2);
+		c = 0;
+	} else if (startCharPos < GRID_SIZE * 4) {
+		direction = DIR_UP;
+		isAlt = 0;
+		r = GRID_SIZE - 1;
+		c = startCharPos - (GRID_SIZE * 3);
+	} else if (startCharPos < GRID_SIZE * 5) {
+		direction = DIR_DOWN;
+		isAlt = 1;
+		r = 0;
+		c = startCharPos - (GRID_SIZE * 4);
+	} else if (startCharPos < GRID_SIZE * 6) {
+		direction = DIR_LEFT;
+		isAlt = 1;
+		r = startCharPos - (GRID_SIZE * 5);
+		c = GRID_SIZE - 1;
+	} else if (startCharPos < GRID_SIZE * 7) {
+		direction = DIR_RIGHT;
+		isAlt = 1;
+		r = startCharPos - (GRID_SIZE * 6);
+		c = 0;
+	} else if (startCharPos < GRID_SIZE * 8) {
+		direction = DIR_UP;
+		isAlt = 1;
+		r = GRID_SIZE - 1;
+		c = startCharPos - (GRID_SIZE * 7);
 	}
 
 	// Traverse through the grid
@@ -285,35 +210,44 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 
 		// Check if our position is out of grid bounds. That means we found our char.
 		if (r < 0) {
-			endChar = &(grid[0][c].charUp);
-			endCharAlt = &(grid[0][c].charUpAlt);
+			if (isAlt)
+				c += (GRID_SIZE * 4);
+
 			endCharPos = c;
-			ech = isAlt ? *endCharAlt : *endChar;
-			break;
-		} else if (r >= GRID_SIZE) {
-			endChar = &(grid[GRID_SIZE-1][c].charDown);
-			endCharAlt = &(grid[GRID_SIZE-1][c].charDownAlt);
-			endCharPos = c + (GRID_SIZE*3);
-			ech = isAlt ? *endCharAlt : *endChar;
-			break;
-		} else if (c < 0) {
-			endChar = &(grid[r][0].charLeft);
-			endCharAlt = &(grid[r][0].charLeftAlt);
-			endCharPos = r + (GRID_SIZE*2);
-			ech = isAlt ? *endCharAlt : *endChar;
+			ech = perimeterChars[endCharPos];
 			break;
 		} else if (c >= GRID_SIZE) {
-			endChar = &(grid[r][GRID_SIZE-1].charRight);
-			endCharAlt = &(grid[r][GRID_SIZE-1].charRightAlt);
+			if (isAlt)
+				r += (GRID_SIZE * 4);
+
 			endCharPos = r + GRID_SIZE;
-			ech = isAlt ? *endCharAlt : *endChar;
+			ech = perimeterChars[endCharPos];
+			break;
+		} else if (c < 0) {
+			if (isAlt)
+				r += (GRID_SIZE * 4);
+
+			endCharPos = r + (GRID_SIZE * 2);
+			ech = perimeterChars[endCharPos];
+			break;
+		} else if (r >= GRID_SIZE) {
+			if (isAlt)
+				c += (GRID_SIZE * 4);
+
+			endCharPos = c + (GRID_SIZE * 3);
+			ech = perimeterChars[endCharPos];
 			break;
 		}
 	}
 	
 	// Roll start char
-	startRollCharPos = (startCharPos + (int)*startChar + (int)*startCharAlt) % (GRID_SIZE * 4);
-	endRollCharPos = (endCharPos + (int)*endChar + (int)*endCharAlt) % (GRID_SIZE * 4);
+	if (isAlt) {
+		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
+		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos - (GRID_SIZE*4)]) % (GRID_SIZE * 8);
+	} else {
+		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos + (GRID_SIZE*4)]) % (GRID_SIZE * 8);
+		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos + (GRID_SIZE*4)]) % (GRID_SIZE * 8);
+	}
 	
 	// Characters can't roll to their own position, to the other char position, or to their previous position
 	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos) {
@@ -329,53 +263,19 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	} else {
 
 		// Roll start char
-		if (startRollCharPos < GRID_SIZE) {
-			startRollChar = &(grid[0][startRollCharPos].charUp);
-			startRollCharAlt = &(grid[0][startRollCharPos].charUpAlt);
-		} else if (startRollCharPos < GRID_SIZE * 2) {
-			startRollChar = &(grid[startRollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
-			startRollCharAlt = &(grid[startRollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
-		} else if (startRollCharPos < GRID_SIZE * 3) {
-			startRollChar = &(grid[startRollCharPos % GRID_SIZE][0].charLeft);
-			startRollCharAlt = &(grid[startRollCharPos % GRID_SIZE][0].charLeftAlt);
-		} else if (startRollCharPos < GRID_SIZE * 4) {
-			startRollChar = &(grid[GRID_SIZE-1][startRollCharPos % GRID_SIZE].charDown);
-			startRollCharAlt = &(grid[GRID_SIZE-1][startRollCharPos % GRID_SIZE].charDownAlt);
-		}
-		if (isAlt) {
-			tempCharAlt = *startCharAlt;
-			*startCharAlt = *startRollChar;
-			*startRollChar = tempCharAlt;
-		} else {
-			tempChar = *startChar;
-			*startChar = *startRollCharAlt;
-			*startRollCharAlt = tempChar;
-		}
+		tempChar = perimeterChars[startCharPos];
+		perimeterChars[startCharPos] = perimeterChars[startRollCharPos];
+		perimeterChars[startRollCharPos] = tempChar;
+		
+		// Remember start position for next char
 		lastStartCharPos = startCharPos;
 		
 		// Roll end char
-		if (endRollCharPos < GRID_SIZE) {
-			endRollChar = &(grid[0][endRollCharPos].charUp);
-			endRollCharAlt = &(grid[0][endRollCharPos].charUpAlt);
-		} else if (endRollCharPos < GRID_SIZE * 2) {
-			endRollChar = &(grid[endRollCharPos % GRID_SIZE][GRID_SIZE-1].charRight);
-			endRollCharAlt = &(grid[endRollCharPos % GRID_SIZE][GRID_SIZE-1].charRightAlt);
-		} else if (endRollCharPos < GRID_SIZE * 3) {
-			endRollChar = &(grid[endRollCharPos % GRID_SIZE][0].charLeft);
-			endRollCharAlt = &(grid[endRollCharPos % GRID_SIZE][0].charLeftAlt);
-		} else if (endRollCharPos < GRID_SIZE * 4) {
-			endRollChar = &(grid[GRID_SIZE-1][endRollCharPos % GRID_SIZE].charDown);
-			endRollCharAlt = &(grid[GRID_SIZE-1][endRollCharPos % GRID_SIZE].charDownAlt);
-		}
-		if (isAlt) {
-			tempCharAlt = *endCharAlt;
-			*endCharAlt = *endRollChar;
-			*endRollChar = tempCharAlt;
-		} else {
-			tempChar = *endChar;
-			*endChar = *endRollCharAlt;
-			*endRollCharAlt = tempChar;
-		}
+		tempChar = perimeterChars[endCharPos];
+		perimeterChars[endCharPos] = perimeterChars[endRollCharPos];
+		perimeterChars[endRollCharPos] = tempChar;
+		
+		// Remember end position for next char
 		lastEndCharPos = endCharPos;
 	
 	}
@@ -458,21 +358,21 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 			else if (r == GRID_SIZE+1 && c == GRID_SIZE+1)  // Lower right corner
 				printf("%2c", ' ');
 			else if (r == -2)                           // Alt Top chars
-				printf("%2x", grid[r+2][c].charUpAlt);
+				printf("%2x", perimeterChars[c + (GRID_SIZE * 4)]);
 			else if (r == -1)                           // Top chars
-				printf("%2x", grid[r+1][c].charUp);
+				printf("%2x", perimeterChars[c]);
 			else if (c == GRID_SIZE+1)                    // Alt Right chars
-				printf("%2x", grid[r][c-2].charRightAlt);
+				printf("%2x", perimeterChars[r + (GRID_SIZE * 5)]);
 			else if (c == GRID_SIZE)                    // Right chars
-				printf("%2x", grid[r][c-1].charRight);
+				printf("%2x", perimeterChars[r + GRID_SIZE]);
 			else if (r == GRID_SIZE+1)                    // Alt Bottom chars
-				printf("%2x", grid[r-2][c].charDownAlt);
+				printf("%2x", perimeterChars[c + (GRID_SIZE * 7)]);
 			else if (r == GRID_SIZE)                    // Bottom chars
-				printf("%2x", grid[r-1][c].charDown);
+				printf("%2x", perimeterChars[c + (GRID_SIZE * 3)]);
 			else if (c == -2)                           // Alt Left chars
-				printf("%2x", grid[r][c+2].charLeftAlt);
+				printf("%2x", perimeterChars[r + (GRID_SIZE * 6)]);
 			else if (c == -1)                           // Left chars
-				printf("%2x", grid[r][c+1].charLeft);
+				printf("%2x", perimeterChars[r + (GRID_SIZE * 2)]);
 			else if (grid[r][c].mirrorType == MIRROR_FORWARD)
 				printf("%2c", '/');
 			else if (grid[r][c].mirrorType == MIRROR_BACKWARD)
