@@ -65,7 +65,7 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 		break;
 	}
 	
-	// Return zero if we can't openthe key file
+	// Return zero if we can't open the key file
 	if (keyFile == NULL)
 		return 0;
 	
