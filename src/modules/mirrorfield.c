@@ -40,21 +40,19 @@ int mirrorfield_set(unsigned char ch) {
 	
 	// Set Mirror Char
 	if (i < GRID_SIZE * GRID_SIZE) {
-		if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch)) {
-			t = ((i / GRID_SIZE) * GRID_SIZE) + (i % GRID_SIZE);
-			if (ch == '/') {
-				grid[t] = MIRROR_FORWARD;
-			} else if (ch == '\\') {
-				grid[t] = MIRROR_BACKWARD;
-			} else if (ch == '-') {
-				grid[t] = MIRROR_STRAIGHT;
-			} else {
-				grid[t] = MIRROR_NONE;
-			}
-			return 1;
+		t = ((i / GRID_SIZE) * GRID_SIZE) + (i % GRID_SIZE);
+		if (ch == '/') {
+			grid[t] = MIRROR_FORWARD;
+		} else if (ch == '\\') {
+			grid[t] = MIRROR_BACKWARD;
+		} else if (ch == '-') {
+			grid[t] = MIRROR_STRAIGHT;
+		} else if (ch == ' ') {
+			grid[t] = MIRROR_NONE;
 		} else {
 			return 0;
 		}
+		return 1;
 	}
 	
 	// Set Inner Perimeter Chars
