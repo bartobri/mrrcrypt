@@ -10,19 +10,18 @@
 #include "main.h"
 #include "modules/mirrorfield.h"
 
-#define MIRROR_NONE      32
-#define MIRROR_FORWARD   47
-#define MIRROR_BACKWARD  92
-#define MIRROR_STRAIGHT  45
-#define DIR_UP           1
-#define DIR_DOWN         2
-#define DIR_LEFT         3
-#define DIR_RIGHT        4
+#define MIRROR_NONE      3
+#define MIRROR_FORWARD   0
+#define MIRROR_STRAIGHT  1
+#define MIRROR_BACKWARD  2
+#define DIR_DOWN         1
+#define DIR_LEFT         2
+#define DIR_RIGHT        3
+#define DIR_UP           4
 
 // Gridpoint Structure
 struct gridPoint {
 	int mirrorType;
-	int visited;
 };
 
 // Static Variables
@@ -36,7 +35,6 @@ void mirrorfield_init(void) {
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 			grid[r][c].mirrorType = 0;
-			grid[r][c].visited = 0;
 		}
 	}
 	
@@ -54,7 +52,15 @@ int mirrorfield_set(unsigned char ch) {
 	// Set Mirror Char
 	if (i < GRID_SIZE * GRID_SIZE) {
 		if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch)) {
-			grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = ch;
+			if (ch == '/') {
+				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_FORWARD;
+			} else if (ch == '\\') {
+				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_BACKWARD;
+			} else if (ch == '-') {
+				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_STRAIGHT;
+			} else {
+				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_NONE;
+			}
 			return 1;
 		} else {
 			return 0;
@@ -77,10 +83,9 @@ int mirrorfield_validate(void) {
 	// Check mirrors
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
-
-			if (!grid[r][c].mirrorType || !strchr(SUPPORTED_MIRROR_TYPES, grid[r][c].mirrorType))
+			if (grid[r][c].mirrorType < 0 || grid[r][c].mirrorType > 3) {
 				return 0;
-			
+			}
 		}
 	}
 	
@@ -103,6 +108,10 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int isAlt = 0;
 	int startCharPos;
 	int endCharPos;
+	int visited[GRID_SIZE*GRID_SIZE];
+	
+	// Init visited array to all zeros
+	memset(visited, 0, sizeof(visited));
 	
 	// For the debug flag
 	struct timespec ts;
@@ -167,9 +176,15 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			nanosleep(&ts, NULL);
 		}
 		
-		// Flag the mirrors we visited so we can rotate them
-		if (grid[r][c].mirrorType != MIRROR_NONE)
-			grid[r][c].visited = 1;
+		// If we already encountered this mirror, unspin it before
+		// changing direction. We can only spin mirrors once per char.
+		if (grid[r][c].mirrorType != MIRROR_NONE && visited[(r * GRID_SIZE) + c]) {
+			if (grid[r][c].mirrorType == MIRROR_FORWARD) {
+				grid[r][c].mirrorType = MIRROR_BACKWARD;
+			} else {
+				--(grid[r][c].mirrorType);
+			}
+		}
 
 		// Change direction if we hit a mirror
 		if (grid[r][c].mirrorType == MIRROR_FORWARD) {
@@ -190,6 +205,12 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				direction = DIR_DOWN;
 			else if (direction == DIR_UP)
 				direction = DIR_LEFT;
+		}
+		
+		// Spin mirror and mark as visited
+		if (grid[r][c].mirrorType != MIRROR_NONE) {
+			grid[r][c].mirrorType = (grid[r][c].mirrorType + 1) % 3;
+			visited[(r * GRID_SIZE) + c] = 1;
 		}
 
 		// Advance position
@@ -236,22 +257,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	
 	// Roll start and end chars
 	mirrorfield_roll_chars(startCharPos, endCharPos);
-
-	// Rotate visited mirrors and reset to zero
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].visited) {
-				if (grid[r][c].mirrorType == MIRROR_BACKWARD)
-					grid[r][c].mirrorType = MIRROR_FORWARD;
-				else if (grid[r][c].mirrorType == MIRROR_FORWARD)
-					grid[r][c].mirrorType = MIRROR_STRAIGHT;
-				else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
-					grid[r][c].mirrorType = MIRROR_BACKWARD;
-
-				grid[r][c].visited = 0;
-			}
-		}
-	}	
 
 	// Return crypted char
 	return ech;
