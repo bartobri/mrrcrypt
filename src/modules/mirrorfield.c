@@ -19,26 +19,15 @@
 #define DIR_RIGHT        3
 #define DIR_UP           4
 
-// Gridpoint Structure
-struct gridPoint {
-	int mirrorType;
-};
-
 // Static Variables
-static struct gridPoint grid[GRID_SIZE][GRID_SIZE];
+static int grid[GRID_SIZE * GRID_SIZE];
 static unsigned char perimeterChars[GRID_SIZE * 8];
 
 void mirrorfield_init(void) {
-	int r, c;
-
-	// Init struct with default values
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
-			grid[r][c].mirrorType = 0;
-		}
-	}
+	// Init grid values to zero
+	memset(grid, 0, sizeof(grid));
 	
-	// Set perimeter chars to zero
+	// Init perimeter chars to zero
 	memset(perimeterChars, 0, sizeof(perimeterChars));
 }
 
@@ -52,14 +41,15 @@ int mirrorfield_set(unsigned char ch) {
 	// Set Mirror Char
 	if (i < GRID_SIZE * GRID_SIZE) {
 		if (ch != '\0' && strchr(SUPPORTED_MIRROR_TYPES, ch)) {
+			t = ((i / GRID_SIZE) * GRID_SIZE) + (i % GRID_SIZE);
 			if (ch == '/') {
-				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_FORWARD;
+				grid[t] = MIRROR_FORWARD;
 			} else if (ch == '\\') {
-				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_BACKWARD;
+				grid[t] = MIRROR_BACKWARD;
 			} else if (ch == '-') {
-				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_STRAIGHT;
+				grid[t] = MIRROR_STRAIGHT;
 			} else {
-				grid[i / GRID_SIZE][i % GRID_SIZE].mirrorType = MIRROR_NONE;
+				grid[t] = MIRROR_NONE;
 			}
 			return 1;
 		} else {
@@ -78,14 +68,12 @@ int mirrorfield_set(unsigned char ch) {
 }
 
 int mirrorfield_validate(void) {
-	int i, i2, r, c;
+	int i, i2;
 
 	// Check mirrors
-	for (r = 0; r < GRID_SIZE; ++r) {
-		for (c = 0; c < GRID_SIZE; ++c) {
-			if (grid[r][c].mirrorType < 0 || grid[r][c].mirrorType > 3) {
-				return 0;
-			}
+	for (i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
+		if (grid[i] < 0 || grid[i] > 3) {
+			return 0;
 		}
 	}
 	
@@ -102,13 +90,13 @@ int mirrorfield_validate(void) {
 }
 
 unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
-	int r, c;
+	int r, c, t;
 	unsigned char ech;
 	int direction = 0;
 	int isAlt = 0;
 	int startCharPos;
 	int endCharPos;
-	int visited[GRID_SIZE*GRID_SIZE];
+	int visited[GRID_SIZE * GRID_SIZE];
 	
 	// Init visited array to all zeros
 	memset(visited, 0, sizeof(visited));
@@ -169,6 +157,9 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	// Traverse through the grid
 	while (1) {
 		
+		// Translate row/column to position in grid
+		t = (r * GRID_SIZE) + c;
+		
 		// Draw mirror field if debug flag is set
 		if (debug) {
 			mirrorfield_draw(r, c);
@@ -178,16 +169,16 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		
 		// If we already encountered this mirror, unspin it before
 		// changing direction. We can only spin mirrors once per char.
-		if (grid[r][c].mirrorType != MIRROR_NONE && visited[(r * GRID_SIZE) + c]) {
-			if (grid[r][c].mirrorType == MIRROR_FORWARD) {
-				grid[r][c].mirrorType = MIRROR_BACKWARD;
+		if (grid[t] != MIRROR_NONE && visited[t]) {
+			if (grid[t] == MIRROR_FORWARD) {
+				grid[t] = MIRROR_BACKWARD;
 			} else {
-				--(grid[r][c].mirrorType);
+				grid[t] -= 1;
 			}
 		}
 
 		// Change direction if we hit a mirror
-		if (grid[r][c].mirrorType == MIRROR_FORWARD) {
+		if (grid[t] == MIRROR_FORWARD) {
 			if (direction == DIR_DOWN)
 				direction = DIR_LEFT;
 			else if (direction == DIR_LEFT)
@@ -196,7 +187,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				direction = DIR_UP;
 			else if (direction == DIR_UP)
 				direction = DIR_RIGHT;
-		} else if (grid[r][c].mirrorType == MIRROR_BACKWARD) {
+		} else if (grid[t] == MIRROR_BACKWARD) {
 			if (direction == DIR_DOWN)
 				direction = DIR_RIGHT;
 			else if (direction == DIR_LEFT)
@@ -208,9 +199,9 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 		
 		// Spin mirror and mark as visited
-		if (grid[r][c].mirrorType != MIRROR_NONE) {
-			grid[r][c].mirrorType = (grid[r][c].mirrorType + 1) % 3;
-			visited[(r * GRID_SIZE) + c] = 1;
+		if (grid[t] != MIRROR_NONE) {
+			grid[t] = (grid[t] + 1) % 3;
+			visited[t] = 1;
 		}
 
 		// Advance position
@@ -384,11 +375,11 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 				printf("%2x", perimeterChars[r + (GRID_SIZE * 6)]);
 			else if (c == -1)                           // Left chars
 				printf("%2x", perimeterChars[r + (GRID_SIZE * 2)]);
-			else if (grid[r][c].mirrorType == MIRROR_FORWARD)
+			else if (grid[(r * GRID_SIZE) + c] == MIRROR_FORWARD)
 				printf("%2c", '/');
-			else if (grid[r][c].mirrorType == MIRROR_BACKWARD)
+			else if (grid[(r * GRID_SIZE) + c] == MIRROR_BACKWARD)
 				printf("%2c", '\\');
-			else if (grid[r][c].mirrorType == MIRROR_STRAIGHT)
+			else if (grid[(r * GRID_SIZE) + c] == MIRROR_STRAIGHT)
 				printf("%2c", '-');
 			else
 				printf("%2c", ' ');
