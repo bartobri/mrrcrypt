@@ -276,28 +276,37 @@ void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 		endRollCharPos = (endRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
 	}
 	
-	// Characters can't roll to the same position
-	if (startRollCharPos == endRollCharPos) {
-		// do nothing for now...
-	} else {
+	// Roll the larger of the start/end chars first. This only matters if their
+	// roll position is the same.
+	if ((int)perimeterChars[startCharPos] > (int)perimeterChars[endCharPos]) {
 
 		// Roll start char
 		tempChar = perimeterChars[startCharPos];
 		perimeterChars[startCharPos] = perimeterChars[startRollCharPos];
 		perimeterChars[startRollCharPos] = tempChar;
 		
-		// Remember start position for next char
-		lastStartCharPos = startCharPos;
+		// Roll end char
+		tempChar = perimeterChars[endCharPos];
+		perimeterChars[endCharPos] = perimeterChars[endRollCharPos];
+		perimeterChars[endRollCharPos] = tempChar;
+		
+	} else {
 		
 		// Roll end char
 		tempChar = perimeterChars[endCharPos];
 		perimeterChars[endCharPos] = perimeterChars[endRollCharPos];
 		perimeterChars[endRollCharPos] = tempChar;
 		
-		// Remember end position for next char
-		lastEndCharPos = endCharPos;
-	
+		// Roll start char
+		tempChar = perimeterChars[startCharPos];
+		perimeterChars[startCharPos] = perimeterChars[startRollCharPos];
+		perimeterChars[startRollCharPos] = tempChar;
 	}
+		
+	// Remember start/end position for next char
+	lastStartCharPos = startCharPos;
+	lastEndCharPos = endCharPos;
+	
 }
 
 void mirrorfield_draw(int pos_r, int pos_c) {
