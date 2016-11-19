@@ -9,6 +9,6 @@
 #define VERSION                "0.1.0"
 #define DEFAULT_KEY_NAME       "default"
 #define DEFAULT_KEY_PATH       ".config/mrrcrypt/"
-#define GRID_SIZE              32
+#define GRID_SIZE              64
 
 #endif

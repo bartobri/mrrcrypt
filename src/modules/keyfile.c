@@ -15,7 +15,7 @@
 #include "modules/keyfile.h"
 #include "modules/base64.h"
 
-#define MIRROR_OUTER_DENSITY   14
+#define MIRROR_DENSITY   20
 
 // Static chars
 static FILE *keyFile;
@@ -73,13 +73,13 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 }
 
 int keyfile_create(char *keyFileFullPathName) {
-	int i, r, c, d;
+	int i, r, c;
 	int w = 0;
 	uint32_t randseed = 0;
 	struct stat sb;
 	FILE *keyfile;
 	FILE *urandom;
-	unsigned char perimeterChars[GRID_SIZE * 8];
+	unsigned char perimeterChars[GRID_SIZE * 4];
 	base64 contents = { .index = 0 };
 
 	// Check subdirs and create them if needed
@@ -111,15 +111,9 @@ int keyfile_create(char *keyFileFullPathName) {
 			for (i = 24; i >= 0; i -= 8)
 				randseed += ((uint32_t)fgetc(urandom) << i);
 			srand(randseed);
-			
-			// Double mirror density in the center
-			if (r > GRID_SIZE / 4 && r < GRID_SIZE - (GRID_SIZE / 4) && c > GRID_SIZE / 4 && c < GRID_SIZE - (GRID_SIZE / 4))
-				d = MIRROR_OUTER_DENSITY / 2;
-			else
-				d = MIRROR_OUTER_DENSITY;
 
 			// Randomly generate mirror char
-			switch (rand() % d) {
+			switch (rand() % MIRROR_DENSITY) {
 				case 1:
 					contents.decoded[contents.index++] = '/';
 					break;
@@ -148,7 +142,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	fclose(urandom);
 	
 	// Generate perimeter characters
-	for (i = 0; i < GRID_SIZE * 8; i++)
+	for (i = 0; i < GRID_SIZE * 4; i++)
 		perimeterChars[i] = i;
 		
 	// Shuffle perimeter characters
@@ -192,7 +186,7 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 	if ((urandom = fopen("/dev/urandom", "r")) == NULL)
 		return 0;
 	
-	sIndex = (rand() % GRID_SIZE * 8);
+	sIndex = (rand() % GRID_SIZE * 4);
 	rIndex = sIndex;
 	c1 = str[rIndex];
 	for (i = 0; i < p; ++i) {
@@ -204,7 +198,7 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
-		while ((rIndex = (rand() % (GRID_SIZE * 8))) == sIndex)
+		while ((rIndex = (rand() % (GRID_SIZE * 4))) == sIndex)
 			;
 		
 		c2 = str[rIndex];
