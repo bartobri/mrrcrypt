@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 void main_shutdown(const char *errmsg) {
 	
 	// Log a shutdown message
-	printf("Shutting down. Reason: %s\n", errmsg);
+	fprintf (stderr, "Shutting down. Reason: %s\n", errmsg);
 	
 	// Close mirror file (if open)
 	keyfile_close();
