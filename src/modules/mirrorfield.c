@@ -206,6 +206,13 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			break;
 		}
 	}
+
+	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
+	// It is important that this happens to pass tests for randomness. This solution is only a step towards that end.
+	// It creates a 2-1 bias over other chars making it a non-ideal solution, but better than before, which was 0-1.
+	if ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos) {
+		ech = perimeterChars[startCharPos];
+	}
 	
 	// Roll start and end chars
 	mirrorfield_roll_chars(startCharPos, endCharPos);
@@ -234,12 +241,12 @@ void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos - 1]) % (GRID_SIZE * 4);
 	}
 	
-	// Characters can't roll to their own position, to the other char position, or to their previous position
-	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos) {
-		startRollCharPos = (startRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
+	// Characters can't roll to their own position, to the other char position, or to either previous position
+	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos || startRollCharPos == lastEndCharPos) {
+		startRollCharPos = (startRollCharPos + (GRID_SIZE/2)) % (GRID_SIZE * 4);
 	}
-	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos || endRollCharPos == lastEndCharPos) {
-		endRollCharPos = (endRollCharPos + GRID_SIZE) % (GRID_SIZE * 4);
+	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos || endRollCharPos == lastEndCharPos || endRollCharPos == lastStartCharPos) {
+		endRollCharPos = (endRollCharPos + (GRID_SIZE/2)) % (GRID_SIZE * 4);
 	}
 	
 	// Roll the larger of the start/end chars first. This only matters if their
