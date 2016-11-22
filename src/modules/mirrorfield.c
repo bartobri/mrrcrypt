@@ -95,6 +95,11 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int endCharPos;
 	int visited[GRID_SIZE * GRID_SIZE];
 	
+	static int evenodd = 0;
+	
+	// Toggle evenodd var
+	evenodd = (evenodd + 1) % 2;
+	
 	// Init visited array to all zeros
 	memset(visited, 0, sizeof(visited));
 	
@@ -211,7 +216,9 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	// It is important that this happens to pass tests for randomness. This solution is only a step towards that end.
 	// It creates a 2-1 bias over other chars making it a non-ideal solution, but better than before, which was 0-1.
 	if ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos) {
-		ech = perimeterChars[startCharPos];
+		if (evenodd) {
+			ech = perimeterChars[startCharPos];
+		}
 	}
 	
 	// Roll start and end chars
