@@ -7,10 +7,10 @@ for encrypting and decrypting data using an adaptive mirror field algorithm.
 The algorithm passes testing for output patterns or biases, producing
 output that is indistinguishable from random data.
 
-The key used for encryption and decryption is highly against resilient to
+The key used for encryption and decryption is highly resilient to
 brute force attacks. The total number of key permutations is: 256!\*3^(32\*32) ≈ 3.2e+995
 
-Encryption speed is roughly 4 seconds per megabyte.
+Encryption speed is roughly 1 second per megabyte.
 
 The adaptive mirror field algorithm implemented in this project is the first
 of it's kind.
