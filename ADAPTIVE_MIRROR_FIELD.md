@@ -2,7 +2,7 @@ Adaptive Mirror Field
 =====================
 
 To help explain what an adaptive mirror field is, let's
-first explain what a typical, non-adaptive mirror field is.
+first explain what a typical mirror field is.
 
 Non-Adaptive Mirror Field
 -------------------------
@@ -67,8 +67,8 @@ These two features eliminate identifiable patterns in the output, most important
 MrrCrypt's Adaptive Mirror Field
 --------------------------------
 
-MrrCrypt encrypts data 1 byte at a time, so the mirror field was built to accomodate a 256 character alphabet.
-It consists of a 32x32 square grid with two rows of perimeter characters.
+MrrCrypt encrypts data 1 byte at a time. A byte has 256 possible values.
+The size of the mirror field is 64x64 to accomodate a 256 character alphabet.
 
 In this visualization, characters are represented in hexidecimal.
 
