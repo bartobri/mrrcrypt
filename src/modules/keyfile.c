@@ -149,7 +149,7 @@ int keyfile_create(char *keyFileFullPathName) {
 	keyfile_shuffle_string(perimeterChars, 2000);
 	
 	// Encode perimeter chars to base64 and write to key file
-	for (i = 0; i < GRID_SIZE * 8; ++i) {
+	for (i = 0; i < GRID_SIZE * 4; ++i) {
 		contents.decoded[contents.index++] = perimeterChars[i];
 		if (contents.index == BASE64_DECODED_COUNT) {
 			contents = base64_encode(contents);
