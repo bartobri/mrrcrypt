@@ -9,7 +9,7 @@ Output passes most tests for randmoness using the
 developed by the National Institute for Standards and Technology (NIST),
 and the [diehard test suite](https://en.wikipedia.org/wiki/Diehard_tests).
 
-A 34816 bit key is used for encryption and decryption, and is highly resilient to
+A 4352 byte key is used for encryption and decryption, and is highly resilient to
 brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) ≈ 1.66e+2461
 
 Encryption speed is roughly 1 second per megabyte.
