@@ -4,22 +4,23 @@ MrrCrypt
 The goal of this project is to provide a simple and robust command-line tool
 for encrypting and decrypting data using an adaptive mirror field algorithm.
 
-The algorithm passes testing for output patterns or biases, producing
-output that is indistinguishable from random data.
+Output passes most tests for randmoness using the
+[Statistical Test Suite](http://csrc.nist.gov/groups/ST/toolkit/rng/stats_tests.html)
+developed by the National Institute for Standards and Technology (NIST),
+and the [diehard test suite](https://en.wikipedia.org/wiki/Diehard_tests).
 
-The key used for encryption and decryption is highly resilient to
-brute force attacks. The total number of key permutations is: 256!\*3^(32\*32) ≈ 3.2e+995
+A 34816 bit key is used for encryption and decryption, and is highly resilient to
+brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) ≈ 1.66e+2461
 
 Encryption speed is roughly 1 second per megabyte.
 
 The adaptive mirror field algorithm implemented in this project is the first
-of it's kind.
+of it's kind. See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for
+more details.
 
 *Adaptive Mirror Field Animation:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
-
-See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for more details.
 
 Table of Contents
 -----------------
@@ -157,11 +158,11 @@ Auto-create a new key if the one specified by `-k key_file` does not exist.
 `-d ms`
 
 Debug mode. This draws the mirror field and animates the decryption process
-for debugging purposes. You will need a minimum terminal size of 75x40.
+for debugging purposes. You will need a minimum terminal size of 132x68.
 "ms" specifies the time in milliseconds for each step through the mirror
 field. Values around the mirror field perimeter are shown in hexadecimal.
-There is an inner and outer row of values for a total of 256 values represented
-in the 32x32 grid, one for every possible arrangement of bits in a single byte.
+There are a total of 256 values represented in the 64x64 grid, one for every
+possible arrangement of bits in a single byte.
 
 Key Management
 --------------
