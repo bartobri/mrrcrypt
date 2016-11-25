@@ -20,7 +20,7 @@ more details.
 
 *Adaptive Mirror Field Animation:*
 
-![MrrCrypt's Adaptve Mirror Field](http://i.imgur.com/Oq2Ch7S.gif)
+![MrrCrypt's Adaptve Mirror Field](http://www.brianbarto.info/extern/images/mrrcrypt/mrrcrypt.gif)
 
 Table of Contents
 -----------------
