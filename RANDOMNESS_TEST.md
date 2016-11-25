@@ -120,21 +120,12 @@ rgb_minimum_distance|   5|     10000|    1000|0.45574187|  PASSED
     rgb_permutations|   4|    100000|     100|0.33292543|  PASSED  
     rgb_permutations|   5|    100000|     100|0.64533475|  PASSED  
       rgb_lagged_sum|   0|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   1|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   2|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   3|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   4|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   5|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   6|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   7|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   8|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|   9|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  10|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  11|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  12|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  13|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  14|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  15|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  16|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  17|   1000000|     100|0.00000000|  FAILED  
-      rgb_lagged_sum|  18|   1000000|     100|0.00000000|  FAILED
+     rgb_kstest_test|   0|     10000|    1000|0.00000130|   WEAK
+     dab_bytedistrib|   0|  51200000|       1|0.00000000|  FAILED
+             dab_dct| 256|     50000|       1|0.45241142|  PASSED
+        dab_filltree|  32|  15000000|       1|0.27920628|  PASSED  
+        dab_filltree|  32|  15000000|       1|0.89654691|  PASSED
+       dab_filltree2|   0|   5000000|       1|0.02907675|  PASSED  
+       dab_filltree2|   1|   5000000|       1|0.00000000|  FAILED
+        dab_monobit2|  12|  65000000|       1|1.00000000|  FAILED
+```
