@@ -15,21 +15,12 @@ No particular bitmap seemed to favor a color, or show any bias towards
 light or dark, when compared to bitmaps generated from other keys,
 suggesting that different keys produce the similar random results.
 
-Key  | Bitmap Size | Result
------|-------------|-------
-key1 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test01.bmp)
-key2 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test02.bmp)
-key3 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test03.bmp)
-key4 | 320x200     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test04.bmp)
-key1 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test05.bmp)
-key2 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test06.bmp)
-key3 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test07.bmp)
-key4 | 640x400     | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test08.bmp)
-key1 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test09.bmp)
-key2 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test10.bmp)
-key3 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test11.bmp)
-key4 | 1280x800    | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test12.bmp)
-
+Key  | 320x200 | 640x400 | 1280x800
+-----------------------------------
+key1 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test01.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test05.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test09.bmp)
+key2 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test02.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test06.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test10.bmp)
+key3 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test03.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test07.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test11.bmp)
+key4 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test04.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test08.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test12.bmp)
 
 NIST and Diehard Tests
 ----------------------
