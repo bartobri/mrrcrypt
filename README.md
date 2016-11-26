@@ -4,10 +4,11 @@ MrrCrypt
 The goal of this project is to provide a simple and robust command-line tool
 for encrypting and decrypting data using an adaptive mirror field algorithm.
 
-Output passes most tests for randmoness using the
+Encrypted output passes most tests for randmoness using the
 [Statistical Test Suite](http://csrc.nist.gov/groups/ST/toolkit/rng/stats_tests.html)
 developed by the National Institute for Standards and Technology (NIST),
 and the [diehard test suite](https://en.wikipedia.org/wiki/Diehard_tests).
+See [RANDOMNESS_TEST](RANDOMNESS_TEST.md) for test results.
 
 A 4352 byte key is used for encryption and decryption, and is highly resilient to
 brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) â‰ˆ 1.66e+2461
@@ -15,10 +16,10 @@ brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) â
 Encryption speed is roughly 1 second per megabyte.
 
 The adaptive mirror field algorithm implemented in this project is the first
-of it's kind. See [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md) for
-more details.
+of it's kind, though is may have some similar attributes to a block cypher.
+For more information on how it works, see [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md).
 
-*Adaptive Mirror Field Animation:*
+*MrrCrypt in debug mode shows how envryption/decryption occurs:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://www.brianbarto.info/extern/images/mrrcrypt/mrrcrypt.gif)
 
