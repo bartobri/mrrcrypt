@@ -19,7 +19,7 @@ The adaptive mirror field algorithm implemented in this project is the first
 of it's kind, though is may have some similar attributes to a block cypher.
 For more information on how it works, see [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md).
 
-*MrrCrypt in debug mode shows how envryption/decryption occurs:*
+*MrrCrypt in debug mode shows how encryption/decryption occurs:*
 
 ![MrrCrypt's Adaptve Mirror Field](http://www.brianbarto.info/extern/images/mrrcrypt/mrrcrypt.gif)
 
