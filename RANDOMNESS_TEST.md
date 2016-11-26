@@ -17,10 +17,10 @@ suggesting that different keys produce the similar random results.
 
 Key  | 320x200 | 640x400 | 1280x800
 -----|---------|---------|---------
-key1 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test01.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test05.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test09.bmp)
-key2 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test02.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test06.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test10.bmp)
-key3 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test03.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test07.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test11.bmp)
-key4 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test04.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test08.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test12.bmp)
+key1 | ![TEST01](http://brianbarto.info/extern/images/mrrcrypt/test01.png) | ![TEST05](http://brianbarto.info/extern/images/mrrcrypt/test05.png) | ![TEST09](http://brianbarto.info/extern/images/mrrcrypt/test09.png)
+key2 | ![TEST02](http://brianbarto.info/extern/images/mrrcrypt/test02.png) | ![TEST06](http://brianbarto.info/extern/images/mrrcrypt/test06.png) | ![TEST10](http://brianbarto.info/extern/images/mrrcrypt/test10.png)
+key3 | ![TEST03](http://brianbarto.info/extern/images/mrrcrypt/test03.png) | ![TEST07](http://brianbarto.info/extern/images/mrrcrypt/test07.png) | ![TEST11](http://brianbarto.info/extern/images/mrrcrypt/test11.png)
+key4 | ![TEST04](http://brianbarto.info/extern/images/mrrcrypt/test04.png) | ![TEST08](http://brianbarto.info/extern/images/mrrcrypt/test08.png) | ![TEST12](http://brianbarto.info/extern/images/mrrcrypt/test12.png)
 
 NIST and Diehard Tests
 ----------------------
