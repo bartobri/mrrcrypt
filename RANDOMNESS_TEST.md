@@ -16,7 +16,7 @@ light or dark, when compared to bitmaps generated from other keys,
 suggesting that different keys produce the similar random results.
 
 Key  | 320x200 | 640x400 | 1280x800
------------------------------------
+-----|---------|---------|---------
 key1 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test01.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test05.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test09.bmp)
 key2 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test02.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test06.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test10.bmp)
 key3 | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test03.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test07.bmp) | [LINK](http://brianbarto.info/extern/images/mrrcrypt/test11.bmp)
