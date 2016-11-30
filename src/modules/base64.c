@@ -8,6 +8,41 @@
 #include <stdlib.h>
 #include "modules/base64.h"
 
+/*
+ * MODULE DESCRIPTION
+ * 
+ * The base64 module was designed to work with unencoded and encoded characters
+ * in a 3-4 ratio. Which is to say, every 3 unencoded characters will
+ * produce 4 encoded characters. This ratio is inherent within the base64
+ * specification. The base64 structure defined in base64.h was designed
+ * to facilitate the 3-4 ratio.
+ * 
+ * Long strings that need to be encoded should be passed to the base64_encode()
+ * function no more than 3 characters at a time, via the decoded[] character array
+ * defined in the base64 structure. Set the structure index to the number of
+ * characters you want encoded. This will usually be 3 unless there is a
+ * trailing 1 or 2 characters at the end of your string.
+ * 
+ * The returned structure will contain 4 encoded characters stored in the
+ * encoded[] character array.
+ * 
+ * Repeat this process until the entire string is encoded.
+ * 
+ * Decoding a string works the same way but in reverse. Feed your encoded
+ * string into the base64_decode() function 4 characters at a time, via
+ * the encoded[] character array defined in the base64 structure. There is
+ * no need to set the index when decoding because a properly encoded string
+ * will always be evenly divisible by 4. The decode function always assumes
+ * it will receive 4 encoded characters. If it does not, it will set the
+ * error flag and return.
+ * 
+ * The returned structure will contain 3 decoded characters stored in the
+ * decoded[] character array.
+ */
+
+/*
+ * Base64 Character Encoding Table
+ */
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
                                 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
@@ -16,7 +51,13 @@ static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
                                 'w', 'x', 'y', 'z', '0', '1', '2', '3',
                                 '4', '5', '6', '7', '8', '9', '+', '/'};
-
+/*
+ * The base64_encode() function encodes the characters stored in the decoded[]
+ * character array member of the base64 structure. Only the number of
+ * characters specified by index will be encoded. Encoded characters are
+ * stored in the encoded[] character array member of the returned base64
+ * structure.
+ */
 base64 base64_encode(base64 data) {
 	uint32_t octet_1, octet_2, octet_3;
 	uint32_t combined = 0;
@@ -46,6 +87,12 @@ base64 base64_encode(base64 data) {
 	return data;
 }
 
+/*
+ * The base64_decode() function decodes the characters stored in the encoded[]
+ * character array member of the base64 structure. Decoded characters are
+ * stored in the decoded[] character array member of the returned base64
+ * structure.
+ */
 base64 base64_decode(base64 data) {
 	int i, f = 0;
 	uint32_t octet_1, octet_2, octet_3, octet_4;
