@@ -17,6 +17,12 @@
 // Function prototypes
 void main_shutdown(const char *);
 
+/*
+ * The main function initializes the modules, checks arguments,
+ * validates the key, and reads from STDIN 8 bits at a time. Each 8-bit
+ * character is processed through the encryption algorithm and the result
+ * is printed to STDOUT.
+ */
 int main(int argc, char *argv[]) {
 	int o, ch;
 	int autoCreate       = 0;
@@ -86,6 +92,10 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
+/*
+ * The main_shutdown() function ensures all open file descriptors are closed
+ * cleanly before printing the shutdown message and exiting the program.
+ */
 void main_shutdown(const char *errmsg) {
 	
 	// Log a shutdown message
