@@ -6,6 +6,9 @@
 #ifndef KEYFILE_H
 #define KEYFILE_H 1
 
+/*
+ * Function Prototypes
+ */
 void  keyfile_init(void);
 int   keyfile_open(char *, int);
 int   keyfile_create(char *);

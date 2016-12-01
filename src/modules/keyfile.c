@@ -15,15 +15,38 @@
 #include "modules/keyfile.h"
 #include "modules/base64.h"
 
+/*
+ * MODULE DESCRIPTION
+ * 
+ * The keyfile module manages the opening, closing, creating, and
+ * reading of a key file. Creating the key file also includes creating
+ * the key itself.
+ */
+
 #define MIRROR_DENSITY   20
 
-// Static chars
+// Static variables
 static FILE *keyFile;
 
+/*
+ * The keyfile_init() function initializes any static variables.
+ */
 void keyfile_init(void) {
 	keyFile = NULL;
 }
 
+/*
+ * The keyfile_open() function attempts to open the keyfile specified in
+ * the keyFileName parameter. If keyFileName does not contain an absolute
+ * path, it will use $HOME/DEFAULT_KEY_PATH as the path to the directory
+ * that contains the specified key file.
+ * 
+ * If the key file is not found and the autoCreate flag is set, it will
+ * call the keyfile_create() function to attempt to create a new key file
+ * at the determined path.
+ * 
+ * Upon any errors, zero is returned.
+ */
 int keyfile_open(char *keyFileName, int autoCreate) {
 	char *homeDir              = getenv("HOME");
 	char *keyFilePath          = DEFAULT_KEY_PATH;
@@ -72,6 +95,17 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 	return 1;
 }
 
+/*
+ * The keyfile_create() function creates a new key file at the given path.
+ * A full absolute path and name must be provided as a single character
+ * sting. It will attempt to create any missing directories in the path
+ * if necessary.
+ * 
+ * Upon successfully creating the key file, it will also populate the file
+ * with a new randomized key.
+ * 
+ * Upon any errors, zero is returned.
+ */
 int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
 	int w = 0;
@@ -176,6 +210,13 @@ int keyfile_create(char *keyFileFullPathName) {
 	return 1;
 }
 
+/*
+ * The keyfile_shuffle_string() function shuffles the contents of the
+ * provided string pointer. The shuffle loop is repeated the number of
+ * times specified in p.
+ * 
+ * Once the shuffle is complete, the same string pointer is returned.
+ */
 unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 	int i, s, sIndex, rIndex;
 	unsigned char c1, c2;
@@ -213,6 +254,11 @@ unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
 	return str;
 }
 
+/*
+ * The keyfile_next_char() function is responsible for reading and decoding
+ * the contents of the key file. It returns a single unsigned char cast
+ * as an integer for each call.
+ */
 int keyfile_next_char(void) {
 	static base64 contents = { .index = BASE64_DECODED_COUNT, .error = 0 };
 
@@ -239,6 +285,10 @@ int keyfile_next_char(void) {
 	return (int)contents.decoded[contents.index++];
 }
 
+/*
+ * The keyfile_close() function closes the key file pointer if it has
+ * been opened.
+ */
 void keyfile_close(void) {
 	if (keyFile != NULL) {
 		fclose(keyFile);
