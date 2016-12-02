@@ -10,6 +10,15 @@
 #include "main.h"
 #include "modules/mirrorfield.h"
 
+/*
+ * MODULE DESCRIPTION
+ * 
+ * The mirrorfield module manages the loading, validating, and traversing
+ * of the mirror field. The cryptographic algorithm is implemented here.
+ * If the debug flag is set then this module also draws the mirror field
+ * and animates the encryption process.
+ */
+
 #define MIRROR_NONE      3
 #define MIRROR_FORWARD   0
 #define MIRROR_STRAIGHT  1
@@ -23,6 +32,9 @@
 static int grid[GRID_SIZE * GRID_SIZE];
 static unsigned char perimeterChars[GRID_SIZE * 4];
 
+/*
+ * The mirrorfield_init() function initializes any static variables.
+ */
 void mirrorfield_init(void) {
 	// Init grid values to zero
 	memset(grid, 0, sizeof(grid));
@@ -31,6 +43,14 @@ void mirrorfield_init(void) {
 	memset(perimeterChars, 0, sizeof(perimeterChars));
 }
 
+/*
+ * The mirrorfield_set() function accepts one character at a time and
+ * loads them sequentially into the static variables that contain the
+ * mirror field and perimeter characters.
+ * 
+ * Zero is returned if it gets a character it doesn't expect, although
+ * this is just a cursory error checking process. 
+ */
 int mirrorfield_set(unsigned char ch) {
 	static int i = -1;
 	int t;
@@ -65,6 +85,13 @@ int mirrorfield_set(unsigned char ch) {
 	return 0;
 }
 
+/*
+ * The mirrorfield_validate() function checks that the data contained in
+ * the static variables for the mirror field and perimeter character is
+ * valid.
+ * 
+ * Zero is returned if invalid.
+ */
 int mirrorfield_validate(void) {
 	int i, i2;
 
@@ -87,6 +114,12 @@ int mirrorfield_validate(void) {
 	return 1;
 }
 
+/*
+ * The mirrorfield_crypt_char() function receives a cleartext character
+ * and traverses the mirror field to find it's cyphertext equivelent,
+ * which is then returned. It also calls mirrorfield_roll_chars() after
+ * the cyphertext character is determined.
+ */
 unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int r, c, t;
 	unsigned char ech;
@@ -213,8 +246,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	}
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
-	// It is important that this happens to pass tests for randomness. This solution is only a step towards that end.
-	// It creates a 2-1 bias over other chars making it a non-ideal solution, but better than before, which was 0-1.
 	if ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos) {
 		if (evenodd) {
 			ech = perimeterChars[startCharPos];
@@ -228,6 +259,14 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	return ech;
 }
 
+/*
+ * The mirrorfield_roll_chars() function received the starting and ending
+ * positions of the cleartext and cyphertext character respectively, and
+ * implements a character rolling process to make the perimeter character
+ * positions dynamic and increase randomness in the output.
+ * 
+ * No value is returned.
+ */
 void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 	int startRollCharPos;
 	int endRollCharPos;
@@ -289,6 +328,11 @@ void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 	
 }
 
+/*
+ * The mirrorfield_draw() function draws the current state of the mirror
+ * field and perimeter characters. It receives x/y coordinates and highlights
+ * that position on the field.
+ */
 void mirrorfield_draw(int pos_r, int pos_c) {
 	int r, c;
 	static int resetCursor = 0;
