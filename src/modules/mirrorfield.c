@@ -189,24 +189,40 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 
 		// Change direction if we hit a mirror
-		if (grid[t] == MIRROR_FORWARD) {
-			if (direction == DIR_DOWN)
-				direction = DIR_LEFT;
-			else if (direction == DIR_LEFT)
-				direction = DIR_DOWN;
-			else if (direction == DIR_RIGHT)
-				direction = DIR_UP;
-			else if (direction == DIR_UP)
-				direction = DIR_RIGHT;
-		} else if (grid[t] == MIRROR_BACKWARD) {
-			if (direction == DIR_DOWN)
-				direction = DIR_RIGHT;
-			else if (direction == DIR_LEFT)
-				direction = DIR_UP;
-			else if (direction == DIR_RIGHT)
-				direction = DIR_DOWN;
-			else if (direction == DIR_UP)
-				direction = DIR_LEFT;
+		switch (grid[t]) {
+			case MIRROR_FORWARD:
+				switch (direction) {
+					case DIR_DOWN:
+						direction = DIR_LEFT;
+						break;
+					case DIR_LEFT:
+						direction = DIR_DOWN;
+						break;
+					case DIR_RIGHT:
+						direction = DIR_UP;
+						break;
+					case DIR_UP:
+						direction = DIR_RIGHT;
+						break;
+				}
+				break;
+			case MIRROR_BACKWARD:
+				switch (direction) {
+					case DIR_DOWN:
+						direction = DIR_RIGHT;
+						break;
+					case DIR_LEFT:
+						direction = DIR_UP;
+						break;
+					case DIR_RIGHT:
+						direction = DIR_DOWN;
+						break;
+					case DIR_UP:
+						direction = DIR_LEFT;
+						break;
+				}
+				break;
+				
 		}
 		
 		// Spin mirror and mark as visited
