@@ -125,7 +125,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	unsigned char ech;
 	int direction = 0;
 	int startCharPos;
-	int endCharPos;
+	int endCharPos = -1;
 	int visited[GRID_SIZE * GRID_SIZE];
 	
 	static int evenodd = 0;
@@ -166,7 +166,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	}
 
 	// Traverse through the grid
-	while (1) {
+	while (endCharPos < 0) {
 		
 		// Translate row/column to position in grid
 		t = (r * GRID_SIZE) + c;
@@ -231,41 +231,33 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 			visited[t] = 1;
 		}
 
-		// Advance position
+		// Advance position and check if we are out of grid bounds. If yes, we found our end character position.
 		switch (direction) {
 			case DIR_DOWN:
-				++r;
+				if (++r == GRID_SIZE) {
+					endCharPos = c + (GRID_SIZE * 3);
+				}
 				break;
 			case DIR_LEFT:
-				--c;
+				if (--c == -1) {
+					endCharPos = r + (GRID_SIZE * 2);
+				}
 				break;
 			case DIR_RIGHT:
-				++c;
+				if (++c == GRID_SIZE) {
+					endCharPos = r + GRID_SIZE;
+				}
 				break;
 			case DIR_UP:
-				--r;
+				if (--r == -1) {
+					endCharPos = c;
+				}
 				break;
 		}
-
-		// Check if our position is out of grid bounds. That means we found our char.
-		if (r < 0) {
-			endCharPos = c;
-			ech = perimeterChars[endCharPos];
-			break;
-		} else if (c >= GRID_SIZE) {
-			endCharPos = r + GRID_SIZE;
-			ech = perimeterChars[endCharPos];
-			break;
-		} else if (c < 0) {
-			endCharPos = r + (GRID_SIZE * 2);
-			ech = perimeterChars[endCharPos];
-			break;
-		} else if (r >= GRID_SIZE) {
-			endCharPos = c + (GRID_SIZE * 3);
-			ech = perimeterChars[endCharPos];
-			break;
-		}
 	}
+	
+	// Get ending character from position
+	ech = perimeterChars[endCharPos];
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
 	if ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos) {
