@@ -180,12 +180,8 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		
 		// If we already encountered this mirror, unspin it before
 		// changing direction. We can only spin mirrors once per char.
-		if (grid[t] != MIRROR_NONE && visited[t]) {
-			if (grid[t] == MIRROR_FORWARD) {
-				grid[t] = MIRROR_BACKWARD;
-			} else {
-				grid[t] -= 1;
-			}
+		if (visited[t]) {
+			grid[t] = (grid[t] + 2) % 3;
 		}
 
 		// Change direction if we hit a mirror
