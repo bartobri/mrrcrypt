@@ -232,14 +232,20 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		}
 
 		// Advance position
-		if (direction == DIR_DOWN)
-			++r;
-		else if (direction == DIR_LEFT)
-			--c;
-		else if (direction == DIR_RIGHT)
-			++c;
-		else if (direction == DIR_UP)
-			--r;
+		switch (direction) {
+			case DIR_DOWN:
+				++r;
+				break;
+			case DIR_LEFT:
+				--c;
+				break;
+			case DIR_RIGHT:
+				++c;
+				break;
+			case DIR_UP:
+				--r;
+				break;
+		}
 
 		// Check if our position is out of grid bounds. That means we found our char.
 		if (r < 0) {
