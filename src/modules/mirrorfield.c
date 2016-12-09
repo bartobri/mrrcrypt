@@ -256,10 +256,8 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	ech = perimeterChars[endCharPos];
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
-	if ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos) {
-		if (evenodd) {
-			ech = perimeterChars[startCharPos];
-		}
+	if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
+		ech = perimeterChars[startCharPos];
 	}
 	
 	// Roll start and end chars
