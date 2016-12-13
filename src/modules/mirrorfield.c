@@ -284,16 +284,8 @@ void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 	static int lastEndCharPos = -1;
 
 	// Determine start and end roll chars
-	if (startCharPos == 0) {
-		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos + 1]) % (GRID_SIZE * 4);
-	} else {
-		startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[startCharPos - 1]) % (GRID_SIZE * 4);
-	}
-	if (endCharPos == 0) {
-		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos + 1]) % (GRID_SIZE * 4);
-	} else {
-		endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[endCharPos - 1]) % (GRID_SIZE * 4);
-	}
+	startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[(startCharPos + 1) % (GRID_SIZE * 4)]) % (GRID_SIZE * 4);
+	endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[(endCharPos + 1) % (GRID_SIZE * 4)]) % (GRID_SIZE * 4);
 	
 	// Characters can't roll to their own position, to the other char position, or to either previous position
 	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos || startRollCharPos == lastEndCharPos) {
