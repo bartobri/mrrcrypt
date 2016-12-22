@@ -109,7 +109,6 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 int keyfile_create(char *keyFileFullPathName) {
 	int i, r, c;
 	int w = 0;
-	uint32_t randseed = 0;
 	struct stat sb;
 	FILE *keyfile;
 	FILE *urandom;
@@ -141,13 +140,8 @@ int keyfile_create(char *keyFileFullPathName) {
 	for (r = 0; r < GRID_SIZE; ++r) {
 		for (c = 0; c < GRID_SIZE; ++c) {
 
-			// (Re)seed our PRNG
-			for (i = 24; i >= 0; i -= 8)
-				randseed += ((uint32_t)fgetc(urandom) << i);
-			srand(randseed);
-
 			// Randomly generate mirror char
-			switch (rand() % MIRROR_DENSITY) {
+			switch (fgetc(urandom) % MIRROR_DENSITY) {
 				case 1:
 					contents.decoded[contents.index++] = '/';
 					break;
@@ -218,28 +212,22 @@ int keyfile_create(char *keyFileFullPathName) {
  * Once the shuffle is complete, the same string pointer is returned.
  */
 unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
-	int i, s, sIndex, rIndex;
+	int i, sIndex, rIndex;
 	unsigned char c1, c2;
 	FILE *urandom;
-	uint32_t randseed = 0;
 	
 	// Open the urandom resource
 	if ((urandom = fopen("/dev/urandom", "r")) == NULL)
 		return 0;
 	
-	sIndex = (rand() % GRID_SIZE * 4);
+	sIndex = (fgetc(urandom) % GRID_SIZE * 4);
 	rIndex = sIndex;
 	c1 = str[rIndex];
 	for (i = 0; i < p; ++i) {
 		
-		// (Re)seed our PRNG
-		for (s = 24; s >= 0; s -= 8)
-			randseed += ((uint32_t)fgetc(urandom) << s);
-		srand(randseed);
-		
 		// rIndex can't equal sIndex. sIndex is reserved for the
 		// placement of the last character shuffled.
-		while ((rIndex = (rand() % (GRID_SIZE * 4))) == sIndex)
+		while ((rIndex = (fgetc(urandom) % (GRID_SIZE * 4))) == sIndex)
 			;
 		
 		c2 = str[rIndex];
