@@ -166,15 +166,26 @@ int keyfile_create(char *keyFileFullPathName) {
 		}
 	}
 	
+	// init all perimeter chars to zero
+	memset(perimeterChars, 0, GRID_SIZE * 4);
+	
+	// Generate perimeter characters in random placements
+	for (i = 1; i < GRID_SIZE * 4; i++) {
+		r = fgetc(urandom) % (GRID_SIZE * 4);
+		if (r % 2 == 0) {
+			while (perimeterChars[r] > 0) {
+				r = (r + 1) % (GRID_SIZE * 4);
+			}
+		} else {
+			while (perimeterChars[r] > 0) {
+				r = (r + (GRID_SIZE * 4) - 1) % (GRID_SIZE * 4);
+			}
+		}
+		perimeterChars[r] = i;
+	}
+	
 	// Close urandom resource
 	fclose(urandom);
-	
-	// Generate perimeter characters
-	for (i = 0; i < GRID_SIZE * 4; i++)
-		perimeterChars[i] = i;
-		
-	// Shuffle perimeter characters
-	keyfile_shuffle_string(perimeterChars, 2000);
 	
 	// Encode perimeter chars to base64 and write to key file
 	for (i = 0; i < GRID_SIZE * 4; ++i) {
@@ -202,44 +213,6 @@ int keyfile_create(char *keyFileFullPathName) {
 	fclose(keyfile);
 
 	return 1;
-}
-
-/*
- * The keyfile_shuffle_string() function shuffles the contents of the
- * provided string pointer. The shuffle loop is repeated the number of
- * times specified in p.
- * 
- * Once the shuffle is complete, the same string pointer is returned.
- */
-unsigned char *keyfile_shuffle_string(unsigned char *str, int p) {
-	int i, sIndex, rIndex;
-	unsigned char c1, c2;
-	FILE *urandom;
-	
-	// Open the urandom resource
-	if ((urandom = fopen("/dev/urandom", "r")) == NULL)
-		return 0;
-	
-	sIndex = (fgetc(urandom) % GRID_SIZE * 4);
-	rIndex = sIndex;
-	c1 = str[rIndex];
-	for (i = 0; i < p; ++i) {
-		
-		// rIndex can't equal sIndex. sIndex is reserved for the
-		// placement of the last character shuffled.
-		while ((rIndex = (fgetc(urandom) % (GRID_SIZE * 4))) == sIndex)
-			;
-		
-		c2 = str[rIndex];
-		str[rIndex] = c1;
-		c1 = c2;
-	}
-	str[sIndex] = c1;
-	
-	// Close urandom resource
-	fclose(urandom);
-	
-	return str;
 }
 
 /*

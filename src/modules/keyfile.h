@@ -12,7 +12,6 @@
 void  keyfile_init(void);
 int   keyfile_open(char *, int);
 int   keyfile_create(char *);
-unsigned char *keyfile_shuffle_string(unsigned char *, int);
 int keyfile_next_char(void);
 void  keyfile_close(void);
 
