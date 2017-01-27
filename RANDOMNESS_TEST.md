@@ -7,7 +7,7 @@ number of randomness tests were applied to the output. See below for details.
 Visual Analysis
 ---------------
 
-Three bitmap bitmap images of varying size were generated from each of
+Three bitmap images of varying size were generated from each of
 four random keys, for a total of 12 visual analysis tests. In all cases,
 the output did not show any striations or noticible patterns of any kind.
 
