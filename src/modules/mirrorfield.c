@@ -41,9 +41,11 @@ struct gridnode {
 };
 static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
 static struct gridnode perimeter[GRID_SIZE * 4];
+static int so_perimeter[GRID_SIZE * 4];
 
 // Static Function Prototypes
 static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int);
+static void mirrorfield_roll_chars(struct gridnode *, struct gridnode *);
 
 /*
  * The mirrorfield_init() function initializes any static variables.
@@ -67,6 +69,8 @@ void mirrorfield_init(void) {
 		perimeter[i].down = NULL;
 		perimeter[i].left = NULL;
 		perimeter[i].right = NULL;
+		
+		so_perimeter[i] = 0;
 	}
 }
 
@@ -79,7 +83,6 @@ void mirrorfield_init(void) {
  * this is just a cursory error checking process. 
  */
 int mirrorfield_set(unsigned char ch) {
-	static int p[GRID_SIZE * 4];
 	static int i = 0;
 	int j, k;
 	
@@ -121,7 +124,7 @@ int mirrorfield_set(unsigned char ch) {
 	} else if (i < (GRID_SIZE * GRID_SIZE) + (GRID_SIZE * 4)) {
 		
 		// Store order or perimeter characters
-		p[i - (GRID_SIZE * GRID_SIZE)] = (int)ch;
+		so_perimeter[i - (GRID_SIZE * GRID_SIZE)] = (int)ch;
 		
 		// Setting perimeter value by index
 		perimeter[(int)ch].value = (int)ch;
@@ -172,8 +175,8 @@ int mirrorfield_set(unsigned char ch) {
 			
 			// If we don't have a mirror, link to opposite perimeter character
 			if (k >= j + GRID_SIZE) {
-				perimeter[(int)ch].right = &perimeter[p[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]];
-				perimeter[p[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]].left = &perimeter[(int)ch];
+				perimeter[(int)ch].right = &perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]];
+				perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]].left = &perimeter[(int)ch];
 			}
 			
 		// Linking bottom row characters
@@ -190,8 +193,8 @@ int mirrorfield_set(unsigned char ch) {
 			
 			// If we don't have a mirror, link to opposite perimeter character
 			if (j < 0) {
-				perimeter[(int)ch].up = &perimeter[p[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]];
-				perimeter[p[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]].down = &perimeter[(int)ch];
+				perimeter[(int)ch].up = &perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]];
+				perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]].down = &perimeter[(int)ch];
 			}
 		}
 		
@@ -229,6 +232,9 @@ int mirrorfield_validate(void) {
 			if (perimeter[i].value == perimeter[j].value) {
 				return 0;
 			}
+			if (so_perimeter[i] == so_perimeter[j]) {
+				return 0;
+			}
 		}
 	}
 	
@@ -243,7 +249,8 @@ int mirrorfield_validate(void) {
  */
 unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int d;
-	struct gridnode *p = &perimeter[(int)ch];
+	struct gridnode *startnode = &perimeter[(int)ch];
+	struct gridnode *endnode = NULL;
 	
 	//static int evenodd = 0;
 	
@@ -256,18 +263,18 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	//ts.tv_nsec = (debug % 1000) * 1000000;
 	
 	// Set initial direction
-	if (p->down != NULL) {
+	if (startnode->down != NULL) {
 		d = DIR_DOWN;
-	} else if (p->up != NULL) {
+	} else if (startnode->up != NULL) {
 		d = DIR_UP;
-	} else if (p->left != NULL) {
+	} else if (startnode->left != NULL) {
 		d = DIR_LEFT;
-	} else if (p->right != NULL) {
+	} else if (startnode->right != NULL) {
 		d = DIR_RIGHT;
 	}
 	
 	// Traverse the mirror field and find the cyphertext node
-	p = mirrorfield_crypt_char_advance(p, d);
+	endnode = mirrorfield_crypt_char_advance(startnode, d);
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
 	//if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
@@ -275,10 +282,10 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	//}
 	
 	// Roll start and end chars
-	//mirrorfield_roll_chars(startCharPos, endCharPos);
+	mirrorfield_roll_chars(startnode, endnode);
 
 	// Return crypted char
-	return (unsigned char)p->value;
+	return (unsigned char)endnode->value;
 }
 
 /*
@@ -345,7 +352,7 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 				
 		}
 		
-		// Perform recursive call. t will be our cyphertext.
+		// Perform recursive call. t will be our cyphertext node.
 		t = mirrorfield_crypt_char_advance(p, d);
 		
 		// Rotate mirror after we get cyphertext
@@ -377,60 +384,162 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
  * 
  * No value is returned.
  */
- /*
-void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
-	int startRollCharPos;
-	int endRollCharPos;
-	unsigned char tempChar;
+static void mirrorfield_roll_chars(struct gridnode *startnode, struct gridnode *endnode) {
+	int i;
+	struct gridnode *rollstart;
+	struct gridnode *rollend;
+	struct gridnode temp;
 	
-	static int lastStartCharPos = -1;
-	static int lastEndCharPos = -1;
-
-	// Determine start and end roll chars
-	startRollCharPos = (startCharPos + (int)perimeterChars[startCharPos] + (int)perimeterChars[(startCharPos + 1) % (GRID_SIZE * 4)]) % (GRID_SIZE * 4);
-	endRollCharPos = (endCharPos + (int)perimeterChars[endCharPos] + (int)perimeterChars[(endCharPos + 1) % (GRID_SIZE * 4)]) % (GRID_SIZE * 4);
+	i = 1;
+	do {
+		rollstart = &perimeter[(startnode->value + i++) % (GRID_SIZE * 4)];
+	} while (rollstart == endnode);
 	
-	// Characters can't roll to their own position, to the other char position, or to either previous position
-	while (startRollCharPos == startCharPos || startRollCharPos == endCharPos || startRollCharPos == lastStartCharPos || startRollCharPos == lastEndCharPos) {
-		startRollCharPos = (startRollCharPos + (GRID_SIZE/2)) % (GRID_SIZE * 4);
-	}
-	while (endRollCharPos == endCharPos || endRollCharPos == startCharPos || endRollCharPos == lastEndCharPos || endRollCharPos == lastStartCharPos) {
-		endRollCharPos = (endRollCharPos + (GRID_SIZE/2)) % (GRID_SIZE * 4);
-	}
+	i = 1;
+	do {
+		rollend = &perimeter[(endnode->value + i++) % (GRID_SIZE * 4)];
+	} while (rollend == startnode);
 	
-	// Roll the larger of the start/end chars first. This only matters if their
-	// roll position is the same.
-	if ((int)perimeterChars[startCharPos] > (int)perimeterChars[endCharPos]) {
-
-		// Roll start char
-		tempChar = perimeterChars[startCharPos];
-		perimeterChars[startCharPos] = perimeterChars[startRollCharPos];
-		perimeterChars[startRollCharPos] = tempChar;
+	if (startnode->value > endnode->value) {
+		// roll start node
+		if (startnode->up != NULL)
+			startnode->up->down = rollstart;
+		if (startnode->down != NULL)
+			startnode->down->up = rollstart;
+		if (startnode->left != NULL)
+			startnode->left->right = rollstart;
+		if (startnode->right != NULL)
+			startnode->right->left = rollstart;
 		
-		// Roll end char
-		tempChar = perimeterChars[endCharPos];
-		perimeterChars[endCharPos] = perimeterChars[endRollCharPos];
-		perimeterChars[endRollCharPos] = tempChar;
+		if (rollstart->up != NULL)
+			rollstart->up->down = startnode;
+		if (rollstart->down != NULL)
+			rollstart->down->up = startnode;
+		if (rollstart->left != NULL)
+			rollstart->left->right = startnode;
+		if (rollstart->right != NULL)
+			rollstart->right->left = startnode;
 		
+		temp.up = startnode->up;
+		temp.down = startnode->down;
+		temp.left = startnode->left;
+		temp.right = startnode->right;
+		
+		startnode->up = rollstart->up;
+		startnode->down = rollstart->down;
+		startnode->left = rollstart->left;
+		startnode->right = rollstart->right;
+		
+		rollstart->up = temp.up;
+		rollstart->down = temp.down;
+		rollstart->left = temp.left;
+		rollstart->right = temp.right;
+		
+		// roll end node
+		if (endnode->up != NULL)
+			endnode->up->down = rollend;
+		if (endnode->down != NULL)
+			endnode->down->up = rollend;
+		if (endnode->left != NULL)
+			endnode->left->right = rollend;
+		if (endnode->right != NULL)
+			endnode->right->left = rollend;
+		
+		if (rollend->up != NULL)
+			rollend->up->down = endnode;
+		if (rollend->down != NULL)
+			rollend->down->up = endnode;
+		if (rollend->left != NULL)
+			rollend->left->right = endnode;
+		if (rollend->right != NULL)
+			rollend->right->left = endnode;
+
+		temp.up = endnode->up;
+		temp.down = endnode->down;
+		temp.left = endnode->left;
+		temp.right = endnode->right;
+		
+		endnode->up = rollend->up;
+		endnode->down = rollend->down;
+		endnode->left = rollend->left;
+		endnode->right = rollend->right;
+		
+		rollend->up = temp.up;
+		rollend->down = temp.down;
+		rollend->left = temp.left;
+		rollend->right = temp.right;
 	} else {
+		// roll end node
+		if (endnode->up != NULL)
+			endnode->up->down = rollend;
+		if (endnode->down != NULL)
+			endnode->down->up = rollend;
+		if (endnode->left != NULL)
+			endnode->left->right = rollend;
+		if (endnode->right != NULL)
+			endnode->right->left = rollend;
 		
-		// Roll end char
-		tempChar = perimeterChars[endCharPos];
-		perimeterChars[endCharPos] = perimeterChars[endRollCharPos];
-		perimeterChars[endRollCharPos] = tempChar;
+		if (rollend->up != NULL)
+			rollend->up->down = endnode;
+		if (rollend->down != NULL)
+			rollend->down->up = endnode;
+		if (rollend->left != NULL)
+			rollend->left->right = endnode;
+		if (rollend->right != NULL)
+			rollend->right->left = endnode;
+
+		temp.up = endnode->up;
+		temp.down = endnode->down;
+		temp.left = endnode->left;
+		temp.right = endnode->right;
 		
-		// Roll start char
-		tempChar = perimeterChars[startCharPos];
-		perimeterChars[startCharPos] = perimeterChars[startRollCharPos];
-		perimeterChars[startRollCharPos] = tempChar;
+		endnode->up = rollend->up;
+		endnode->down = rollend->down;
+		endnode->left = rollend->left;
+		endnode->right = rollend->right;
+		
+		rollend->up = temp.up;
+		rollend->down = temp.down;
+		rollend->left = temp.left;
+		rollend->right = temp.right;
+		
+		// roll start node
+		if (startnode->up != NULL)
+			startnode->up->down = rollstart;
+		if (startnode->down != NULL)
+			startnode->down->up = rollstart;
+		if (startnode->left != NULL)
+			startnode->left->right = rollstart;
+		if (startnode->right != NULL)
+			startnode->right->left = rollstart;
+		
+		if (rollstart->up != NULL)
+			rollstart->up->down = startnode;
+		if (rollstart->down != NULL)
+			rollstart->down->up = startnode;
+		if (rollstart->left != NULL)
+			rollstart->left->right = startnode;
+		if (rollstart->right != NULL)
+			rollstart->right->left = startnode;
+
+		temp.up = startnode->up;
+		temp.down = startnode->down;
+		temp.left = startnode->left;
+		temp.right = startnode->right;
+		
+		startnode->up = rollstart->up;
+		startnode->down = rollstart->down;
+		startnode->left = rollstart->left;
+		startnode->right = rollstart->right;
+		
+		rollstart->up = temp.up;
+		rollstart->down = temp.down;
+		rollstart->left = temp.left;
+		rollstart->right = temp.right;
 	}
-		
-	// Remember start/end position for next char
-	lastStartCharPos = startCharPos;
-	lastEndCharPos = endCharPos;
-	
+
+	return;
 }
-*/
 
 /*
  * The mirrorfield_draw() function draws the current state of the mirror
