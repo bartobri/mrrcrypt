@@ -345,9 +345,21 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 				
 		}
 		
+		// Perform recursive call. t will be our cyphertext.
 		t = mirrorfield_crypt_char_advance(p, d);
 		
-		// Rotate mirror here
+		// Rotate mirror after we get cyphertext
+		switch (p->value) {
+			case MIRROR_FORWARD:
+				p->value = MIRROR_STRAIGHT;
+				break;
+			case MIRROR_BACKWARD:
+				p->value = MIRROR_FORWARD;
+				break;
+			case MIRROR_STRAIGHT:
+				p->value = MIRROR_BACKWARD;
+				break;
+		}
 		
 		p = t;
 	}
