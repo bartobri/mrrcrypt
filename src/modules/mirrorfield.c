@@ -266,7 +266,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 		d = DIR_RIGHT;
 	}
 	
-	// Traverse the mirror field and find the cyphertext
+	// Traverse the mirror field and find the cyphertext node
 	p = mirrorfield_crypt_char_advance(p, d);
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
@@ -361,9 +361,11 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 				break;
 		}
 		
+		// After rotating mirror at p, assign it the cyphertext node.
 		p = t;
 	}
 	
+	// Return cyphertext node
 	return p;
 }
 
