@@ -281,7 +281,15 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	return (unsigned char)p->value;
 }
 
+/*
+ * The mirrorfield_crypt_char_advance() is a recursive function that traverses
+ * the mirror field and returns a pointer to the node containing the cypthertext
+ * character. This function also handles mirror rotation.
+ */
 static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d) {
+	struct gridnode *t;
+
+	// Advance character
 	switch (d) {
 		case DIR_DOWN:
 			p = p->down;
@@ -297,6 +305,8 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 			break;
 	}
 	
+	// If we don't have the cypthertext, determine new direction and perform
+	// a recursive call.
 	if (p->value < 0) {
 
 		switch (p->value) {
@@ -335,9 +345,11 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 				
 		}
 		
-		p = mirrorfield_crypt_char_advance(p, d);
+		t = mirrorfield_crypt_char_advance(p, d);
 		
 		// Rotate mirror here
+		
+		p = t;
 	}
 	
 	return p;
