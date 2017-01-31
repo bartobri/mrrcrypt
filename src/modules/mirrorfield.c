@@ -42,6 +42,9 @@ struct gridnode {
 static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
 static struct gridnode perimeter[GRID_SIZE * 4];
 
+// Static Function Prototypes
+static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int);
+
 /*
  * The mirrorfield_init() function initializes any static variables.
  */
@@ -252,32 +255,50 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	//ts.tv_sec = debug / 1000;
 	//ts.tv_nsec = (debug % 1000) * 1000000;
 	
-	// Set direction and advance p
+	// Set initial direction
 	if (p->down != NULL) {
 		d = DIR_DOWN;
-		p = p->down;
 	} else if (p->up != NULL) {
 		d = DIR_UP;
-		p = p->up;
 	} else if (p->left != NULL) {
 		d = DIR_LEFT;
-		p = p->left;
 	} else if (p->right != NULL) {
 		d = DIR_RIGHT;
-		p = p->right;
 	}
+	
+	// Traverse the mirror field and find the cyphertext
+	p = mirrorfield_crypt_char_advance(p, d);
 
-	// Traverse through the grid
-	while (p->value < 0) {
-		
-		// Draw mirror field if debug flag is set
-		//if (debug) {
-		//	mirrorfield_draw(r, c);
-		//	fflush(stdout);
-		//	nanosleep(&ts, NULL);
-		//}
+	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
+	//if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
+	//	ech = perimeterChars[startCharPos];
+	//}
+	
+	// Roll start and end chars
+	//mirrorfield_roll_chars(startCharPos, endCharPos);
 
-		// Change direction if we hit a mirror
+	// Return crypted char
+	return (unsigned char)p->value;
+}
+
+static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d) {
+	switch (d) {
+		case DIR_DOWN:
+			p = p->down;
+			break;
+		case DIR_LEFT:
+			p = p->left;
+			break;
+		case DIR_RIGHT:
+			p = p->right;
+			break;
+		case DIR_UP:
+			p = p->up;
+			break;
+	}
+	
+	if (p->value < 0) {
+
 		switch (p->value) {
 			case MIRROR_FORWARD:
 				switch (d) {
@@ -313,34 +334,13 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 				break;
 				
 		}
-
-		// Advance position
-		switch (d) {
-			case DIR_DOWN:
-				p = p->down;
-				break;
-			case DIR_LEFT:
-				p = p->left;
-				break;
-			case DIR_RIGHT:
-				p = p->right;
-				break;
-			case DIR_UP:
-				p = p->up;
-				break;
-		}
+		
+		p = mirrorfield_crypt_char_advance(p, d);
+		
+		// Rotate mirror here
 	}
-
-	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
-	//if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
-	//	ech = perimeterChars[startCharPos];
-	//}
 	
-	// Roll start and end chars
-	//mirrorfield_roll_chars(startCharPos, endCharPos);
-
-	// Return crypted char
-	return (unsigned char)p->value;
+	return p;
 }
 
 /*
