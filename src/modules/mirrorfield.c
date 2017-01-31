@@ -19,28 +19,52 @@
  * and animates the encryption process.
  */
 
-#define MIRROR_NONE      3
-#define MIRROR_FORWARD   0
-#define MIRROR_STRAIGHT  1
-#define MIRROR_BACKWARD  2
-#define DIR_DOWN         1
-#define DIR_LEFT         2
-#define DIR_RIGHT        3
-#define DIR_UP           4
+#define MIRROR_NONE      -1
+#define MIRROR_FORWARD   -2
+#define MIRROR_STRAIGHT  -3
+#define MIRROR_BACKWARD  -4
+#define DIR_UP            1
+#define DIR_DOWN          2
+#define DIR_LEFT          3
+#define DIR_RIGHT         4
 
 // Static Variables
-static int grid[GRID_SIZE * GRID_SIZE];
-static unsigned char perimeterChars[GRID_SIZE * 4];
+//static int grid[GRID_SIZE * GRID_SIZE];
+//static unsigned char perimeterChars[GRID_SIZE * 4];
+
+struct gridnode {
+	int value;
+	struct gridnode *up;
+	struct gridnode *down;
+	struct gridnode *left;
+	struct gridnode *right;
+};
+static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
+static struct gridnode perimeter[GRID_SIZE * 4];
 
 /*
  * The mirrorfield_init() function initializes any static variables.
  */
 void mirrorfield_init(void) {
-	// Init grid values to zero
-	memset(grid, 0, sizeof(grid));
+	int i;
 	
-	// Init perimeter chars to zero
-	memset(perimeterChars, 0, sizeof(perimeterChars));
+	// Init gridnode values
+	for (i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
+		gridnodes[i].value = 0;
+		gridnodes[i].up = NULL;
+		gridnodes[i].down = NULL;
+		gridnodes[i].left = NULL;
+		gridnodes[i].right = NULL;
+	}
+	
+	// Init perimeter values
+	for (i = 0; i < GRID_SIZE * 4; ++i) {
+		perimeter[i].value = 0;
+		perimeter[i].up = NULL;
+		perimeter[i].down = NULL;
+		perimeter[i].left = NULL;
+		perimeter[i].right = NULL;
+	}
 }
 
 /*
@@ -52,37 +76,131 @@ void mirrorfield_init(void) {
  * this is just a cursory error checking process. 
  */
 int mirrorfield_set(unsigned char ch) {
-	static int i = -1;
-	int t;
-
-	// Increment our static counter
-	++i;
+	static int p[GRID_SIZE * 4];
+	static int i = 0;
+	int j, k;
 	
-	// Set Mirror Char
+	// Set mirror value and links
 	if (i < GRID_SIZE * GRID_SIZE) {
-		t = ((i / GRID_SIZE) * GRID_SIZE) + (i % GRID_SIZE);
+		
+		// Set mirror value
 		if (ch == '/') {
-			grid[t] = MIRROR_FORWARD;
+			gridnodes[i].value = MIRROR_FORWARD;
 		} else if (ch == '\\') {
-			grid[t] = MIRROR_BACKWARD;
+			gridnodes[i].value = MIRROR_BACKWARD;
 		} else if (ch == '-') {
-			grid[t] = MIRROR_STRAIGHT;
+			gridnodes[i].value = MIRROR_STRAIGHT;
 		} else if (ch == ' ') {
-			grid[t] = MIRROR_NONE;
+			gridnodes[i].value = MIRROR_NONE;
 		} else {
 			return 0;
 		}
-		return 1;
+		
+		// Link left/right
+		for (j = 1; j <= i % GRID_SIZE; ++j) {
+			if (gridnodes[i - j].value < MIRROR_NONE) {
+				gridnodes[i].left = &gridnodes[i - j];
+				gridnodes[i - j].right = &gridnodes[i];
+				break;
+			}
+		}
+		
+		// Link up/down
+		for (j = GRID_SIZE; i - j >= 0; j += GRID_SIZE) {
+			if (gridnodes[i - j].value < MIRROR_NONE) {
+				gridnodes[i].up = &gridnodes[i - j];
+				gridnodes[i - j].down = &gridnodes[i];
+				break;
+			}
+		}
+
+	// Set perimiter value and link
+	} else if (i < (GRID_SIZE * GRID_SIZE) + (GRID_SIZE * 4)) {
+		
+		// Store order or perimeter characters
+		p[i - (GRID_SIZE * GRID_SIZE)] = (int)ch;
+		
+		// Setting perimeter value by index
+		perimeter[(int)ch].value = (int)ch;
+		
+		// Linking top row characters
+		if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 1) {
+
+			// Link down/up
+			for (j = i - (GRID_SIZE * GRID_SIZE); j < GRID_SIZE * GRID_SIZE; j += GRID_SIZE) {
+				if (gridnodes[j].value < MIRROR_NONE) {
+					perimeter[(int)ch].down = &gridnodes[j];
+					gridnodes[j].up = &perimeter[(int)ch];
+					break;
+				}
+			}
+			
+		// Linking right row characters
+		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 2) {
+
+			// Getting adjacent grid position
+			j = i % GRID_SIZE;
+			j = (j * GRID_SIZE) + (GRID_SIZE - 1);
+			
+			// Link left/right
+			for (k = j; k > j - GRID_SIZE; --k) {
+				if (gridnodes[k].value < MIRROR_NONE) {
+					perimeter[(int)ch].left = &gridnodes[k];
+					gridnodes[k].right = &perimeter[(int)ch];
+					break;
+				}
+			}
+			
+		// Linking left row
+		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 3) {
+			
+			// Getting adjacent grid position
+			j = i % GRID_SIZE;
+			j = (j * GRID_SIZE);
+			
+			// Link left/right
+			for (k = j; k < j + GRID_SIZE; ++k) {
+				if (gridnodes[k].value < MIRROR_NONE) {
+					perimeter[(int)ch].right = &gridnodes[k];
+					gridnodes[k].left = &perimeter[(int)ch];
+					break;
+				}
+			}
+			
+			// If we don't have a mirror, link to opposite perimeter character
+			if (k >= j + GRID_SIZE) {
+				perimeter[(int)ch].right = &perimeter[p[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]];
+				perimeter[p[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]].left = &perimeter[(int)ch];
+			}
+			
+		// Linking bottom row characters
+		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 4) {
+
+			// Link up/down
+			for (j = i - (GRID_SIZE * 4); j >= 0; j -= GRID_SIZE) {
+				if (gridnodes[j].value < MIRROR_NONE) {
+					perimeter[(int)ch].up = &gridnodes[j];
+					gridnodes[j].down = &perimeter[(int)ch];
+					break;
+				}
+			}
+			
+			// If we don't have a mirror, link to opposite perimeter character
+			if (j < 0) {
+				perimeter[(int)ch].up = &perimeter[p[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]];
+				perimeter[p[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]].down = &perimeter[(int)ch];
+			}
+		}
+		
+	// Ignore extra characters
+	} else {
+		return 0;
 	}
 	
-	// Set Inner Perimeter Chars
-	t = i - (GRID_SIZE * GRID_SIZE);
-	if (t < GRID_SIZE * 4) {
-		perimeterChars[t] = ch;
-		return 1;
-	}
+	// Increment our static counter
+	++i;
 	
-	return 0;
+	return 1;
 }
 
 /*
@@ -93,19 +211,19 @@ int mirrorfield_set(unsigned char ch) {
  * Zero is returned if invalid.
  */
 int mirrorfield_validate(void) {
-	int i, i2;
+	int i, j;
 
 	// Check mirrors
 	for (i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
-		if (grid[i] < 0 || grid[i] > 3) {
+		if (gridnodes[i].value > MIRROR_NONE || gridnodes[i].value < MIRROR_BACKWARD) {
 			return 0;
 		}
 	}
 	
 	// Check for duplicate perimeter chars
 	for (i = 0; i < GRID_SIZE * 4; ++i) {
-		for (i2 = i+1; i2 < GRID_SIZE * 4; ++i2) {
-			if (perimeterChars[i] == perimeterChars[i2]) {
+		for (j = i+1; j < GRID_SIZE * 4; ++j) {
+			if (perimeter[i].value == perimeter[j].value) {
 				return 0;
 			}
 		}
@@ -121,150 +239,108 @@ int mirrorfield_validate(void) {
  * the cyphertext character is determined.
  */
 unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
-	int r, c, t;
-	unsigned char ech;
-	int direction = 0;
-	int startCharPos;
-	int endCharPos = -1;
-	int visited[GRID_SIZE * GRID_SIZE];
+	int d;
+	struct gridnode *p = &perimeter[(int)ch];
 	
-	static int evenodd = 0;
+	//static int evenodd = 0;
 	
 	// Toggle evenodd var
-	evenodd = (evenodd + 1) % 2;
-	
-	// Init visited array to all zeros
-	memset(visited, 0, sizeof(visited));
+	//evenodd = (evenodd + 1) % 2;
 	
 	// For the debug flag
-	struct timespec ts;
-	ts.tv_sec = debug / 1000;
-	ts.tv_nsec = (debug % 1000) * 1000000;
+	//struct timespec ts;
+	//ts.tv_sec = debug / 1000;
+	//ts.tv_nsec = (debug % 1000) * 1000000;
 	
-	// Determine perimeter char location
-	for (startCharPos = 0; startCharPos < GRID_SIZE * 4; ++startCharPos)
-		if (perimeterChars[startCharPos] == ch)
-			break;
-
-	// Determining starting row/col and starting direction
-	if (startCharPos < GRID_SIZE) {
-		direction = DIR_DOWN;
-		r = 0;
-		c = startCharPos;
-	} else if (startCharPos < GRID_SIZE * 2) {
-		direction = DIR_LEFT;
-		r = startCharPos - GRID_SIZE;
-		c = GRID_SIZE - 1;
-	} else if (startCharPos < GRID_SIZE * 3) {
-		direction = DIR_RIGHT;
-		r = startCharPos - (GRID_SIZE * 2);
-		c = 0;
-	} else if (startCharPos < GRID_SIZE * 4) {
-		direction = DIR_UP;
-		r = GRID_SIZE - 1;
-		c = startCharPos - (GRID_SIZE * 3);
+	// Set direction and advance p
+	if (p->down != NULL) {
+		d = DIR_DOWN;
+		p = p->down;
+	} else if (p->up != NULL) {
+		d = DIR_UP;
+		p = p->up;
+	} else if (p->left != NULL) {
+		d = DIR_LEFT;
+		p = p->left;
+	} else if (p->right != NULL) {
+		d = DIR_RIGHT;
+		p = p->right;
 	}
 
 	// Traverse through the grid
-	while (endCharPos < 0) {
-		
-		// Translate row/column to position in grid
-		t = (r * GRID_SIZE) + c;
+	while (p->value < 0) {
 		
 		// Draw mirror field if debug flag is set
-		if (debug) {
-			mirrorfield_draw(r, c);
-			fflush(stdout);
-			nanosleep(&ts, NULL);
-		}
-		
-		// If we already encountered this mirror, unspin it before
-		// changing direction. We can only spin mirrors once per char.
-		if (visited[t]) {
-			grid[t] = (grid[t] + 2) % 3;
-		}
+		//if (debug) {
+		//	mirrorfield_draw(r, c);
+		//	fflush(stdout);
+		//	nanosleep(&ts, NULL);
+		//}
 
 		// Change direction if we hit a mirror
-		switch (grid[t]) {
+		switch (p->value) {
 			case MIRROR_FORWARD:
-				switch (direction) {
+				switch (d) {
 					case DIR_DOWN:
-						direction = DIR_LEFT;
+						d = DIR_LEFT;
 						break;
 					case DIR_LEFT:
-						direction = DIR_DOWN;
+						d = DIR_DOWN;
 						break;
 					case DIR_RIGHT:
-						direction = DIR_UP;
+						d = DIR_UP;
 						break;
 					case DIR_UP:
-						direction = DIR_RIGHT;
+						d = DIR_RIGHT;
 						break;
 				}
 				break;
 			case MIRROR_BACKWARD:
-				switch (direction) {
+				switch (d) {
 					case DIR_DOWN:
-						direction = DIR_RIGHT;
+						d = DIR_RIGHT;
 						break;
 					case DIR_LEFT:
-						direction = DIR_UP;
+						d = DIR_UP;
 						break;
 					case DIR_RIGHT:
-						direction = DIR_DOWN;
+						d = DIR_DOWN;
 						break;
 					case DIR_UP:
-						direction = DIR_LEFT;
+						d = DIR_LEFT;
 						break;
 				}
 				break;
 				
 		}
-		
-		// Spin mirror and mark as visited
-		if (grid[t] != MIRROR_NONE) {
-			grid[t] = (grid[t] + 1) % 3;
-			visited[t] = 1;
-		}
 
-		// Advance position and check if we are out of grid bounds. If yes, we found our end character position.
-		switch (direction) {
+		// Advance position
+		switch (d) {
 			case DIR_DOWN:
-				if (++r == GRID_SIZE) {
-					endCharPos = c + (GRID_SIZE * 3);
-				}
+				p = p->down;
 				break;
 			case DIR_LEFT:
-				if (--c == -1) {
-					endCharPos = r + (GRID_SIZE * 2);
-				}
+				p = p->left;
 				break;
 			case DIR_RIGHT:
-				if (++c == GRID_SIZE) {
-					endCharPos = r + GRID_SIZE;
-				}
+				p = p->right;
 				break;
 			case DIR_UP:
-				if (--r == -1) {
-					endCharPos = c;
-				}
+				p = p->up;
 				break;
 		}
 	}
-	
-	// Get ending character from position
-	ech = perimeterChars[endCharPos];
 
 	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
-	if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
-		ech = perimeterChars[startCharPos];
-	}
+	//if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
+	//	ech = perimeterChars[startCharPos];
+	//}
 	
 	// Roll start and end chars
-	mirrorfield_roll_chars(startCharPos, endCharPos);
+	//mirrorfield_roll_chars(startCharPos, endCharPos);
 
 	// Return crypted char
-	return ech;
+	return (unsigned char)p->value;
 }
 
 /*
@@ -275,6 +351,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
  * 
  * No value is returned.
  */
+ /*
 void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 	int startRollCharPos;
 	int endRollCharPos;
@@ -327,12 +404,14 @@ void mirrorfield_roll_chars(int startCharPos, int endCharPos) {
 	lastEndCharPos = endCharPos;
 	
 }
+*/
 
 /*
  * The mirrorfield_draw() function draws the current state of the mirror
  * field and perimeter characters. It receives x/y coordinates and highlights
  * that position on the field.
  */
+ /*
 void mirrorfield_draw(int pos_r, int pos_c) {
 	int r, c;
 	static int resetCursor = 0;
@@ -398,5 +477,5 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 	else
 		resetCursor = 1;
 }
-
+*/
 
