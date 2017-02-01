@@ -386,19 +386,22 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
  */
 static void mirrorfield_roll_chars(struct gridnode *startnode, struct gridnode *endnode) {
 	int i;
+	static int j = 0;
 	struct gridnode *rollstart;
 	struct gridnode *rollend;
 	struct gridnode temp;
 	
 	i = 1;
 	do {
-		rollstart = &perimeter[(startnode->value + i++) % (GRID_SIZE * 4)];
+		rollstart = &perimeter[(startnode->value + j + i++) % (GRID_SIZE * 4)];
 	} while (rollstart == endnode);
 	
 	i = 1;
 	do {
-		rollend = &perimeter[(endnode->value + i++) % (GRID_SIZE * 4)];
+		rollend = &perimeter[(endnode->value + j + i++) % (GRID_SIZE * 4)];
 	} while (rollend == startnode);
+	
+	j = (j + 1) % (GRID_SIZE * 4);
 	
 	if (startnode->value > endnode->value) {
 		// roll start node
