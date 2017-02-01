@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
 		
 		if (sample > 0 && sample == c) {
 			show_stats();
+			
+			memset(data, 0, sizeof(data));
 			c = 0;
 		}
 	}
@@ -57,9 +59,6 @@ void show_stats(void) {
 		if (data[i] > high) {
 			high = data[i];
 		}
-		if (data[i] < low) {
-			low = data[i];
-		}
 	}
 	low = high;
 	for (i = 0; i < GRID_SIZE*4; ++i) {
@@ -68,13 +67,12 @@ void show_stats(void) {
 		}
 	}
 	diff = high - low;
+	
 	for (i = 0; i < GRID_SIZE*4; ++i) {
-		//printf("%i => %i\n", i, data[i]);
+		printf("%i => %i\n", i, data[i]);
 	}
 	
 	diffpct = ((float)diff / (float)high) * 100;
 	
 	printf("%i -> %i, diff: %i (%%%.2f)\n", low, high, diff, diffpct);
-	
-	memset(data, 0, sizeof(data));
 }
