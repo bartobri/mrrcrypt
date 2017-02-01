@@ -43,8 +43,9 @@ static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
 static struct gridnode perimeter[GRID_SIZE * 4];
 
 // Static Function Prototypes
-static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int);
+static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int, int);
 static void mirrorfield_roll_chars(struct gridnode *, struct gridnode *);
+static void mirrorfield_draw(struct gridnode *);
 
 /*
  * The mirrorfield_init() function initializes any static variables.
@@ -248,11 +249,6 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	struct gridnode *endnode = NULL;
 	static int p = 0;
 	
-	// For the debug flag
-	//struct timespec ts;
-	//ts.tv_sec = debug / 1000;
-	//ts.tv_nsec = (debug % 1000) * 1000000;
-	
 	// Set initial direction
 	if (startnode->down != NULL) {
 		d = DIR_DOWN;
@@ -265,7 +261,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	}
 	
 	// Traverse the mirror field and find the cyphertext node
-	endnode = mirrorfield_crypt_char_advance(startnode, d);
+	endnode = mirrorfield_crypt_char_advance(startnode, d, debug);
 	
 	// Roll start and end chars
 	mirrorfield_roll_chars(startnode, endnode);
@@ -287,8 +283,18 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
  * the mirror field and returns a pointer to the node containing the cypthertext
  * character. This function also handles mirror rotation.
  */
-static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d) {
+static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d, int debug) {
 	struct gridnode *t;
+	
+	// For the debug flag
+	struct timespec ts;
+	ts.tv_sec = debug / 1000;
+	ts.tv_nsec = (debug % 1000) * 1000000;
+	if (debug) {
+		mirrorfield_draw(p);
+		fflush(stdout);
+		nanosleep(&ts, NULL);
+	}
 
 	// Advance character
 	switch (d) {
@@ -347,7 +353,7 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 		}
 		
 		// Perform recursive call. t will be our cyphertext node.
-		t = mirrorfield_crypt_char_advance(p, d);
+		t = mirrorfield_crypt_char_advance(p, d, debug);
 		
 		// Rotate mirror after we get cyphertext
 		switch (p->value) {
@@ -537,9 +543,8 @@ static void mirrorfield_roll_chars(struct gridnode *startnode, struct gridnode *
  * field and perimeter characters. It receives x/y coordinates and highlights
  * that position on the field.
  */
- /*
-void mirrorfield_draw(int pos_r, int pos_c) {
-	int r, c;
+static void mirrorfield_draw(struct gridnode *p) {
+	int r, c, i;
 	static int resetCursor = 0;
 	
 	// Save cursor position if we need to reset it
@@ -557,7 +562,7 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 		for (c = -1; c <= GRID_SIZE; ++c) {
 			
 			// Highlight cell if r/c match
-			if (r == pos_r && c == pos_c) {
+			if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE && &gridnodes[(r * GRID_SIZE) + c] == p) {
 				printf("\x1B[30m"); // foreground black
 				printf("\x1B[47m"); // background white
 			}
@@ -571,25 +576,37 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 				printf("%2c", ' ');
 			else if (r == GRID_SIZE && c == GRID_SIZE)  // Lower right corner
 				printf("%2c", ' ');
-			else if (r == -1)                           // Top chars
-				printf("%2x", perimeterChars[c]);
-			else if (c == GRID_SIZE)                    // Right chars
-				printf("%2x", perimeterChars[r + GRID_SIZE]);
-			else if (r == GRID_SIZE)                    // Bottom chars
-				printf("%2x", perimeterChars[c + (GRID_SIZE * 3)]);
-			else if (c == -1)                           // Left chars
-				printf("%2x", perimeterChars[r + (GRID_SIZE * 2)]);
-			else if (grid[(r * GRID_SIZE) + c] == MIRROR_FORWARD)
+			else if (r == -1) {
+				// Top chars
+				for (i = 0; gridnodes[c + i].up == NULL; i += GRID_SIZE)
+					;
+				printf("%2x", gridnodes[c + i].up->value);
+			} else if (c == GRID_SIZE) {
+				// Right chars
+				for (i = 1; gridnodes[(r * GRID_SIZE) + c - i].right == NULL; ++i)
+					;
+				printf("%2x", gridnodes[(r * GRID_SIZE) + c - i].right->value);
+			} else if (r == GRID_SIZE) {
+				// Bottom chars
+				for (i = GRID_SIZE; gridnodes[(r * GRID_SIZE) + c - i].down == NULL; i += GRID_SIZE)
+					;
+				printf("%2x", gridnodes[(r * GRID_SIZE) + c - i].down->value);
+			} else if (c == -1) {
+				// Left chars
+				for (i = 1; gridnodes[(r * GRID_SIZE) + c + i].left == NULL; ++i)
+					;
+				printf("%2x", gridnodes[(r * GRID_SIZE) + c + i].left->value);
+			} else if (gridnodes[(r * GRID_SIZE) + c].value == MIRROR_FORWARD)
 				printf("%2c", '/');
-			else if (grid[(r * GRID_SIZE) + c] == MIRROR_BACKWARD)
+			else if (gridnodes[(r * GRID_SIZE) + c].value == MIRROR_BACKWARD)
 				printf("%2c", '\\');
-			else if (grid[(r * GRID_SIZE) + c] == MIRROR_STRAIGHT)
+			else if (gridnodes[(r * GRID_SIZE) + c].value == MIRROR_STRAIGHT)
 				printf("%2c", '-');
 			else
 				printf("%2c", ' ');
 			
 			// Un-Highlight cell if r/c match
-			if (r == pos_r && c == pos_c)
+			if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE && &gridnodes[(r * GRID_SIZE) + c] == p)
 				printf("\x1B[0m");
 
 		}
@@ -603,5 +620,4 @@ void mirrorfield_draw(int pos_r, int pos_c) {
 	else
 		resetCursor = 1;
 }
-*/
 
