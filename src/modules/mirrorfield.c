@@ -41,7 +41,6 @@ struct gridnode {
 };
 static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
 static struct gridnode perimeter[GRID_SIZE * 4];
-static int so_perimeter[GRID_SIZE * 4];
 
 // Static Function Prototypes
 static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int);
@@ -69,8 +68,6 @@ void mirrorfield_init(void) {
 		perimeter[i].down = NULL;
 		perimeter[i].left = NULL;
 		perimeter[i].right = NULL;
-		
-		so_perimeter[i] = 0;
 	}
 }
 
@@ -83,8 +80,9 @@ void mirrorfield_init(void) {
  * this is just a cursory error checking process. 
  */
 int mirrorfield_set(unsigned char ch) {
-	static int i = 0;
 	int j, k;
+	static int i = 0;
+	static int so_perimeter[GRID_SIZE * 4];
 	
 	// Set mirror value and links
 	if (i < GRID_SIZE * GRID_SIZE) {
@@ -230,9 +228,6 @@ int mirrorfield_validate(void) {
 	for (i = 0; i < GRID_SIZE * 4; ++i) {
 		for (j = i+1; j < GRID_SIZE * 4; ++j) {
 			if (perimeter[i].value == perimeter[j].value) {
-				return 0;
-			}
-			if (so_perimeter[i] == so_perimeter[j]) {
 				return 0;
 			}
 		}
