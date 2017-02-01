@@ -251,11 +251,7 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	int d;
 	struct gridnode *startnode = &perimeter[(int)ch];
 	struct gridnode *endnode = NULL;
-	
-	//static int evenodd = 0;
-	
-	// Toggle evenodd var
-	//evenodd = (evenodd + 1) % 2;
+	static int p = 0;
 	
 	// For the debug flag
 	//struct timespec ts;
@@ -275,14 +271,17 @@ unsigned char mirrorfield_crypt_char(unsigned char ch, int debug) {
 	
 	// Traverse the mirror field and find the cyphertext node
 	endnode = mirrorfield_crypt_char_advance(startnode, d);
-
-	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
-	//if (evenodd && ((int)perimeterChars[startCharPos] == startCharPos || (int)perimeterChars[endCharPos] == endCharPos)) {
-	//	ech = perimeterChars[startCharPos];
-	//}
 	
 	// Roll start and end chars
 	mirrorfield_roll_chars(startnode, endnode);
+	
+	// This is a way of returning the cleartext char as the cyphertext char and still preserve decryption.
+	if ((endnode->value + startnode->value) % (GRID_SIZE * 4) == p) {
+		p = endnode->value > startnode->value ? endnode->value : startnode->value;
+		endnode = startnode;
+	} else {
+		p = endnode->value > startnode->value ? endnode->value : startnode->value;
+	}
 
 	// Return crypted char
 	return (unsigned char)endnode->value;
