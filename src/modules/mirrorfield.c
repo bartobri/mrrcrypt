@@ -372,11 +372,9 @@ static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *p, int d
 
 /*
  * The mirrorfield_roll_chars() function received the starting and ending
- * positions of the cleartext and cyphertext character respectively, and
- * implements a character rolling process to make the perimeter character
- * positions dynamic and increase randomness in the output.
- * 
- * No value is returned.
+ * nodes of the cleartext and cyphertext character respectively, and
+ * implements a character rolling process to reposition the nodes and
+ * increase randomness in the output. No value is returned.
  */
 static void mirrorfield_roll_chars(struct gridnode *startnode, struct gridnode *endnode) {
 	int i = 1;
