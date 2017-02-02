@@ -6,6 +6,10 @@ MrrCrypt
 The goal of this project is to provide a simple and robust command-line tool
 for encrypting and decrypting data using an adaptive mirror field algorithm.
 
+**WARNING** - While the results of this program pass almost all cryptographic
+tests for randomness (see below), it has not undergone an official peer
+review process. Use at your own risk.
+
 Encrypted output passes most tests for randmoness using the
 [Statistical Test Suite](http://csrc.nist.gov/groups/ST/toolkit/rng/stats_tests.html)
 developed by the National Institute for Standards and Technology (NIST),
@@ -14,8 +18,6 @@ See [RANDOMNESS_TEST](RANDOMNESS_TEST.md) for test results.
 
 A 4352 byte key is used for encryption and decryption, and is highly resilient to
 brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) ≈ 1.66e+2461
-
-Encryption speed is roughly 1 second per megabyte.
 
 The adaptive mirror field algorithm implemented in this project is the first
 of it's kind, though is may have some similar attributes to a block cypher.
