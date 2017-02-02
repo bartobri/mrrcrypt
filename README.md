@@ -10,7 +10,7 @@ for encrypting and decrypting data using an adaptive mirror field algorithm.
 tests for randomness (see below), it has not undergone an official peer
 review process. Use at your own risk.
 
-Encrypted output passes most tests for randmoness using the
+Encrypted output passes almost all tests for randmoness using the
 [Statistical Test Suite](http://csrc.nist.gov/groups/ST/toolkit/rng/stats_tests.html)
 developed by the National Institute for Standards and Technology (NIST),
 and the [diehard test suite](https://en.wikipedia.org/wiki/Diehard_tests).
