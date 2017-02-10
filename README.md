@@ -128,21 +128,21 @@ Use I/O redirection for generating input and capturing output.
 **Basic Encryption**
 
 ```
-# Encrypt a String
+# Encrypt a string
 $ echo "This is my secret" | mrrcrypt > secret_string.encrypted
 
-# Encrypting a file
+# Encrypt a file
 $ cat secret_photo.jpg | mrrcrypt > secret_photo.jpg.encrypted
 ```
 
 **Basic Decryption**
 
 ```
-# Decrypt a File
+# Decrypt a string
 $ cat secret_string.encrypted | mrrcrypt
 This is my secret
 
-# Capture Output to a File
+# Decrypt a file
 $ cat secret_photo.jpg.encrypted | mrrcrypt > secret_photo.jpg
 ```
 
