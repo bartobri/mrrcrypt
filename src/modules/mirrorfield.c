@@ -41,6 +41,7 @@ struct gridnode {
 };
 static struct gridnode gridnodes[GRID_SIZE * GRID_SIZE];
 static struct gridnode perimeter[GRID_SIZE * 4];
+static int so_perimeter[GRID_SIZE * 4];
 
 // Static Function Prototypes
 static struct gridnode *mirrorfield_crypt_char_advance(struct gridnode *, int, int);
@@ -81,13 +82,11 @@ void mirrorfield_init(void) {
  * this is just a cursory error checking process. 
  */
 int mirrorfield_set(unsigned char ch) {
-	int j, k;
 	static int i = 0;
-	static int so_perimeter[GRID_SIZE * 4];
 	
-	// Set mirror value and links
+	// Ste mirror values
 	if (i < GRID_SIZE * GRID_SIZE) {
-		
+	
 		// Set mirror value
 		if (ch == '/') {
 			gridnodes[i].value = MIRROR_FORWARD;
@@ -100,105 +99,20 @@ int mirrorfield_set(unsigned char ch) {
 		} else {
 			return 0;
 		}
+	}
+	
+	// Set perimiter values
+	else if (i < (GRID_SIZE * GRID_SIZE) + (GRID_SIZE * 4)) {
 		
-		// Link left/right
-		for (j = 1; j <= i % GRID_SIZE; ++j) {
-			if (gridnodes[i - j].value < MIRROR_NONE) {
-				gridnodes[i].left = &gridnodes[i - j];
-				gridnodes[i - j].right = &gridnodes[i];
-				break;
-			}
-		}
-		
-		// Link up/down
-		for (j = GRID_SIZE; i - j >= 0; j += GRID_SIZE) {
-			if (gridnodes[i - j].value < MIRROR_NONE) {
-				gridnodes[i].up = &gridnodes[i - j];
-				gridnodes[i - j].down = &gridnodes[i];
-				break;
-			}
-		}
-
-	// Set perimiter value and link
-	} else if (i < (GRID_SIZE * GRID_SIZE) + (GRID_SIZE * 4)) {
-		
-		// Store order or perimeter characters
+		// Store order of perimeter characters
 		so_perimeter[i - (GRID_SIZE * GRID_SIZE)] = (int)ch;
 		
 		// Setting perimeter value by index
 		perimeter[(int)ch].value = (int)ch;
-		
-		// Linking top row characters
-		if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 1) {
-
-			// Link down/up
-			for (j = i - (GRID_SIZE * GRID_SIZE); j < GRID_SIZE * GRID_SIZE; j += GRID_SIZE) {
-				if (gridnodes[j].value < MIRROR_NONE) {
-					perimeter[(int)ch].down = &gridnodes[j];
-					gridnodes[j].up = &perimeter[(int)ch];
-					break;
-				}
-			}
-			
-		// Linking right row characters
-		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 2) {
-
-			// Getting adjacent grid position
-			j = i % GRID_SIZE;
-			j = (j * GRID_SIZE) + (GRID_SIZE - 1);
-			
-			// Link left/right
-			for (k = j; k > j - GRID_SIZE; --k) {
-				if (gridnodes[k].value < MIRROR_NONE) {
-					perimeter[(int)ch].left = &gridnodes[k];
-					gridnodes[k].right = &perimeter[(int)ch];
-					break;
-				}
-			}
-			
-		// Linking left row
-		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 3) {
-			
-			// Getting adjacent grid position
-			j = i % GRID_SIZE;
-			j = (j * GRID_SIZE);
-			
-			// Link left/right
-			for (k = j; k < j + GRID_SIZE; ++k) {
-				if (gridnodes[k].value < MIRROR_NONE) {
-					perimeter[(int)ch].right = &gridnodes[k];
-					gridnodes[k].left = &perimeter[(int)ch];
-					break;
-				}
-			}
-			
-			// If we don't have a mirror, link to opposite perimeter character
-			if (k >= j + GRID_SIZE) {
-				perimeter[(int)ch].right = &perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]];
-				perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - GRID_SIZE]].left = &perimeter[(int)ch];
-			}
-			
-		// Linking bottom row characters
-		} else if (i - (GRID_SIZE * GRID_SIZE) < GRID_SIZE * 4) {
-
-			// Link up/down
-			for (j = i - (GRID_SIZE * 4); j >= 0; j -= GRID_SIZE) {
-				if (gridnodes[j].value < MIRROR_NONE) {
-					perimeter[(int)ch].up = &gridnodes[j];
-					gridnodes[j].down = &perimeter[(int)ch];
-					break;
-				}
-			}
-			
-			// If we don't have a mirror, link to opposite perimeter character
-			if (j < 0) {
-				perimeter[(int)ch].up = &perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]];
-				perimeter[so_perimeter[i - (GRID_SIZE * GRID_SIZE) - (GRID_SIZE * 3)]].down = &perimeter[(int)ch];
-			}
-		}
-		
+	} 
+	
 	// Ignore extra characters
-	} else {
+	else {
 		return 0;
 	}
 	
@@ -231,10 +145,60 @@ int mirrorfield_validate(void) {
 			if (perimeter[i].value == perimeter[j].value) {
 				return 0;
 			}
+			if (so_perimeter[i] == so_perimeter[j]) {
+				return 0;
+			}
 		}
 	}
 	
 	return 1;
+}
+
+/*
+ * The mirrorfield_link() function creates links between nodes to speed
+ * up the encryption/decryption process.
+ */
+void mirrorfield_link(void) {
+	int i, j;
+	struct gridnode *last;
+	
+	// Linking up/down
+	for (i = 0; i < GRID_SIZE; ++i) {
+
+		last = &perimeter[so_perimeter[i]];
+
+		for (j = i; j < GRID_SIZE * GRID_SIZE; j += GRID_SIZE) {
+			if (gridnodes[j].value < MIRROR_NONE) {
+				last->down = &gridnodes[j];
+				gridnodes[j].up = last;
+				last = &gridnodes[j];
+			}
+			if (j + GRID_SIZE >= GRID_SIZE * GRID_SIZE) {
+				last->down = &perimeter[so_perimeter[i + (GRID_SIZE * 3)]];
+				perimeter[so_perimeter[i + (GRID_SIZE * 3)]].up = last;
+				break;
+			}
+		}
+	}
+
+	// Linking right/left
+	for (i = 0; i < GRID_SIZE; ++i) {
+		
+		last = &perimeter[so_perimeter[i + (GRID_SIZE * 2)]];
+		
+		for (j = i * GRID_SIZE; j < (i * GRID_SIZE) + GRID_SIZE; ++j) {
+			if (gridnodes[j].value < MIRROR_NONE) {
+				last->right = &gridnodes[j];
+				gridnodes[j].left = last;
+				last = &gridnodes[j];
+			}
+			if (j + 1 >= (i * GRID_SIZE) + GRID_SIZE) {
+				last->right = &perimeter[so_perimeter[i + GRID_SIZE]];
+				perimeter[so_perimeter[i + GRID_SIZE]].left = last;
+				break;
+			}
+		}
+	}
 }
 
 /*
