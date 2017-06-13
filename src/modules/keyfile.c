@@ -98,7 +98,7 @@ int keyfile_open(char *keyFileName, int autoCreate) {
 /*
  * The keyfile_create() function creates a new key file at the given path.
  * A full absolute path and name must be provided as a single character
- * sting. It will attempt to create any missing directories in the path
+ * string. It will attempt to create any missing directories in the path
  * if necessary.
  * 
  * Upon successfully creating the key file, it will also populate the file
