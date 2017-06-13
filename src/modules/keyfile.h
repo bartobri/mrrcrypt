@@ -12,7 +12,7 @@
 void  keyfile_init(void);
 int   keyfile_open(char *, int);
 int   keyfile_create(char *);
-int keyfile_next_char(void);
+int   keyfile_next_char(void);
 void  keyfile_close(void);
 
 #endif
