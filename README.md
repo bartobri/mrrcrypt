@@ -20,7 +20,7 @@ A 4352 byte key is used for encryption and decryption, and is highly resilient t
 brute force attacks. The total number of key permutations is: 256!\*3^(64\*64) ≈ 1.66e+2461
 
 The adaptive mirror field algorithm implemented in this project is the first
-of it's kind, though is may have some similar attributes to a block cypher.
+of it's kind, though it may have some similar attributes to a block cypher.
 For more information on how it works, see [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRROR_FIELD.md).
 
 *MrrCrypt in debug mode shows how encryption/decryption occurs:*
