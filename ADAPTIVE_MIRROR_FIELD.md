@@ -60,7 +60,7 @@ In an adaptive mirror field, the mirror orientations and position of the perimet
 For every character that is processed:
 
 * The character's path through the mirror field reorients the mirrors it contacts, creating a unique mirror field permutation for the next character.
-* The plaintext and cyphertext characters are moved to a new perimeter posion.
+* The plaintext and cyphertext characters are moved to a new perimeter position.
    
 These two features eliminate identifiable patterns in the output, most importantly when given repeating characters as input.
 
