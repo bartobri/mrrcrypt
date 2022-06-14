@@ -25,7 +25,7 @@ For more information on how it works, see [ADAPTIVE_MIRROR_FIELD](ADAPTIVE_MIRRO
 
 *MrrCrypt in debug mode shows how encryption/decryption occurs:*
 
-![MrrCrypt's Adaptve Mirror Field](http://www.brianbarto.info/extern/images/mrrcrypt/mrrcrypt.gif)
+![MrrCrypt's Adaptve Mirror Field](https://www.brianbarto.info/static/mrrcrypt/mrrcrypt.gif)
 
 Table of Contents
 -----------------

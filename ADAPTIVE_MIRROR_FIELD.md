@@ -72,4 +72,4 @@ The size of the mirror field is 64x64 to accomodate a 256 character alphabet.
 
 In this visualization, characters are represented in hexidecimal.
 
-![MrrCrypt's Adaptve Mirror Field](http://www.brianbarto.info/extern/images/mrrcrypt/mrrcrypt.gif)
+![MrrCrypt's Adaptve Mirror Field](https://www.brianbarto.info/static/mrrcrypt/mrrcrypt.gif)
