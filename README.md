@@ -1,5 +1,7 @@
 ![Version](https://img.shields.io/badge/Version-0.2.0-green.svg)
 
+Like this project? Consider sponsoring me: [https://github.com/sponsors/bartobri](https://github.com/sponsors/bartobri)
+
 MrrCrypt
 ========
 
@@ -196,7 +198,3 @@ License
 This program is free software; you can redistribute it and/or modify it under the terms of the the
 GNU General Public License. See [LICENSE](LICENSE) for more details.
 
-Tips
-----
-
-[Tips are always appreciated!](https://github.com/bartobri/tips)
