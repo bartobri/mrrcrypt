@@ -37,7 +37,6 @@ Table of Contents
 3. [Usage](#usage)
 4. [Key Management](#key-management)
 5. [License](#license)
-6. [Tips](#tips)
 
 Quick Examples
 --------------
