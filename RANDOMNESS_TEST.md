@@ -15,12 +15,7 @@ No particular bitmap seemed to favor a color, or show any bias towards
 light or dark, when compared to bitmaps generated from other keys,
 suggesting that different keys produce the similar random results.
 
-Key  | 320x200 | 640x400 | 1280x800
------|---------|---------|---------
-key1 | [![TEST01](http://www.brianbarto.info/static/mrrcrypt/test01.png)](http://www.brianbarto.info/static/mrrcrypt/test01.bmp) | [![TEST05](http://www.brianbarto.info/static/mrrcrypt/test05.png)](http://www.brianbarto.info/static/mrrcrypt/test05.bmp) | [![TEST09](http://www.brianbarto.info/static/mrrcrypt/test09.png)](http://www.brianbarto.info/static/mrrcrypt/test09.bmp)
-key2 | [![TEST02](http://www.brianbarto.info/static/mrrcrypt/test02.png)](http://www.brianbarto.info/static/mrrcrypt/test02.bmp) | [![TEST06](http://www.brianbarto.info/static/mrrcrypt/test06.png)](http://www.brianbarto.info/static/mrrcrypt/test06.bmp) | [![TEST10](http://www.brianbarto.info/static/mrrcrypt/test10.png)](http://www.brianbarto.info/static/mrrcrypt/test10.bmp)
-key3 | [![TEST03](http://www.brianbarto.info/static/mrrcrypt/test03.png)](http://www.brianbarto.info/static/mrrcrypt/test03.bmp) | [![TEST07](http://www.brianbarto.info/static/mrrcrypt/test07.png)](http://www.brianbarto.info/static/mrrcrypt/test07.bmp) | [![TEST11](http://www.brianbarto.info/static/mrrcrypt/test11.png)](http://www.brianbarto.info/static/mrrcrypt/test11.bmp)
-key4 | [![TEST04](http://www.brianbarto.info/static/mrrcrypt/test04.png)](http://www.brianbarto.info/static/mrrcrypt/test04.bmp) | [![TEST08](http://www.brianbarto.info/static/mrrcrypt/test08.png)](http://www.brianbarto.info/static/mrrcrypt/test08.bmp) | [![TEST12](http://www.brianbarto.info/static/mrrcrypt/test12.png)](http://www.brianbarto.info/static/mrrcrypt/test12.bmp)
+![TEST12](http://www.brianbarto.info/media/pubfiles/test12.png)
 
 NIST and Diehard Tests
 ----------------------
